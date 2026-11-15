@@ -1,0 +1,1985 @@
+{
+  "origin": "http://127.0.0.1:5193",
+  "startedAt": "2026-11-15T07:42:47.907Z",
+  "method": "Normal production UI and keyboard only. Renderer pose and persisted campaign evidence are read-only. No source, physics, clock or store mutation by the harness.",
+  "actions": [
+    {
+      "ms": 3988,
+      "action": "click",
+      "name": "ENTER MISSION CONTROL"
+    },
+    {
+      "ms": 5217,
+      "action": "click",
+      "name": "Enter mission control"
+    },
+    {
+      "ms": 6440,
+      "action": "click",
+      "name": "Begin workshop"
+    },
+    {
+      "ms": 8913,
+      "action": "click",
+      "name": "Review mission"
+    },
+    {
+      "ms": 10980,
+      "action": "click",
+      "name": "Approve & launch"
+    },
+    {
+      "ms": 11113,
+      "action": "click",
+      "name": "BEGIN COUNTDOWN"
+    },
+    {
+      "ms": 11995,
+      "action": "click",
+      "name": "CONFIRM LIFTOFF"
+    },
+    {
+      "ms": 14330,
+      "action": "click",
+      "name": "BEGIN MARS APPROACH"
+    },
+    {
+      "ms": 15162,
+      "action": "click",
+      "name": "DEPLOY ROVER"
+    },
+    {
+      "ms": 25374,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 32962,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 33844,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 34139,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 38543,
+      "action": "start scan",
+      "target": "ancient-outcrop",
+      "pose": {
+        "x": -18,
+        "z": 7.546982075169756,
+        "heading": 0,
+        "at": 38384.89999999851
+      }
+    },
+    {
+      "ms": 54020,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 56952,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a",
+        "Space"
+      ]
+    },
+    {
+      "ms": 57850,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 64699,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 65452,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 66182,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 66909,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 67631,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 68350,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 69058,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 69764,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 70473,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 71170,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 71856,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 72547,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 73258,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 74440,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 75124,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 75809,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 76491,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 78064,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 78741,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 79415,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 80072,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 81882,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 82788,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 83719,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 84896,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 85613,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 86354,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 87108,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 87843,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 88574,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 89328,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 90077,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 90806,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 91541,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 92317,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 93054,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 93770,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 94537,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 95278,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 96009,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 96709,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 97443,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 98221,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 98933,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 99860,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 100543,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 103159,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 103865,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 104597,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 105285,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 106987,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 107704,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 108405,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 109090,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 110726,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 111893,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 112807,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 113680,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 114812,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 115570,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 116342,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 117098,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 117852,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 118623,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 119404,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 120180,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 120949,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 121722,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 122799,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 123611,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 124449,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 125248,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 126172,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 127000,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 127779,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 128549,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 129332,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 130122,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 130934,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 131758,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 132869,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 133678,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 133965,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 138206,
+      "action": "start scan",
+      "target": "basalt-fracture",
+      "pose": {
+        "x": -88.09960656595017,
+        "z": -32.649385158807846,
+        "heading": 0.7510574478729779,
+        "at": 138048.29999999702
+      }
+    },
+    {
+      "ms": 156428,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 159367,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d",
+        "Space"
+      ]
+    },
+    {
+      "ms": 172443,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 180160,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 180860,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 185507,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 186532,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 187523,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 188894,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 189921,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 190958,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 195138,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 196209,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 197216,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 198333,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 200783,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 201859,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 202587,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 203754,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 205016,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 205834,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 207434,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 213354,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 214366,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 215376,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 216311,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 217795,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 218661,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 219607,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 220472,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 221939,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 222859,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 223785,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 224454,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 225330,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 226772,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 227636,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 228486,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 229362,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 231460,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 232314,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 233184,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 234020,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 235699,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 236539,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 237751,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 238715,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 239602,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 240625,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 241527,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 242412,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 243308,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 244216,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 245147,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 246017,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 246898,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 247788,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 248678,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 249566,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 250475,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 251167,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 252048,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 252920,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 254101,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 255015,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 255905,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 259770,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 260679,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 261679,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 262667,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 265219,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 266133,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 267039,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 267916,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 269155,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 270049,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 271442,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 279798,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 281164,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 282233,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 293836,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 294676,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 295684,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 296562,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 299175,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 300024,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 300868,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 301722,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 303786,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 304616,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 305433,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 306439,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 308463,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 309243,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 310142,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 311146,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 311891,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 312716,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 316640,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 317559,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 318474,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 319419,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 321856,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 322707,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 323666,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 325071,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 325817,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 326935,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 331273,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 332286,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "a"
+      ]
+    },
+    {
+      "ms": 333062,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 356280,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift",
+        "d"
+      ]
+    },
+    {
+      "ms": 356990,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 358092,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 359283,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 359953,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 360681,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 361911,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 362675,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 363633,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 364319,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 367114,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 367919,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 368785,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 369654,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 371729,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 372496,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 373691,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a",
+        "Space"
+      ]
+    },
+    {
+      "ms": 375009,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 382866,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 383867,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "Shift"
+      ]
+    },
+    {
+      "ms": 388842,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 390875,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 391740,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 392522,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 393262,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 395575,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "d"
+      ]
+    },
+    {
+      "ms": 396351,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 397110,
+      "action": "keyboard",
+      "keys": [
+        "w",
+        "a"
+      ]
+    },
+    {
+      "ms": 397897,
+      "action": "keyboard",
+      "keys": [
+        "w"
+      ]
+    },
+    {
+      "ms": 399458,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 400235,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 400495,
+      "action": "keyboard",
+      "keys": [
+        "Space"
+      ]
+    },
+    {
+      "ms": 404476,
+      "action": "start scan",
+      "target": "iron-ejecta",
+      "pose": {
+        "x": 77.99165363802503,
+        "z": -58.60860919377303,
+        "heading": 0.05935441447476869,
+        "at": 404317.19999999553
+      }
+    },
+    {
+      "ms": 420284,
+      "action": "keyboard",
+      "keys": []
+    },
+    {
+      "ms": 425631,
+      "action": "click",
+      "name": "/^Uplink/"
+    },
+    {
+      "ms": 428133,
+      "action": "click",
+      "name": "End mission"
+    }
+  ],
+  "targets": [
+    {
+      "id": "ancient-outcrop",
+      "ms": 54898,
+      "pose": {
+        "x": -18,
+        "z": 7.546981398358633,
+        "heading": 0,
+        "at": 54740.39999999851
+      },
+      "objective": "FIELD SCIENCE · 1/3 DISCOVERIES\nANALYZE · BASALT FRACTURE ZONE\nFollow a cyan beacon to a marked geological formation."
+    },
+    {
+      "id": "basalt-fracture",
+      "ms": 157338,
+      "pose": {
+        "x": -88.09960703691621,
+        "z": -32.64938566328445,
+        "heading": 0.7510574478729779,
+        "at": 157180.3999999985
+      },
+      "objective": "FIELD SCIENCE · 2/3 DISCOVERIES\nANALYZE · IRON-RICH EJECTA\nFollow a cyan beacon to a marked geological formation."
+    },
+    {
+      "id": "iron-ejecta",
+      "ms": 421149,
+      "pose": {
+        "x": 77.99165359710324,
+        "z": -58.60860988241221,
+        "heading": 0.05935441447476869,
+        "at": 420991.8999999985
+      },
+      "objective": "FIELD SCIENCE · 3/3 DISCOVERIES\nGEOLOGY SURVEY COMPLETE\nAll marked sites analyzed. Continue exploring the crater."
+    }
+  ],
+  "errors": [],
+  "browser": "151.0.7922.34",
+  "outcome": "FULL SUCCESS",
+  "reportText": "Briefing\nEngineering\nLaunch\nMars\n5\nReport\nARES-01 · POST-FLIGHT REVIEW\nFULL SUCCESS\n\nMission concluded by player.\n\nKavi\n· Mission Director\n\nEvery target record made it home. Our payload, operating plan, and relay strategy worked together.\n\nScience return\nAncient Lakebed Outcrop\nRETURNED\nBasalt Fracture Zone\nRETURNED\nIron-Rich Ejecta\nRETURNED\n\n3 of 3 target records returned · campaign award +87 RP.\n\nEngineering contribution\n\nmastcam-z, supercam, sherloc, pixl, meda, moxie, rimfax · 1025.0 kg · 635 Wh modeled daily energy balance\n\nEvents & recovery\n\nNo modeled anomalies occurred.\n\nWhat this teaches\n\nThe selected payload and operating plan supported the returned science objectives.\n\nThermal operating limits, battery discharge limits, and flight qualification criteria are unknown here and are not simulated.\n\nNASA/JPL source references: S1 · S2 · S3 · S4 · S5\nNEW CAMPAIGN",
+  "persistedEvidence": {
+    "missionRecord": {
+      "events": [],
+      "transmittedTargets": [
+        "ancient-outcrop",
+        "basalt-fracture",
+        "iron-ejecta"
+      ],
+      "safeMode": false,
+      "mobilityReplanned": false,
+      "ended": true,
+      "outcome": "full-success",
+      "endReason": "Mission concluded by player.",
+      "rewardApplied": true
+    },
+    "missionProgress": {
+      "x": 77.99165359710324,
+      "z": -58.60860988241221,
+      "heading": 0.05935441447476869,
+      "distance": 305.8686204367841,
+      "battery": 98.34854413175471,
+      "sol": 1,
+      "scannedTargets": [
+        "ancient-outcrop",
+        "basalt-fracture",
+        "iron-ejecta"
+      ],
+      "science": 87
+    },
+    "agencyRP": 107
+  },
+  "completedAt": "2026-11-15T07:49:56.508Z",
+  "durationMs": 428601
+}

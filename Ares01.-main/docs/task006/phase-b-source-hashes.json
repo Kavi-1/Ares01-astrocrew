@@ -1,0 +1,11 @@
+{
+  "src/game/MarsGame.tsx": "6bfbc15345f1252bcd7feed823ed54b17d84dcb2f7e5034f4ba0b97e4df4cb08",
+  "src/game/MissionReport.tsx": "6522eae4aa74bd0e075d1a378de9cc97f76bc1336bdc276877a25eca81c1c87a",
+  "src/game/WelcomeScreen.tsx": "20e08e06a483dcb3e22b3187b14a95367dfa98fe68af1d356cca8d95874a79b4",
+  "src/game/ProjectCredits.tsx": "c51887b4fda592f0da7f4c5c3337eebf5061df92c217dbe9a84f56719d44254a",
+  "src/game/welcome.css": "4bfc8199b19f337a51ebad3e21bf1fe95ed63c6d6c4d3705ab38c34a6e686351",
+  "src/game/mission-report.css": "5022fd2d1c3916d20b6be7ae219d3583ef7f8a6058bf0edeb81b3b2dd40003fc",
+  "tests/presentation.spec.ts": "2162d1fc4e1ef73758cdb593bf3ee76e091a1a1079dd97f82965bf5b166b3dd6",
+  "scripts/capture-ui.mjs": "936c3eb1e7f79e34e1ccd9b1c8746cfe7aae085f054186eb73d80e2fb2835723",
+  "scripts/play-full-success.mjs": "b3be97cf884e69bf40f10789835f6a8fd54fb29d694e1f6908a122a9ce939a78"
+}

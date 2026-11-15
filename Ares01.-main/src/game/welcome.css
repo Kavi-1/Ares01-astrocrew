@@ -1,0 +1,88 @@
+/* Cinematic entry, composed like the approved left-menu/right-subject reference. */
+.game-shell.is-welcome { background: #080b15; }
+.game-shell.is-welcome > .mars-world { left: 24%; }
+.game-shell.is-welcome > .mars-world > .model-status { top: 95px; right: 24px; max-width: calc(100% - 40px); font-size: 10px; }
+.welcome-screen {
+  --welcome-display: 'Space Mono', monospace;
+  position: absolute; inset: 0; z-index: 3;
+  display: grid; grid-template-rows: auto 1fr auto;
+  padding: 30px 7.5vw 24px; pointer-events: none;
+  color: #e9e9f0;
+  background: linear-gradient(90deg, #080b15 0%, #080b15f5 24%, #080b15b3 44%, #080b1533 72%), linear-gradient(0deg, #080b15f5, #080b1522 42%, #080b1555 75%, #080b15b3);
+}
+.welcome-screen > * { pointer-events: auto; }
+.welcome-masthead { display: flex; align-items: center; gap: 14px; width: 100%; font: 500 11px/1.4 var(--mono); letter-spacing: .2em; }
+.welcome-masthead small { display: block; font-size: 8px; letter-spacing: .18em; margin-top: 5px; color: #a0a5b2; }
+.welcome-emblem { display: grid; place-items: center; width: 32px; height: 38px; border: 1px solid #ffc18366; color: #ffc183; font: 700 20px/1 var(--welcome-display); }
+.welcome-masthead-end { margin-left: auto; font-size: 9px; color: #b1b4c0; letter-spacing: .15em; }
+.welcome-mission-copy { align-self: center; width: min(520px, 46vw); padding: 50px 0; }
+.welcome-kicker { display: flex; align-items: center; gap: 10px; font: 500 10px/1.6 var(--mono); letter-spacing: .16em; color: #6bd0d1; }
+.welcome-kicker > span { width: 7px; height: 7px; background: #ffc183; border-radius: 50%; box-shadow: 0 0 12px #ffc18344; flex: none; }
+.welcome-screen h1 { margin: 16px 0 10px -5px; font: 700 clamp(50px, 5.7vw, 92px)/1.15 var(--welcome-display); letter-spacing: -.085em; white-space: nowrap; }
+.welcome-screen h1 > span { color: #ffc183; }
+.welcome-lead { font: 500 clamp(10px, 1.03vw, 15px)/1.6 var(--mono); letter-spacing: .16em; color: #d3d0d4; }
+.welcome-description { margin-top: 9px; font: 400 13px/1.7 var(--mono); color: #aeb3c0; max-width: 40ch; }
+.welcome-menu { display: grid; gap: 12px; margin-top: 42px; width: 100%; }
+.welcome-enter, .welcome-secondary, .welcome-notes > summary { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px; width: 100%; min-height: 60px; padding: 14px 22px; border: 1px solid #ffffff13; border-radius: 1px; background: #0c101bd9; color: #d5d5df; font: 700 12px/1.5 var(--mono); letter-spacing: .1em; text-align: left; text-transform: uppercase; cursor: pointer; transition: border-color .18s ease, background .18s ease; }
+.welcome-index { color: #a0a3b0; font: 500 10px/1.5 var(--mono); letter-spacing: .1em; white-space: nowrap; }
+.welcome-enter { border-color: #ffc18366; border-left: 5px solid #ffc183; padding-left: 18px; color: #ffcf95; background: linear-gradient(90deg, #ffc18310, #111521eb); box-shadow: 0 0 30px #ffb8660b; min-height: 66px; }
+.welcome-enter .welcome-index { color: #ffc183; }
+.welcome-enter:hover { background: #ffc183; color: #21140a; }
+.welcome-enter:hover .welcome-index { color: #21140a; }
+.welcome-secondary:hover, .welcome-notes > summary:hover { border-color: #ffc18388; background: #202431; color: #ffcf95; }
+.welcome-notes > summary { list-style: none; position: relative; }
+.welcome-notes > summary::-webkit-details-marker { display: none; }
+.welcome-notes-chevron { display: none; }
+.welcome-notes-content { padding: 18px; border: 1px solid #ffffff1a; border-top: 0; background: #0c101bf5; color: #bcc2cf; font: 12px/1.8 var(--mono); max-height: min(27vh, 250px); overflow: auto; }
+.welcome-notes-content p + p { margin-top: 12px; }
+.welcome-notes-content strong { color: #e6e6ee; }
+.welcome-notes-content a { color: #8fd7d6; text-underline-offset: 3px; }
+.welcome-team { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: #9ca4b4; font: 500 9px/1.6 var(--mono); letter-spacing: .12em; margin-top: 48px; }
+.welcome-team > span { color: #ffc183; margin-inline: 3px; }
+.welcome-world-note { position: absolute; right: 7.5vw; bottom: 15%; display: flex; gap: 12px; font: 500 10px/1.5 var(--mono); letter-spacing: .18em; pointer-events: none; text-shadow: 0 2px 12px #000; }
+.welcome-cross { color: #ffc183; font: 400 22px/1 var(--mono); }
+.welcome-world-note small { display: flex; align-items: center; gap: 6px; color: #bbc1cc; font-size: 9px; letter-spacing: .05em; margin-top: 5px; }
+.welcome-world-note small:last-child { color: #9ca5b5; }
+.welcome-footer { display: flex; justify-content: space-between; gap: 20px; font: 500 8px/1.8 var(--mono); color: #99a1b1; letter-spacing: .14em; border-top: 1px solid #ffffff0e; padding-top: 18px; }
+@media (max-width: 1000px) and (min-width: 701px) {
+  .welcome-screen { padding-inline: 5vw; }
+  .welcome-mission-copy { width: 53vw; }
+  .welcome-screen h1 { font-size: 7vw; }
+  .welcome-enter, .welcome-secondary, .welcome-notes > summary { font-size: 10px; padding-inline: 14px; gap: 10px; }
+  .welcome-enter { padding-left: 10px; }
+  .welcome-masthead-end { font-size: 8px; }
+  .welcome-world-note { right: 5vw; bottom: 13%; }
+}
+@media (max-width: 700px) {
+  .game-shell.is-welcome { height: 100dvh; min-height: 700px; overflow: auto; }
+  .game-shell.is-welcome > .mars-world { left: 0; height: 360px; bottom: auto; }
+  .game-shell.is-welcome > .mars-world > .model-status { top: 75px; right: 14px; }
+  .welcome-screen { position: relative; min-height: 100%; padding: 22px 24px; background: linear-gradient(180deg, #080b1555 0, #080b151a 140px, #080b15ed 330px, #080b15 410px); }
+  .welcome-masthead { font-size: 10px; }
+  .welcome-masthead-end { display: none; }
+  .welcome-mission-copy { width: 100%; align-self: start; padding-top: 230px; padding-bottom: 30px; }
+  .welcome-screen h1 { font-size: clamp(43px, 12vw, 80px); letter-spacing: -.075em; margin-left: -3px; }
+  .welcome-kicker { font-size: 8px; letter-spacing: .1em; gap: 8px; }
+  .welcome-lead { font-size: 10px; letter-spacing: .1em; }
+  .welcome-description { font-size: 11px; }
+  .welcome-menu { margin-top: 28px; gap: 10px; }
+  .welcome-enter, .welcome-secondary, .welcome-notes > summary { font-size: 10px; min-height: 56px; padding: 12px; gap: 10px; letter-spacing: .03em; }
+  .welcome-enter { padding-left: 8px; min-height: 60px; }
+  .welcome-index { font-size: 9px; letter-spacing: 0; }
+  .welcome-notes-content { font-size: 12px; max-height: 260px; }
+  .welcome-team { font-size: 8px; margin-top: 28px; }
+  .welcome-world-note { display: none; }
+  .welcome-footer { font-size: 8px; padding-top: 14px; }
+  .welcome-footer > span:last-child { display: none; }
+}
+@media (max-height: 740px) and (min-width: 701px) {
+  .welcome-screen { padding-top: 20px; padding-bottom: 16px; }
+  .welcome-mission-copy { padding-block: 28px; }
+  .welcome-screen h1 { font-size: clamp(48px, 7vw, 76px); }
+  .welcome-menu { margin-top: 26px; gap: 9px; }
+  .welcome-enter, .welcome-secondary, .welcome-notes > summary { min-height: 50px; }
+  .welcome-team { margin-top: 26px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .welcome-screen *, .welcome-screen *::before, .welcome-screen *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

@@ -1,0 +1,60 @@
+[WebServer] (node:5099) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:5112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:5140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/1] tests/models.spec.ts:130:1 › hub review launches, rover drives, abort resets home
+[WebServer] 6:24:47 PM [vite] (client) [console.warn] Rover model unavailable; using procedural rover. Error: Unable to prepare model /models/rover.glb: Unexpected token '<', "<!doctype "... is not valid JSON
+[WebServer]     at loadModel (http://127.0.0.1:5180/src/models/assets.ts:234:19)
+[WebServer]     at async createRoverModel (http://127.0.0.1:5180/src/models/roverModel.ts:81:15)
+
+[WebServer] 6:24:55 PM [vite] (client) [console.warn] Room rover unavailable; controls remain active. Error: Unable to prepare model /models/rover.glb: Unexpected token '<', "<!doctype "... is not valid JSON
+[WebServer]     at loadModel (http://127.0.0.1:5180/src/models/assets.ts:234:19)
+[WebServer]     at async createRoverModel (http://127.0.0.1:5180/src/models/roverModel.ts:81:15)
+
+[WebServer] 6:24:55 PM [vite] (client) [console.warn] Crew model unavailable; station remains active. kavi Error: Unable to prepare model /models/crew/kavi.glb: Unexpected token '<', "<!doctype "... is not valid JSON
+[WebServer]     at loadModel (http://127.0.0.1:5180/src/models/assets.ts:234:19)
+[WebServer]     at async createCharacterModel (http://127.0.0.1:5180/src/models/characterModel.ts:4:15)
+[WebServer]     at async loadCrew (http://127.0.0.1:5180/src/ui/crew/CrewRoom.tsx:333:14)
+
+[WebServer] 6:24:55 PM [vite] (client) [console.warn] Crew model unavailable; station remains active. aaryan Error: Unable to prepare model /models/crew/aaryan.glb: Unexpected token '<', "<!doctype "... is not valid JSON
+[WebServer]     at loadModel (http://127.0.0.1:5180/src/models/assets.ts:234:19)
+[WebServer]     at async createCharacterModel (http://127.0.0.1:5180/src/models/characterModel.ts:4:15)
+[WebServer]     at async loadCrew (http://127.0.0.1:5180/src/ui/crew/CrewRoom.tsx:333:14)
+
+[WebServer] 6:24:55 PM [vite] (client) [console.warn] Crew model unavailable; station remains active. houssam Error: Unable to prepare model /models/crew/houssam.glb: Unexpected token '<', "<!doctype "... is not valid JSON
+[WebServer]     at loadModel (http://127.0.0.1:5180/src/models/assets.ts:234:19)
+[WebServer]     at async createCharacterModel (http://127.0.0.1:5180/src/models/characterModel.ts:4:15)
+[WebServer]     at async loadCrew (http://127.0.0.1:5180/src/ui/crew/CrewRoom.tsx:333:14)
+
+[WebServer] 6:24:55 PM [vite] (client) [console.warn] Crew model unavailable; station remains active. huzaifa Error: Unable to prepare model /models/crew/huzaifa.glb: Unexpected token '<', "<!doctype "... is not valid JSON
+[WebServer]     at loadModel (http://127.0.0.1:5180/src/models/assets.ts:234:19)
+[WebServer]     at async createCharacterModel (http://127.0.0.1:5180/src/models/characterModel.ts:4:15)
+[WebServer]     at async loadCrew (http://127.0.0.1:5180/src/ui/crew/CrewRoom.tsx:333:14)
+
+[WebServer] 6:24:56 PM [vite] (client) [console.warn] Crew model unavailable; station remains active. lautaro Error: Unable to prepare model /models/crew/lautaro.glb: Unexpected token '<', "<!doctype "... is not valid JSON
+[WebServer]     at loadModel (http://127.0.0.1:5180/src/models/assets.ts:234:19)
+[WebServer]     at async createCharacterModel (http://127.0.0.1:5180/src/models/characterModel.ts:4:15)
+[WebServer]     at async loadCrew (http://127.0.0.1:5180/src/ui/crew/CrewRoom.tsx:333:14)
+
+[WebServer] 6:24:56 PM [vite] (client) [console.warn] Crew model unavailable; station remains active. rihabe Error: Unable to prepare model /models/crew/rihabe.glb: Unexpected token '<', "<!doctype "... is not valid JSON
+[WebServer]     at loadModel (http://127.0.0.1:5180/src/models/assets.ts:234:19)
+[WebServer]     at async createCharacterModel (http://127.0.0.1:5180/src/models/characterModel.ts:4:15)
+[WebServer]     at async loadCrew (http://127.0.0.1:5180/src/ui/crew/CrewRoom.tsx:333:14)
+
+[WebServer] 6:25:16 PM [vite] (client) [console.warn] Rover model unavailable; using procedural rover. Error: Unable to prepare model /models/rover.glb: Unexpected token '<', "<!doctype "... is not valid JSON
+[WebServer]     at loadModel (http://127.0.0.1:5180/src/models/assets.ts:234:19)
+[WebServer]     at async createRoverModel (http://127.0.0.1:5180/src/models/roverModel.ts:81:15)
+
+[WebServer] 6:25:54 PM [vite] (client) [console.warn] Rover model unavailable; using procedural rover. Error: Unable to prepare model /models/rover.glb: Unexpected token '<', "<!doctype "... is not valid JSON
+[WebServer]     at loadModel (http://127.0.0.1:5180/src/models/assets.ts:234:19)
+[WebServer]     at async createRoverModel (http://127.0.0.1:5180/src/models/roverModel.ts:81:15)
+
+  1 passed (1.4m)

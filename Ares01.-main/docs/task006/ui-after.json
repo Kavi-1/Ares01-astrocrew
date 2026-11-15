@@ -1,0 +1,1060 @@
+{
+  "tag": "after",
+  "origin": "http://127.0.0.1:5194",
+  "environment": {
+    "cpu": "12th Gen Intel(R) Core(TM) i7-12700",
+    "logicalCpus": 20,
+    "systemMemoryBytes": 33510207488,
+    "platform": "linux"
+  },
+  "screenshots": [
+    {
+      "label": "home",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "file": "/tmp/ares-task006/ui-after/home-1440x1000.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "mainWidth": 1440,
+        "mainScrollWidth": 1440,
+        "mainHeight": 1000,
+        "mainScrollHeight": 1000
+      }
+    },
+    {
+      "label": "home",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "/tmp/ares-task006/ui-after/home-1366x768.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 1366,
+        "documentWidth": 1366,
+        "bodyWidth": 1366,
+        "mainWidth": 1366,
+        "mainScrollWidth": 1366,
+        "mainHeight": 814,
+        "mainScrollHeight": 814
+      }
+    },
+    {
+      "label": "home",
+      "viewport": {
+        "width": 820,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/home-820x900.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 820,
+        "documentWidth": 820,
+        "bodyWidth": 820,
+        "mainWidth": 820,
+        "mainScrollWidth": 820,
+        "mainHeight": 900,
+        "mainScrollHeight": 900
+      }
+    },
+    {
+      "label": "home",
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/home-390x900.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "mainWidth": 390,
+        "mainScrollWidth": 390,
+        "mainHeight": 900,
+        "mainScrollHeight": 900
+      }
+    },
+    {
+      "label": "failure",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "file": "/tmp/ares-task006/ui-after/failure-1440x1000.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "mainWidth": 1440,
+        "mainScrollWidth": 1440,
+        "mainHeight": 1000,
+        "mainScrollHeight": 1072
+      }
+    },
+    {
+      "label": "failure",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "file": "/tmp/ares-task006/ui-after/failure-1440x1000-bottom.png",
+      "scroll": "main bottom"
+    },
+    {
+      "label": "failure",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "/tmp/ares-task006/ui-after/failure-1366x768.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 1366,
+        "documentWidth": 1366,
+        "bodyWidth": 1366,
+        "mainWidth": 1366,
+        "mainScrollWidth": 1366,
+        "mainHeight": 768,
+        "mainScrollHeight": 1072
+      }
+    },
+    {
+      "label": "failure",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "/tmp/ares-task006/ui-after/failure-1366x768-bottom.png",
+      "scroll": "main bottom"
+    },
+    {
+      "label": "failure",
+      "viewport": {
+        "width": 820,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/failure-820x900.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 820,
+        "documentWidth": 820,
+        "bodyWidth": 820,
+        "mainWidth": 820,
+        "mainScrollWidth": 820,
+        "mainHeight": 900,
+        "mainScrollHeight": 1510
+      }
+    },
+    {
+      "label": "failure",
+      "viewport": {
+        "width": 820,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/failure-820x900-bottom.png",
+      "scroll": "main bottom"
+    },
+    {
+      "label": "failure",
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/failure-390x900.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "mainWidth": 390,
+        "mainScrollWidth": 390,
+        "mainHeight": 900,
+        "mainScrollHeight": 1649
+      }
+    },
+    {
+      "label": "failure",
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/failure-390x900-bottom.png",
+      "scroll": "main bottom"
+    },
+    {
+      "label": "partial-onboard",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-onboard-1440x1000.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "mainWidth": 1440,
+        "mainScrollWidth": 1440,
+        "mainHeight": 1000,
+        "mainScrollHeight": 1103
+      }
+    },
+    {
+      "label": "partial-onboard",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-onboard-1440x1000-bottom.png",
+      "scroll": "main bottom"
+    },
+    {
+      "label": "partial-onboard",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-onboard-1366x768.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 1366,
+        "documentWidth": 1366,
+        "bodyWidth": 1366,
+        "mainWidth": 1366,
+        "mainScrollWidth": 1366,
+        "mainHeight": 768,
+        "mainScrollHeight": 1103
+      }
+    },
+    {
+      "label": "partial-onboard",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-onboard-1366x768-bottom.png",
+      "scroll": "main bottom"
+    },
+    {
+      "label": "partial-onboard",
+      "viewport": {
+        "width": 820,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-onboard-820x900.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 820,
+        "documentWidth": 820,
+        "bodyWidth": 820,
+        "mainWidth": 820,
+        "mainScrollWidth": 820,
+        "mainHeight": 900,
+        "mainScrollHeight": 1540
+      }
+    },
+    {
+      "label": "partial-onboard",
+      "viewport": {
+        "width": 820,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-onboard-820x900-bottom.png",
+      "scroll": "main bottom"
+    },
+    {
+      "label": "partial-onboard",
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-onboard-390x900.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "mainWidth": 390,
+        "mainScrollWidth": 390,
+        "mainHeight": 900,
+        "mainScrollHeight": 1679
+      }
+    },
+    {
+      "label": "partial-onboard",
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-onboard-390x900-bottom.png",
+      "scroll": "main bottom"
+    },
+    {
+      "label": "partial-returned",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-returned-1440x1000.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "mainWidth": 1440,
+        "mainScrollWidth": 1440,
+        "mainHeight": 1000,
+        "mainScrollHeight": 1103
+      }
+    },
+    {
+      "label": "partial-returned",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-returned-1440x1000-bottom.png",
+      "scroll": "main bottom"
+    },
+    {
+      "label": "partial-returned",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-returned-1366x768.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 1366,
+        "documentWidth": 1366,
+        "bodyWidth": 1366,
+        "mainWidth": 1366,
+        "mainScrollWidth": 1366,
+        "mainHeight": 768,
+        "mainScrollHeight": 1103
+      }
+    },
+    {
+      "label": "partial-returned",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-returned-1366x768-bottom.png",
+      "scroll": "main bottom"
+    },
+    {
+      "label": "partial-returned",
+      "viewport": {
+        "width": 820,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-returned-820x900.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 820,
+        "documentWidth": 820,
+        "bodyWidth": 820,
+        "mainWidth": 820,
+        "mainScrollWidth": 820,
+        "mainHeight": 900,
+        "mainScrollHeight": 1540
+      }
+    },
+    {
+      "label": "partial-returned",
+      "viewport": {
+        "width": 820,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-returned-820x900-bottom.png",
+      "scroll": "main bottom"
+    },
+    {
+      "label": "partial-returned",
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-returned-390x900.png",
+      "scroll": "top",
+      "dimensions": {
+        "width": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "mainWidth": 390,
+        "mainScrollWidth": 390,
+        "mainHeight": 900,
+        "mainScrollHeight": 1679
+      }
+    },
+    {
+      "label": "partial-returned",
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "file": "/tmp/ares-task006/ui-after/partial-returned-390x900-bottom.png",
+      "scroll": "main bottom"
+    }
+  ],
+  "findings": [
+    {
+      "passed": true,
+      "description": "home has no horizontal overflow at 1440×1000",
+      "width": 1440,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "mainWidth": 1440,
+      "mainScrollWidth": 1440,
+      "mainHeight": 1000,
+      "mainScrollHeight": 1000
+    },
+    {
+      "passed": true,
+      "description": "home has no horizontal overflow at 1366×768",
+      "width": 1366,
+      "documentWidth": 1366,
+      "bodyWidth": 1366,
+      "mainWidth": 1366,
+      "mainScrollWidth": 1366,
+      "mainHeight": 814,
+      "mainScrollHeight": 814
+    },
+    {
+      "passed": true,
+      "description": "home has no horizontal overflow at 820×900",
+      "width": 820,
+      "documentWidth": 820,
+      "bodyWidth": 820,
+      "mainWidth": 820,
+      "mainScrollWidth": 820,
+      "mainHeight": 900,
+      "mainScrollHeight": 900
+    },
+    {
+      "passed": true,
+      "description": "home has no horizontal overflow at 390×900",
+      "width": 390,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "mainWidth": 390,
+      "mainScrollWidth": 390,
+      "mainHeight": 900,
+      "mainScrollHeight": 900
+    },
+    {
+      "passed": true,
+      "description": "Viewport changes retain the existing home renderer",
+      "activeIds": [
+        "0",
+        "0",
+        "0",
+        "0"
+      ]
+    },
+    {
+      "passed": true,
+      "description": "Home mission action accepts keyboard focus"
+    },
+    {
+      "passed": true,
+      "description": "failure uses the existing real mission outcome",
+      "heading": "MISSION FAILURE"
+    },
+    {
+      "passed": true,
+      "description": "failure distinguishes transmitted records from collected-only observations",
+      "firstTarget": "Ancient Lakebed Outcrop\nNOT COMPLETED"
+    },
+    {
+      "passed": true,
+      "description": "failure has no horizontal overflow at 1440×1000",
+      "width": 1440,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "mainWidth": 1440,
+      "mainScrollWidth": 1440,
+      "mainHeight": 1000,
+      "mainScrollHeight": 1072
+    },
+    {
+      "passed": true,
+      "description": "failure has no horizontal overflow at 1366×768",
+      "width": 1366,
+      "documentWidth": 1366,
+      "bodyWidth": 1366,
+      "mainWidth": 1366,
+      "mainScrollWidth": 1366,
+      "mainHeight": 768,
+      "mainScrollHeight": 1072
+    },
+    {
+      "passed": true,
+      "description": "failure has no horizontal overflow at 820×900",
+      "width": 820,
+      "documentWidth": 820,
+      "bodyWidth": 820,
+      "mainWidth": 820,
+      "mainScrollWidth": 820,
+      "mainHeight": 900,
+      "mainScrollHeight": 1510
+    },
+    {
+      "passed": true,
+      "description": "failure has no horizontal overflow at 390×900",
+      "width": 390,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "mainWidth": 390,
+      "mainScrollWidth": 390,
+      "mainHeight": 900,
+      "mainScrollHeight": 1649
+    },
+    {
+      "passed": true,
+      "description": "failure report replay returns to the existing home flow"
+    },
+    {
+      "passed": true,
+      "description": "Home mission action accepts keyboard focus"
+    },
+    {
+      "passed": true,
+      "description": "First target was reached by keyboard, braked and scanned with E"
+    },
+    {
+      "passed": true,
+      "description": "partial-onboard uses the existing real mission outcome",
+      "heading": "PARTIAL SUCCESS"
+    },
+    {
+      "passed": true,
+      "description": "partial-onboard distinguishes transmitted records from collected-only observations",
+      "firstTarget": "Ancient Lakebed Outcrop\nONBOARD · NOT RETURNED\n\nClay mineral signature"
+    },
+    {
+      "passed": true,
+      "description": "partial-onboard has no horizontal overflow at 1440×1000",
+      "width": 1440,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "mainWidth": 1440,
+      "mainScrollWidth": 1440,
+      "mainHeight": 1000,
+      "mainScrollHeight": 1103
+    },
+    {
+      "passed": true,
+      "description": "partial-onboard has no horizontal overflow at 1366×768",
+      "width": 1366,
+      "documentWidth": 1366,
+      "bodyWidth": 1366,
+      "mainWidth": 1366,
+      "mainScrollWidth": 1366,
+      "mainHeight": 768,
+      "mainScrollHeight": 1103
+    },
+    {
+      "passed": true,
+      "description": "partial-onboard has no horizontal overflow at 820×900",
+      "width": 820,
+      "documentWidth": 820,
+      "bodyWidth": 820,
+      "mainWidth": 820,
+      "mainScrollWidth": 820,
+      "mainHeight": 900,
+      "mainScrollHeight": 1540
+    },
+    {
+      "passed": true,
+      "description": "partial-onboard has no horizontal overflow at 390×900",
+      "width": 390,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "mainWidth": 390,
+      "mainScrollWidth": 390,
+      "mainHeight": 900,
+      "mainScrollHeight": 1679
+    },
+    {
+      "passed": true,
+      "description": "partial-onboard report replay returns to the existing home flow"
+    },
+    {
+      "passed": true,
+      "description": "Home mission action accepts keyboard focus"
+    },
+    {
+      "passed": true,
+      "description": "First target was reached by keyboard, braked and scanned with E"
+    },
+    {
+      "passed": true,
+      "description": "partial-returned uses the existing real mission outcome",
+      "heading": "PARTIAL SUCCESS"
+    },
+    {
+      "passed": true,
+      "description": "partial-returned distinguishes transmitted records from collected-only observations",
+      "firstTarget": "Ancient Lakebed Outcrop\nRETURNED\n\nClay mineral signature"
+    },
+    {
+      "passed": true,
+      "description": "partial-returned has no horizontal overflow at 1440×1000",
+      "width": 1440,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "mainWidth": 1440,
+      "mainScrollWidth": 1440,
+      "mainHeight": 1000,
+      "mainScrollHeight": 1103
+    },
+    {
+      "passed": true,
+      "description": "partial-returned has no horizontal overflow at 1366×768",
+      "width": 1366,
+      "documentWidth": 1366,
+      "bodyWidth": 1366,
+      "mainWidth": 1366,
+      "mainScrollWidth": 1366,
+      "mainHeight": 768,
+      "mainScrollHeight": 1103
+    },
+    {
+      "passed": true,
+      "description": "partial-returned has no horizontal overflow at 820×900",
+      "width": 820,
+      "documentWidth": 820,
+      "bodyWidth": 820,
+      "mainWidth": 820,
+      "mainScrollWidth": 820,
+      "mainHeight": 900,
+      "mainScrollHeight": 1540
+    },
+    {
+      "passed": true,
+      "description": "partial-returned has no horizontal overflow at 390×900",
+      "width": 390,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "mainWidth": 390,
+      "mainScrollWidth": 390,
+      "mainHeight": 900,
+      "mainScrollHeight": 1679
+    },
+    {
+      "passed": true,
+      "description": "partial-returned report replay returns to the existing home flow"
+    },
+    {
+      "passed": true,
+      "description": "No uncaught page errors",
+      "errors": []
+    }
+  ],
+  "pageErrors": [],
+  "outcomes": [
+    {
+      "scenario": "failure",
+      "heading": "MISSION FAILURE",
+      "text": "ARES-01 / ASTROCREW\nBriefing\nEngineering\nLaunch\nMars\n5\nReport\nMISSION DOSSIER / POST-FLIGHT REVIEW\nMISSION FAILURE\n\nMission concluded by player.\n\n01\nScience return\n↗\n02\nEngineering\n↗\n03\nEvents & recovery\n↗\n04\nModel guidance\n↗\n05\nSources & credits\n↗\nPERSEVERANCE · MARS 2020\n\nFollow the record from mission decisions to science return.\n\nNEW CAMPAIGN\n↗\nARES-01 / FIELD RECORD\nSECTION 01\nPOST-FLIGHT REVIEW\nScience return\n\nFollow each observation from scan to return.\n\n0 of 3 target records returned · campaign award +0 RP.\n\nAncient Lakebed Outcrop\nNOT COMPLETED\n—\nBasalt Fracture Zone\nNOT COMPLETED\n—\nIron-Rich Ejecta\nNOT COMPLETED\n—\n\nOnly transmitted observations earn the campaign award. A scan still onboard is not a science return.\n\nCREW DEBRIEF\nKavi · Mission Director\n\n0 target records returned. The report connects our decisions to the result, so we can refine the next mission.\n\n← Previous\nPAGE 01 / 05\nNext →\nASTROCREW / ARES-01\nINDEPENDENT EDUCATIONAL MISSION GAME",
+      "targets": [
+        {
+          "name": "Ancient Lakebed Outcrop",
+          "text": "Ancient Lakebed Outcrop\nNOT COMPLETED"
+        },
+        {
+          "name": "Basalt Fracture Zone",
+          "text": "Basalt Fracture Zone\nNOT COMPLETED"
+        },
+        {
+          "name": "Iron-Rich Ejecta",
+          "text": "Iron-Rich Ejecta\nNOT COMPLETED"
+        }
+      ],
+      "renderers": [
+        {
+          "id": 0,
+          "created": 121.10000000149012,
+          "disposed": 38870.89999999851,
+          "firstModelRender": 7377.39999999851,
+          "frames": 128,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 1,
+          "created": 38904,
+          "disposed": 48017.70000000298,
+          "firstModelRender": 39991.89999999851,
+          "frames": 40,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 2,
+          "created": 48057.80000000447,
+          "disposed": 54613,
+          "firstModelRender": null,
+          "frames": 352,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 3,
+          "created": 54630.89999999851,
+          "disposed": 72175.39999999851,
+          "firstModelRender": 63849.80000000447,
+          "frames": 66,
+          "attached": false,
+          "parentClass": null
+        }
+      ]
+    },
+    {
+      "scenario": "partial-onboard",
+      "heading": "PARTIAL SUCCESS",
+      "text": "ARES-01 / ASTROCREW\nBriefing\nEngineering\nLaunch\nMars\n5\nReport\nMISSION DOSSIER / POST-FLIGHT REVIEW\nPARTIAL SUCCESS\n\nMission concluded by player.\n\n01\nScience return\n↗\n02\nEngineering\n↗\n03\nEvents & recovery\n↗\n04\nModel guidance\n↗\n05\nSources & credits\n↗\nPERSEVERANCE · MARS 2020\n\nFollow the record from mission decisions to science return.\n\nNEW CAMPAIGN\n↗\nARES-01 / FIELD RECORD\nSECTION 01\nPOST-FLIGHT REVIEW\nScience return\n\nFollow each observation from scan to return.\n\n0 of 3 target records returned · campaign award +0 RP.\n\nAncient Lakebed Outcrop\nONBOARD · NOT RETURNED\n\nClay mineral signature\n\n○\nBasalt Fracture Zone\nNOT COMPLETED\n—\nIron-Rich Ejecta\nNOT COMPLETED\n—\n\nOnly transmitted observations earn the campaign award. A scan still onboard is not a science return.\n\nCREW DEBRIEF\nKavi · Mission Director\n\n0 target records returned. The report connects our decisions to the result, so we can refine the next mission.\n\n← Previous\nPAGE 01 / 05\nNext →\nASTROCREW / ARES-01\nINDEPENDENT EDUCATIONAL MISSION GAME",
+      "targets": [
+        {
+          "name": "Ancient Lakebed Outcrop",
+          "text": "Ancient Lakebed Outcrop\nONBOARD · NOT RETURNED\n\nClay mineral signature"
+        },
+        {
+          "name": "Basalt Fracture Zone",
+          "text": "Basalt Fracture Zone\nNOT COMPLETED"
+        },
+        {
+          "name": "Iron-Rich Ejecta",
+          "text": "Iron-Rich Ejecta\nNOT COMPLETED"
+        }
+      ],
+      "renderers": [
+        {
+          "id": 0,
+          "created": 121.10000000149012,
+          "disposed": 38870.89999999851,
+          "firstModelRender": 7377.39999999851,
+          "frames": 128,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 1,
+          "created": 38904,
+          "disposed": 48017.70000000298,
+          "firstModelRender": 39991.89999999851,
+          "frames": 40,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 2,
+          "created": 48057.80000000447,
+          "disposed": 54613,
+          "firstModelRender": null,
+          "frames": 352,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 3,
+          "created": 54630.89999999851,
+          "disposed": 72175.39999999851,
+          "firstModelRender": 63849.80000000447,
+          "frames": 66,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 4,
+          "created": 73074.80000000447,
+          "disposed": 73092.80000000447,
+          "firstModelRender": null,
+          "frames": 0,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 5,
+          "created": 73128.20000000298,
+          "disposed": 83629,
+          "firstModelRender": 78440,
+          "frames": 58,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 6,
+          "created": 83656.20000000298,
+          "disposed": 91759.70000000298,
+          "firstModelRender": 84451.89999999851,
+          "frames": 39,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 7,
+          "created": 91792,
+          "disposed": 98790,
+          "firstModelRender": null,
+          "frames": 367,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 8,
+          "created": 98801.30000000447,
+          "disposed": 168841.1000000015,
+          "firstModelRender": 107355.89999999851,
+          "frames": 143,
+          "attached": false,
+          "parentClass": null
+        }
+      ]
+    },
+    {
+      "scenario": "partial-returned",
+      "heading": "PARTIAL SUCCESS",
+      "text": "ARES-01 / ASTROCREW\nBriefing\nEngineering\nLaunch\nMars\n5\nReport\nMISSION DOSSIER / POST-FLIGHT REVIEW\nPARTIAL SUCCESS\n\nMission concluded by player.\n\n01\nScience return\n↗\n02\nEngineering\n↗\n03\nEvents & recovery\n↗\n04\nModel guidance\n↗\n05\nSources & credits\n↗\nPERSEVERANCE · MARS 2020\n\nFollow the record from mission decisions to science return.\n\nNEW CAMPAIGN\n↗\nARES-01 / FIELD RECORD\nSECTION 01\nPOST-FLIGHT REVIEW\nScience return\n\nFollow each observation from scan to return.\n\n1 of 3 target records returned · campaign award +25 RP.\n\nAncient Lakebed Outcrop\nRETURNED\n\nClay mineral signature\n\n↗\nBasalt Fracture Zone\nNOT COMPLETED\n—\nIron-Rich Ejecta\nNOT COMPLETED\n—\n\nOnly transmitted observations earn the campaign award. A scan still onboard is not a science return.\n\nCREW DEBRIEF\nKavi · Mission Director\n\n1 target record returned. The report connects our decisions to the result, so we can refine the next mission.\n\n← Previous\nPAGE 01 / 05\nNext →\nASTROCREW / ARES-01\nINDEPENDENT EDUCATIONAL MISSION GAME",
+      "targets": [
+        {
+          "name": "Ancient Lakebed Outcrop",
+          "text": "Ancient Lakebed Outcrop\nRETURNED\n\nClay mineral signature"
+        },
+        {
+          "name": "Basalt Fracture Zone",
+          "text": "Basalt Fracture Zone\nNOT COMPLETED"
+        },
+        {
+          "name": "Iron-Rich Ejecta",
+          "text": "Iron-Rich Ejecta\nNOT COMPLETED"
+        }
+      ],
+      "renderers": [
+        {
+          "id": 0,
+          "created": 121.10000000149012,
+          "disposed": 38870.89999999851,
+          "firstModelRender": 7377.39999999851,
+          "frames": 128,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 1,
+          "created": 38904,
+          "disposed": 48017.70000000298,
+          "firstModelRender": 39991.89999999851,
+          "frames": 40,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 2,
+          "created": 48057.80000000447,
+          "disposed": 54613,
+          "firstModelRender": null,
+          "frames": 352,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 3,
+          "created": 54630.89999999851,
+          "disposed": 72175.39999999851,
+          "firstModelRender": 63849.80000000447,
+          "frames": 66,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 4,
+          "created": 73074.80000000447,
+          "disposed": 73092.80000000447,
+          "firstModelRender": null,
+          "frames": 0,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 5,
+          "created": 73128.20000000298,
+          "disposed": 83629,
+          "firstModelRender": 78440,
+          "frames": 58,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 6,
+          "created": 83656.20000000298,
+          "disposed": 91759.70000000298,
+          "firstModelRender": 84451.89999999851,
+          "frames": 39,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 7,
+          "created": 91792,
+          "disposed": 98790,
+          "firstModelRender": null,
+          "frames": 367,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 8,
+          "created": 98801.30000000447,
+          "disposed": 168841.1000000015,
+          "firstModelRender": 107355.89999999851,
+          "frames": 143,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 9,
+          "created": 169761.20000000298,
+          "disposed": 169786.8999999985,
+          "firstModelRender": null,
+          "frames": 0,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 10,
+          "created": 169829,
+          "disposed": 184656.3999999985,
+          "firstModelRender": 176422,
+          "frames": 58,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 11,
+          "created": 184695,
+          "disposed": 197831.80000000447,
+          "firstModelRender": 186072.20000000298,
+          "frames": 41,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 12,
+          "created": 197860.5,
+          "disposed": 204936.80000000447,
+          "firstModelRender": null,
+          "frames": 310,
+          "attached": false,
+          "parentClass": null
+        },
+        {
+          "id": 13,
+          "created": 204948.3999999985,
+          "disposed": 274330,
+          "firstModelRender": 213043.5,
+          "frames": 154,
+          "attached": false,
+          "parentClass": null
+        }
+      ]
+    }
+  ],
+  "homeRendererSamples": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "renderers": [
+        {
+          "id": 0,
+          "created": 121.10000000149012,
+          "disposed": null,
+          "firstModelRender": 7377.39999999851,
+          "frames": 72,
+          "attached": true,
+          "parentClass": "mars-world"
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "renderers": [
+        {
+          "id": 0,
+          "created": 121.10000000149012,
+          "disposed": null,
+          "firstModelRender": 7377.39999999851,
+          "frames": 86,
+          "attached": true,
+          "parentClass": "mars-world"
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 820,
+        "height": 900
+      },
+      "renderers": [
+        {
+          "id": 0,
+          "created": 121.10000000149012,
+          "disposed": null,
+          "firstModelRender": 7377.39999999851,
+          "frames": 101,
+          "attached": true,
+          "parentClass": "mars-world"
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "renderers": [
+        {
+          "id": 0,
+          "created": 121.10000000149012,
+          "disposed": null,
+          "firstModelRender": 7377.39999999851,
+          "frames": 115,
+          "attached": true,
+          "parentClass": "mars-world"
+        }
+      ]
+    }
+  ],
+  "scope": "Actual UI only; no store mutation, teleports or outcome injection.",
+  "unplayed": [
+    "FULL SUCCESS: all three targets were not traversed in this harness.",
+    "RECOVERABLE ANOMALY: this harness does not configure an anomaly scenario."
+  ],
+  "browser": "151.0.7922.34",
+  "gpu": [
+    {
+      "vendorId": 65535,
+      "deviceId": 65535,
+      "vendorString": "Google Inc. (Google)",
+      "deviceString": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver-5.0.0)",
+      "driverVendor": "SwANGLE",
+      "driverVersion": "5.0.0"
+    }
+  ],
+  "homeReadyMs": 10121.10000000149,
+  "completed": true
+}

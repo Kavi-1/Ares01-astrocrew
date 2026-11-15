@@ -1,0 +1,276 @@
+/* ARES-01 · ASTROCREW design system.
+   One visual language for every screen: midnight navy and graphite surfaces,
+   Mars amber for the player's action, telemetry cyan for science and returned
+   data, coral red for hazards, off-white type. Presentation only. */
+:root {
+  --navy-950: #05080f;
+  --navy-900: #090e19;
+  --navy-800: #0e1524;
+  --navy-700: #151e30;
+  --graphite: #1c2534;
+  --line: rgba(196, 212, 232, .14);
+  --line-strong: rgba(196, 212, 232, .3);
+  --text: #eef0ea;
+  --text-2: #bcc5cf;
+  --text-3: #8591a0;
+  --amber: #f4a862;
+  --amber-bright: #ffbd80;
+  --amber-ink: #1b1207;
+  --amber-wash: rgba(244, 168, 98, .12);
+  --cyan: #66d7df;
+  --cyan-wash: rgba(102, 215, 223, .12);
+  --red: #ff6b5f;
+  --red-deep: #a8201c;
+  --red-wash: rgba(255, 107, 95, .13);
+  --paper: #ece5d6;
+  --paper-ink: #1a2230;
+  --surface: rgba(9, 14, 25, .9);
+  --surface-solid: #0c1322;
+  --mono: 'DM Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --sans: Manrope, 'Segoe UI', Arial, sans-serif;
+  --phi: 1.618;
+  --gutter: clamp(16px, 2.6vw, 40px);
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  font-family: var(--sans);
+  color: var(--text);
+  background: var(--navy-950);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; min-width: 320px; background: var(--navy-950); }
+body { min-height: 100vh; overflow-x: hidden; }
+button, select, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+h1, h2, h3, p { margin: 0; }
+a { color: var(--cyan); }
+
+:focus-visible { outline: 2px solid var(--amber-bright); outline-offset: 3px; }
+
+/* ---- Type ------------------------------------------------------------ */
+.ax-label {
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.ax-label--amber { color: var(--amber); }
+.ax-label--cyan { color: var(--cyan); }
+.ax-label--red { color: var(--red); }
+.ax-display {
+  font: 800 clamp(30px, 3.4vw, 50px)/1.02 var(--sans);
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+.ax-slash { color: var(--amber); margin: 0 .35em; }
+
+/* ---- Buttons --------------------------------------------------------- */
+.ax-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 46px;
+  padding: 0 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: rgba(14, 21, 36, .92);
+  color: var(--text);
+  font: 500 12px/1 var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: border-color .18s var(--ease), background-color .18s var(--ease), color .18s var(--ease), transform .18s var(--ease);
+}
+.ax-btn:hover:not(:disabled) { border-color: var(--amber); color: var(--amber-bright); }
+.ax-btn:active:not(:disabled) { transform: translateY(1px); }
+.ax-btn:disabled { opacity: .42; }
+.ax-btn svg { flex: none; }
+.ax-btn--primary {
+  border-color: var(--amber);
+  background: var(--amber);
+  color: var(--amber-ink);
+  font-weight: 500;
+  box-shadow: 0 0 0 1px rgba(244, 168, 98, .18), 0 10px 30px -14px rgba(244, 168, 98, .7);
+}
+.ax-btn--primary:hover:not(:disabled) { background: var(--amber-bright); border-color: var(--amber-bright); color: var(--amber-ink); }
+.ax-btn--ghost { background: transparent; border-color: var(--line); color: var(--text-2); }
+.ax-btn--danger { border-color: rgba(255, 107, 95, .55); color: var(--red); }
+.ax-btn--danger:hover:not(:disabled) { border-color: var(--red); color: #ffd1cc; background: var(--red-wash); }
+.ax-btn--small { min-height: 36px; padding: 0 13px; font-size: 11px; gap: 8px; }
+.ax-btn--icon { width: 46px; padding: 0; }
+
+.ax-key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  background: rgba(9, 14, 25, .7);
+  font: 500 10px/1 var(--mono);
+  letter-spacing: .06em;
+  color: var(--text);
+}
+
+/* ---- Surfaces -------------------------------------------------------- */
+.ax-panel {
+  position: relative;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, .9);
+}
+/* Corner ticks borrow the archive-frame motif without adding nodes. */
+.ax-ticks::before, .ax-ticks::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  border: 0 solid var(--amber);
+}
+.ax-ticks::before { top: -1px; left: -1px; border-top-width: 2px; border-left-width: 2px; }
+.ax-ticks::after { right: -1px; bottom: -1px; border-right-width: 2px; border-bottom-width: 2px; }
+
+.ax-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--line-strong);
+  font: 500 10px/1.4 var(--mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.ax-chip--cyan { color: var(--cyan); border-color: rgba(102, 215, 223, .45); background: var(--cyan-wash); }
+.ax-chip--amber { color: var(--amber); border-color: rgba(244, 168, 98, .5); background: var(--amber-wash); }
+.ax-chip--red { color: var(--red); border-color: rgba(255, 107, 95, .5); background: var(--red-wash); }
+
+/* ---- Gauges ---------------------------------------------------------- */
+.ax-gauge { height: 3px; background: rgba(196, 212, 232, .16); overflow: hidden; }
+.ax-gauge > i { display: block; height: 100%; background: var(--cyan); transition: width .35s var(--ease), background-color .2s; }
+.is-tight > .ax-gauge > i, .ax-gauge.is-tight > i { background: var(--amber); }
+.is-over > .ax-gauge > i, .ax-gauge.is-over > i { background: var(--red); }
+
+/* ---- Crew portraits -------------------------------------------------- */
+.crew-portrait {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 52px;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  background: linear-gradient(160deg, #26324a, #0e1524);
+  color: var(--text-3);
+}
+.crew-portrait img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; display: block; }
+
+/* ---- Crew speech (shared by surface events and the dossier) ---------- */
+.crew-message { display: flex; gap: 14px; align-items: flex-start; min-width: 0; }
+.crew-message > div { min-width: 0; }
+.crew-message > div > span { display: block; font: 500 11px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--amber); }
+.crew-message > div > span small { font: inherit; color: var(--text-3); }
+.crew-message p { margin-top: 6px; font-size: 15px; line-height: 1.6; color: var(--text); overflow-wrap: anywhere; }
+.crew-message.compact { align-items: center; gap: 10px; }
+.crew-message.compact .crew-portrait { width: 34px; height: 40px; }
+.crew-message.compact p { display: none; }
+
+/* ---- Mission phase track --------------------------------------------- */
+.mission-progress ol { display: flex; align-items: center; gap: 0; margin: 0; padding: 0; list-style: none; }
+.mission-progress li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font: 500 10px/1 var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.mission-progress li + li::before { content: ''; width: 22px; height: 1px; margin: 0 10px; background: var(--line-strong); }
+.mission-progress .progress-number { display: inline-flex; align-items: center; justify-content: center; min-width: 14px; color: inherit; }
+.mission-progress li.is-complete { color: var(--cyan); }
+.mission-progress li[aria-current='step'] { color: var(--amber-bright); }
+.mission-progress li[aria-current='step'] .progress-number::before { content: '['; margin-right: 2px; }
+.mission-progress li[aria-current='step'] .progress-number::after { content: ']'; margin-left: 2px; }
+@media (max-width: 1100px) {
+  .mission-progress li:not([aria-current='step']) > span:last-child { display: none; }
+  .mission-progress li + li::before { width: 10px; margin: 0 6px; }
+}
+
+/* ---- Model loading status -------------------------------------------- */
+.model-status, .room-status {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: min(340px, calc(100% - 32px));
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--cyan);
+  background: var(--surface);
+  color: var(--text-2);
+  font: 500 11px/1.5 var(--mono);
+  letter-spacing: .06em;
+  pointer-events: none;
+}
+.model-status button, .room-status button {
+  pointer-events: auto;
+  align-self: flex-start;
+  padding: 6px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: var(--navy-700);
+  color: var(--text);
+  font: inherit;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+/* ---- Dialog ---------------------------------------------------------- */
+.dialog-overlay { position: fixed; inset: 0; z-index: 40; background: rgba(5, 8, 15, .78); }
+.mission-dialog {
+  position: fixed;
+  z-index: 41;
+  top: 50%;
+  left: 50%;
+  width: min(480px, calc(100vw - 32px));
+  transform: translate(-50%, -50%);
+  padding: 30px 30px 26px;
+  border: 1px solid rgba(255, 107, 95, .45);
+  border-top: 3px solid var(--red);
+  background: var(--surface-solid);
+  box-shadow: 0 40px 90px -30px #000;
+}
+.mission-dialog .dialog-symbol { color: var(--red); }
+.mission-dialog h2 { margin-top: 14px; font: 800 26px/1.1 var(--sans); letter-spacing: -.02em; }
+.mission-dialog p { margin-top: 12px; color: var(--text-2); font-size: 15px; line-height: 1.6; }
+.dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; margin-top: 26px; }
+
+/* ---- Phase curtain --------------------------------------------------- */
+.phase-curtain { position: fixed; inset: 0; z-index: 60; background: var(--navy-950); opacity: 0; pointer-events: none; transition: opacity .42s var(--ease); }
+.phase-curtain.cover { opacity: 1; pointer-events: auto; }
+.phase-curtain.reveal { opacity: 0; }
+
+/* ---- Character preview (standalone model viewer) --------------------- */
+.character-stage { position: relative; height: 410px; background: radial-gradient(ellipse at 50% 55%, #24304a, #0e1524 70%); }
+.character-canvas { position: absolute; inset: 0; }
+.character-canvas canvas { width: 100%; height: 100%; display: block; }
+.character-placeholder { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 10px; color: var(--text-2); font: 500 12px/1.5 var(--mono); }
+.character-stage-hint { position: absolute; left: 12px; bottom: 10px; font: 500 10px/1.4 var(--mono); letter-spacing: .1em; color: var(--text-3); }
+
+.ax-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

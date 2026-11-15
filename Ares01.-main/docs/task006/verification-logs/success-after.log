@@ -1,0 +1,37 @@
+{"action":"drive","waypoint":{"x":-18,"z":2},"remaining":"10.0","pose":{"x":-18,"z":12,"heading":0,"at":24743.30000000447},"keys":["w"]}
+{"action":"scan complete","id":"ancient-outcrop","ms":56593,"pose":{"x":-18,"z":7.546981398358633,"heading":0,"at":56396.60000000149},"objective":"FIELD SCIENCE · 1/3 DISCOVERIES\nANALYZE · BASALT FRACTURE ZONE\nFollow a cyan beacon to a marked geological formation."}
+{"action":"drive","waypoint":{"x":-45,"z":0},"remaining":"28.0","pose":{"x":-18,"z":7.546981398358633,"heading":0,"at":57297.30000000447},"keys":["w","a","Space"]}
+{"action":"drive","waypoint":{"x":-45,"z":0},"remaining":"21.5","pose":{"x":-23.849579646888085,"z":3.677196247772186,"heading":1.3923080000000008,"at":68598.30000000447},"keys":["w","Shift"]}
+{"action":"drive","waypoint":{"x":-45,"z":0},"remaining":"8.8","pose":{"x":-36.35365316608407,"z":1.5921144414325967,"heading":1.3923080000000008,"at":79314.70000000298},"keys":["w"]}
+{"action":"drive","waypoint":{"x":-75,"z":-20},"remaining":"38.8","pose":{"x":-42.088117856643215,"z":0.4661084075539455,"heading":1.3423080000000007,"at":86806.70000000298},"keys":["w","d"]}
+{"action":"drive","waypoint":{"x":-75,"z":-20},"remaining":"27.0","pose":{"x":-52.09108190161686,"z":-5.707379420979294,"heading":1.043268170965065,"at":97594.80000000447},"keys":["w","Shift"]}
+{"action":"drive","waypoint":{"x":-75,"z":-20},"remaining":"11.9","pose":{"x":-64.905832031275,"z":-13.713742978380994,"heading":1.043268170965065,"at":108024.90000000596},"keys":["w"]}
+{"action":"drive","waypoint":{"x":-92,"z":-36},"remaining":"26.2","pose":{"x":-72.53315179090617,"z":-18.39134070080098,"heading":1.043268170965065,"at":119648.70000000298},"keys":["w","d"]}
+{"action":"drive","waypoint":{"x":-92,"z":-36},"remaining":"14.9","pose":{"x":-80.78633973130934,"z":-26.145101864830416,"heading":0.8942276253781956,"at":130222.60000000149},"keys":["w"]}
+{"action":"scan complete","id":"basalt-fracture","ms":169306,"pose":{"x":-88.11966984305712,"z":-32.67290742108147,"heading":0.7442276253781954,"at":169110.40000000596},"objective":"FIELD SCIENCE · 2/3 DISCOVERIES\nANALYZE · IRON-RICH EJECTA\nFollow a cyan beacon to a marked geological formation."}
+{"action":"drive","waypoint":{"x":-70,"z":-16},"remaining":"24.6","pose":{"x":-88.11966984305712,"z":-32.67290742108147,"heading":0.7442276253781954,"at":169992.40000000596},"keys":["w","d","Space"]}
+{"action":"drive","waypoint":{"x":-70,"z":-16},"remaining":"27.5","pose":{"x":-87.5672783366703,"z":-37.2221688592177,"heading":-0.898080374621805,"at":180861.5},"keys":["w","d","Space"]}
+{"action":"drive","waypoint":{"x":-70,"z":-16},"remaining":"24.0","pose":{"x":-82.46865110590294,"z":-36.54116122022438,"heading":-2.3480803746218046,"at":190789.6000000015},"keys":["w","d"]}
+{"action":"drive","waypoint":{"x":-70,"z":-16},"remaining":"14.5","pose":{"x":-77.4457766309141,"z":-28.49175876378853,"heading":-2.548080374621804,"at":201279.70000000298},"keys":["w","d"]}
+{"action":"drive","waypoint":{"x":-70,"z":-16},"remaining":"6.9","pose":{"x":-73.62703474455168,"z":-21.926832153188784,"heading":-2.6480803746218036,"at":212015.20000000298},"keys":["w","a"]}
+{"action":"drive","waypoint":{"x":-45,"z":-12},"remaining":"27.5","pose":{"x":-71.6373110771626,"z":-18.654466152278395,"heading":-2.6480803746218036,"at":219381.1000000015},"keys":["w","a"]}
+{"action":"drive","waypoint":{"x":-45,"z":-12},"remaining":"20.3","pose":{"x":-64.8407471546156,"z":-16.123251872852084,"heading":-1.7980803746218055,"at":230221},"keys":["w","Shift"]}
+{"action":"drive","waypoint":{"x":-45,"z":-12},"remaining":"9.3","pose":{"x":-54.17278748891092,"z":-13.655962674539568,"heading":-1.7980803746218055,"at":240658.20000000298},"keys":["w"]}
+{"action":"drive","waypoint":{"x":-18,"z":4},"remaining":"34.1","pose":{"x":-47.80320728509406,"z":-12.583435960838578,"heading":-1.5980803746218053,"at":250515},"keys":["w","d"]}
+{"action":"drive","waypoint":{"x":-18,"z":4},"remaining":"23.9","pose":{"x":-38.66377022048644,"z":-7.965684968048085,"heading":-2.046514517682153,"at":261537.70000000298},"keys":["w","Shift"]}
+{"action":"drive","waypoint":{"x":-18,"z":4},"remaining":"11.5","pose":{"x":-27.97485632603448,"z":-1.7779086049130857,"heading":-2.046514517682153,"at":271920.40000000596},"keys":["w"]}
+{"action":"drive","waypoint":{"x":-18,"z":4},"remaining":"4.3","pose":{"x":-21.712456856412693,"z":1.9049369685391258,"heading":-2.046514517682153,"at":282099.6000000015},"keys":["w"]}
+{"action":"drive","waypoint":{"x":25,"z":-35},"remaining":"59.0","pose":{"x":-20.69503908019694,"z":2.3662837700308326,"heading":-1.9965145176821528,"at":284777.200000003},"keys":["w","a"]}
+{"action":"drive","waypoint":{"x":25,"z":-35},"remaining":"50.4","pose":{"x":-12.92815520643795,"z":-1.8554922673068888,"heading":-0.8474746733909893,"at":295346},"keys":["w","Shift"]}
+{"action":"drive","waypoint":{"x":25,"z":-35},"remaining":"35.3","pose":{"x":-1.594846937993348,"z":-11.86237191494074,"heading":-0.8474746733909893,"at":305619.200000003},"keys":["w","Shift"]}
+{"action":"drive","waypoint":{"x":25,"z":-35},"remaining":"20.9","pose":{"x":9.199475766395212,"z":-21.39334783318093,"heading":-0.8474746733909893,"at":315707.200000003},"keys":["w","Shift"]}
+{"action":"drive","waypoint":{"x":25,"z":-35},"remaining":"8.1","pose":{"x":18.763674314147945,"z":-29.838170962179873,"heading":-0.8474746733909893,"at":326049.90000000596},"keys":["w"]}
+{"action":"drive","waypoint":{"x":78,"z":-40},"remaining":"55.7","pose":{"x":22.71155284912635,"z":-33.07325774713524,"heading":-1.0474746733909894,"at":332974.700000003},"keys":["w","d"]}
+{"action":"drive","waypoint":{"x":78,"z":-40},"remaining":"42.7","pose":{"x":35.565140081017745,"z":-34.861888339435794,"heading":-1.3959092899195886,"at":343614.5},"keys":["w","Shift"]}
+{"action":"drive","waypoint":{"x":78,"z":-40},"remaining":"25.6","pose":{"x":52.61858162391102,"z":-36.781761977554275,"heading":-1.4459092899195887,"at":354015.200000003},"keys":["w","Shift"]}
+{"action":"drive","waypoint":{"x":78,"z":-40},"remaining":"10.5","pose":{"x":67.55867666643675,"z":-38.7517952644872,"heading":-1.4959092899195887,"at":364284},"keys":["w"]}
+{"action":"drive","waypoint":{"x":78,"z":-64},"remaining":"24.6","pose":{"x":74.72824759305091,"z":-39.63835597271395,"heading":-1.3959092899195886,"at":372706.30000000447},"keys":["w","a","Space"]}
+{"action":"drive","waypoint":{"x":78,"z":-64},"remaining":"16.0","pose":{"x":77.74213876457935,"z":-47.97835411888074,"heading":-0.046869019637493764,"at":384160.1000000015},"keys":["w","Shift"]}
+{"action":"drive","waypoint":{"x":78,"z":-64},"remaining":"6.6","pose":{"x":77.981452934069,"z":-57.409551022846856,"heading":0.003130980362506239,"at":394441.30000000447},"keys":["w"]}
+{"action":"scan complete","id":"iron-ejecta","ms":417979,"pose":{"x":78.04460093339407,"z":-58.75589352936444,"heading":-0.046869019637493764,"at":417782.40000000596},"objective":"FIELD SCIENCE · 3/3 DISCOVERIES\nGEOLOGY SURVEY COMPLETE\nAll marked sites analyzed. Continue exploring the crater."}
+PASS genuine FULL SUCCESS via ordinary driving, scans, uplink and End mission; 3 returned observations.

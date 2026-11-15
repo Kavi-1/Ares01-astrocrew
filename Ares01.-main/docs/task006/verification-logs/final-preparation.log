@@ -1,0 +1,17 @@
+
+> ares-01@0.1.0 test:preparation
+> node scripts/test-preparation.mjs
+
+WebSocket server error:
+Error: listen EPERM: operation not permitted 0.0.0.0:24678
+    at Server.setupListenHandle [as _listen2] (node:net:1918:21)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at Object.listen (file:///home/kavi/code/Ares01/node_modules/.pnpm/vite@8.3.6/node_modules/vite/dist/node/chunks/node.js:24662:18)
+    at Object.listen (file:///home/kavi/code/Ares01/node_modules/.pnpm/vite@8.3.6/node_modules/vite/dist/node/chunks/node.js:25337:27)
+    at DevEnvironment.listen (file:///home/kavi/code/Ares01/node_modules/.pnpm/vite@8.3.6/node_modules/vite/dist/node/chunks/node.js:37051:12)
+    at file:///home/kavi/code/Ares01/node_modules/.pnpm/vite@8.3.6/node_modules/vite/dist/node/chunks/node.js:25042:95
+    at Array.map (<anonymous>)
+    at file:///home/kavi/code/Ares01/node_modules/.pnpm/vite@8.3.6/node_modules/vite/dist/node/chunks/node.js:25042:82
+    at async _createServer (file:///home/kavi/code/Ares01/node_modules/.pnpm/vite@8.3.6/node_modules/vite/dist/node/chunks/node.js:25059:9)
+PASS 72 proposal scenarios, all 36 station paths, save migration, preparation persistence and reset
