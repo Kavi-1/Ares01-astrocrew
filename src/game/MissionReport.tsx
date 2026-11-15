@@ -1,3 +1,5 @@
+import { scienceSummary, type Campaign } from '../engine/campaign';
+import { OBJECTIVES, getScenario } from '../data/scenarios';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, Check, Circle, FileText, Radio, Rocket, ShieldCheck, TriangleAlert, X } from 'lucide-react';
 import { CrewDebrief } from '../ui/crew/CrewAdvice';
@@ -11,6 +13,7 @@ import './mission-report.css';
 
 const outcomeLabel = {
   'full-success': 'FULL SUCCESS',
+  'baseline-success': 'MISSION SUCCESS',
   'partial-success': 'PARTIAL SUCCESS',
   'recoverable-anomaly': 'RECOVERABLE ANOMALY',
   'mission-failure': 'MISSION FAILURE',
@@ -31,10 +34,11 @@ export type MissionReportViewProps = {
   progress: Pick<RecordedProgress, 'scannedTargets'> | null;
   debrief?: ReactNode;
   onRestart: () => void;
+  campaign?: Campaign | null;
 };
 
 // The desk changes only presentation state; it never selects or writes a mission outcome.
-export function MissionReportView({ record, mission, progress, debrief, onRestart }: MissionReportViewProps) {
+export function MissionReportView({ record, mission, progress, debrief, onRestart, campaign }: MissionReportViewProps) {
   const outcome = record?.outcome;
   const isIncident = outcome === 'mission-failure' || outcome === 'mission-abort';
   const pages = isIncident ? [sections[2], sections[0], sections[1], sections[3], sections[4]] : sections;
@@ -62,10 +66,11 @@ export function MissionReportView({ record, mission, progress, debrief, onRestar
   };
   const pageIndex = pages.findIndex(page => page.id === active);
   const page = pages[pageIndex];
-  const returned = record?.transmittedTargets ?? [];
+  const result=campaign?scienceSummary(campaign):null;
+  const returned = result?OBJECTIVES.filter(o=>result.fractions[o.id]>0).map(o=>o.id):record?.transmittedTargets ?? [];
   const reward = scienceRewardForReturnedTargets(returned, SCIENCE_TARGETS);
-  const tone = outcome === 'full-success' ? 'success' : isIncident ? 'failure' : outcome ? 'caution' : 'unavailable';
-  const label = outcome ? outcomeLabel[outcome] : 'REPORT UNAVAILABLE';
+  const tone = (outcome === 'full-success'||outcome==='baseline-success') ? 'success' : isIncident ? 'failure' : outcome ? 'caution' : 'unavailable';
+  const label = outcome ? campaign&&outcome==='full-success'?'MISSION SUCCESS':campaign&&outcome==='mission-failure'?'MISSION FAILED':outcomeLabel[outcome] : 'REPORT UNAVAILABLE';
   const reason = record?.endReason || (outcome ? 'No closing reason was recorded.' : 'No finalized mission outcome is available.');
   const OutcomeIcon = isIncident ? TriangleAlert : outcome === 'full-success' ? ShieldCheck : FileText;
 
@@ -75,19 +80,19 @@ export function MissionReportView({ record, mission, progress, debrief, onRestar
         <div><p className="archive-eyebrow">ARES-01 / ASTROCREW / POST-FLIGHT ARCHIVE</p>
           <h1>COMMAND DESK <span>//</span><br />MISSION DEBRIEF</h1>
           <p className="desk-intro">Your mission is on record. Open the dossier to inspect the science return, engineering decisions, and recorded events.</p></div>
-        <div className="desk-status"><OutcomeIcon size={18} aria-hidden="true" /><span>{label}</span></div>
+        <div className="archive-help-actions"><span data-tutorial-tools/><div className="desk-status"><OutcomeIcon size={18} aria-hidden="true" /><span>{label}</span></div></div>
       </header>
       <div className="desk-stage">
         <div className="desk-mug" aria-hidden="true"><span>A</span><small>ASTROCREW</small></div>
         <div className="desk-pen" aria-hidden="true" />
         <div className="desk-cartridge" aria-hidden="true"><span>SCIENCE RETURN</span><div><i /><i /><i /><i /></div><strong>{record ? String(returned.length).padStart(2, '0') : '—'}<small> RECORDS</small></strong><span>ARES-01 / FIELD DATA</span></div>
-        <button ref={dossierButton} type="button" className="desk-dossier" onClick={() => changeDesk(false)} aria-label="Open mission dossier">
+        <button ref={dossierButton} data-coach="report" type="button" className="desk-dossier" onClick={() => changeDesk(false)} aria-label="Open mission dossier">
           <span className="desk-folder-tab">ARES-01 <span>//</span> FIELD RECORD</span>
           <span className="desk-folder-cover">
             <span className="desk-cover-top"><Rocket size={28} aria-hidden="true" /><span>ASTROCREW<br /><small>MISSION OPERATIONS</small></span><span className="desk-barcode" aria-hidden="true" /></span>
             <span className="desk-cover-title">ARES<span>—01</span><small>AFTER-ACTION REPORT</small></span>
             <span className="desk-cover-outcome"><OutcomeIcon size={20} aria-hidden="true" />{label}</span>
-            <span className="desk-cover-bottom">PERSEVERANCE / JEZERO CRATER<span>OBSERVATIONS · ENGINEERING · EVENTS</span></span>
+            <span className="desk-cover-bottom">PERSEVERANCE / {campaign?getScenario(campaign.options.site).name.toUpperCase():'JEZERO CRATER'}<span>OBSERVATIONS · ENGINEERING · EVENTS</span></span>
           </span>
           <span className="desk-open-prompt"><span><i aria-hidden="true" /> MISSION RECORD</span><strong>OPEN MISSION DOSSIER <ArrowRight size={20} aria-hidden="true" /></strong><small>Inspect the full report</small></span>
         </button>
@@ -100,8 +105,8 @@ export function MissionReportView({ record, mission, progress, debrief, onRestar
     <div className="archive-frame">
       <div className="archive-registration" aria-hidden="true"><span>ARES-01 // POST-FLIGHT RECORD</span><span>ASTROCREW / MISSION ARCHIVE</span></div>
       <header className="archive-masthead">
-        <div className="archive-agency"><span className="archive-emblem"><Rocket size={30} aria-hidden="true" /></span><div><strong>ASTROCREW <span>//</span> MISSION OPERATIONS</strong><p>PERSEVERANCE / JEZERO CRATER / POST-FLIGHT REVIEW</p></div></div>
-        <span className="archive-status"><OutcomeIcon size={15} aria-hidden="true" />{outcome ? 'OUTCOME RECORDED' : 'RECORD UNAVAILABLE'}</span>
+        <div className="archive-agency"><span className="archive-emblem"><Rocket size={30} aria-hidden="true" /></span><div><strong>ASTROCREW <span>//</span> MISSION OPERATIONS</strong><p>PERSEVERANCE / {campaign?getScenario(campaign.options.site).name.toUpperCase():'JEZERO CRATER'} / POST-FLIGHT REVIEW</p></div></div>
+        <div className="archive-help-actions"><span data-tutorial-tools/><span className="archive-status"><OutcomeIcon size={15} aria-hidden="true" />{outcome ? 'OUTCOME RECORDED' : 'RECORD UNAVAILABLE'}</span></div>
       </header>
       <nav className="dossier-navigation" aria-label="Report sections">
         {pages.map((item, index) => <button key={item.id} type="button" aria-label={item.label}
@@ -111,16 +116,24 @@ export function MissionReportView({ record, mission, progress, debrief, onRestar
       </nav>
       <article className="dossier-paper" aria-label="Mission report document">
         <div className="dossier-tape" aria-hidden="true" />
-        <header className="dossier-outcome">
+        <header className="dossier-outcome" data-coach="report">
           <div className="dossier-title-block"><p className="dossier-kicker"><OutcomeIcon size={15} aria-hidden="true" />{isIncident ? 'POST-MISSION INCIDENT REVIEW' : 'ARES-01 / EXPEDITION RECORD'}</p>
             <h1 ref={reportHeading} tabIndex={-1}>{!outcome ? label : isIncident ? label : 'FLIGHT DEBRIEF REPORT'}</h1>
             <p className="dossier-reason">{reason}</p></div>
-          {outcome && <div className="dossier-stamp"><b>{isIncident ? '× ' : '★ '}{label}{isIncident ? ' ×' : ' ★'}</b><small>{returned.length} OF {SCIENCE_TARGETS.length} RECORDS RETURNED TO EARTH</small></div>}
+          {outcome && <div className="dossier-stamp"><b>{isIncident ? '× ' : '★ '}{label}{isIncident ? ' ×' : ' ★'}</b><small>{returned.length} OF {SCIENCE_TARGETS.length} {campaign?'OBJECTIVES WITH RETURNED EVIDENCE':'RECORDS RETURNED TO EARTH'}</small></div>}
         </header>
         <section id="dossier-page" className={`dossier-page page-${active}`} aria-labelledby="dossier-page-title">
           <div className="dossier-section-heading"><h2 id="dossier-page-title" ref={pageHeading} tabIndex={-1} aria-live="polite" aria-atomic="true">{page.title}</h2><span>SECTION {String(pageIndex + 1).padStart(2, '0')}</span></div>
           <p className="dossier-page-intro">{page.note}</p>
-          {active === 'science' && <>
+          {active === 'science' && campaign && result && <div className="campaign-result">
+            <h3>{getScenario(campaign.options.site).name} / {campaign.totalSols}-sol mission</h3>
+            <p>Scientific value <strong>{result.sciencePoints.toFixed(2)} / 30</strong> · {result.tier.toUpperCase()} recovery tier · mission-performance {result.performancePoints} / 30.</p>
+            <p>These are the two implemented rubric categories, not a claimed complete 100-point score.</p>
+            <dl>{campaign.options.ranking.map((id,index)=><div key={id}><dt>{OBJECTIVES.find(o=>o.id===id)?.name}<small> · {[50,30,20][index]}% weight</small></dt><dd>{(result.fractions[id]*100).toFixed(0)}% complete with returned evidence</dd></div>)}</dl>
+            <p>{campaign.history.length} committed sols · {campaign.products.filter(p=>p.sentBits<p.bits).length} products still onboard · {campaign.energy.reduce((a,e)=>a+e.unservedWh,0).toFixed(2)} Wh unserved demand.</p>
+            {campaign.majorFailures.map(cause=><p className="report-alert" key={cause}>{cause}</p>)}
+          </div>}
+          {active === 'science' && !campaign && <>
             <div className="dossier-science-grid"><div>
               {record ? <p className="dossier-return-summary">{returned.length} of {SCIENCE_TARGETS.length} target records returned · campaign award +{reward} RP.</p>
                 : <p className="dossier-empty">No science-return record is available.</p>}
@@ -216,6 +229,7 @@ export default function MissionReport() {
   const record = useGameStore(state => state.missionRecord);
   const mission = useGameStore(state => state.confirmedMission);
   const progress = useGameStore(state => state.missionProgress);
+  const campaign=useGameStore(state=>state.campaign);
   const restart = useGameStore(state => state.reset);
-  return <MissionReportView record={record} mission={mission} progress={progress} onRestart={restart} debrief={record?.outcome ? <CrewDebrief /> : undefined} />;
+  return <MissionReportView record={record} mission={mission} progress={progress} onRestart={restart} campaign={campaign} debrief={record?.outcome ? <CrewDebrief /> : undefined} />;
 }

@@ -5,6 +5,8 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import MissionProgress from '../ui/components/MissionProgress';
 import { useGameStore } from '../store/gameStore';
 import './launch.css';
+import { missionChecks } from '../engine/campaign';
+import { getScenario } from '../data/scenarios';
 
 const stages = ['PAD CHECKOUT', 'COUNTDOWN', 'ASCENT', 'CRUISE', 'MARS ARRIVAL', 'ROVER DEPLOYMENT'];
 const kickers = ['FLIGHT READINESS', 'FLIGHT READINESS', 'INTERPLANETARY TRANSIT', 'INTERPLANETARY TRANSIT', 'MARS ARRIVAL', 'MARS ARRIVAL'];
@@ -31,7 +33,8 @@ export default function LaunchCenter({ onArrive, onBack }: { onArrive: () => voi
   };
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
   const host = useRef<HTMLDivElement>(null);
-  const [stage, setStage] = useState(0);
+  const stage=useGameStore(s=>s.launchStage);
+  const setStage=(value:number|((stage:number)=>number))=>useGameStore.getState().setLaunchStage(typeof value==='function'?value(useGameStore.getState().launchStage):value);
   const [busy, setBusy] = useState(false);
   const mission = useGameStore(s => s.confirmedMission);
   const stageRef = useRef(0);
@@ -181,7 +184,7 @@ export default function LaunchCenter({ onArrive, onBack }: { onArrive: () => voi
   const advance = () => {
     if (busy) return;
     setBusy(true);
-    if (stage === 0) setStage(1);
+    if (stage === 0) { if(!useGameStore.getState().checkLaunch())return; setStage(1); }
     if (stage === 1) { setStage(2); schedule(() => setStage(3), 1800); }
     else if (stage === 2 || stage === 3) setStage(s => Math.min(4, s + 1));
     else if (stage === 4) { setStage(5); schedule(arrive, 2100); }
@@ -189,19 +192,22 @@ export default function LaunchCenter({ onArrive, onBack }: { onArrive: () => voi
     schedule(() => setBusy(false), stage === 1 || stage === 4 ? 1900 : 380);
   };
   const results = mission?.results, config = mission?.config;
+  const checks=mission?.options?missionChecks(mission.options,mission.config):null,site=mission?.options?getScenario(mission.options.site).name:'Jezero';
+  const actualTitle=stage===3?`Cruise to ${site}`:titles[stage];
+  const actualCopy=stage===4&&checks?`Landing screening: ${checks.landingDemand.toFixed(2)} / 1125 kg-equivalent. ${checks.landingPass?'Mobility available after deployment.':'Accepted hard landing: mobility disabled after deployment.'}`:stage===5&&checks&&!checks.landingPass?'Stationary science remains available. The hard-landing cause remains in the mission record.':copy[stage];
 
   return <main className="ares-launch" data-launch-stage={stage}>
     <div className="ares-launch-world" ref={host} />
     <header className="ares-launch-top">
       <div className="launch-brand"><span className="surface-emblem" aria-hidden="true">A</span><div><b>ARES<em>—01</em></b><small>LAUNCH COMPLEX<span> // PERSEVERANCE CLASS</span></small></div></div>
       <MissionProgress phase="launch" />
-      <span className="launch-clock" aria-hidden="true">{stage < 2 ? 'T−  HOLD' : stage < 4 ? 'T+  FLIGHT' : 'MARS  ARRIVAL'}</span>
+      <div className="launch-header-actions"><span data-tutorial-tools/><span className="launch-clock" aria-hidden="true">{stage < 2 ? 'T−  HOLD' : stage < 4 ? 'T+  FLIGHT' : 'MARS  ARRIVAL'}</span></div>
     </header>
     <section className="ares-launch-panel" aria-label="Flight sequence">
       <p className="ares-kicker"><i aria-hidden="true" />[ FLIGHT <span aria-hidden="true">//</span> {kickers[stage]} ]</p>
-      <h1>{titles[stage]}</h1>
-      <p className="launch-copy">{copy[stage]}</p>
-      <dl className="launch-manifest" aria-label="Flight manifest">
+      <h1>{actualTitle}</h1>
+      <p className="launch-copy">{actualCopy}</p>
+      <dl data-coach="flight-result" className="launch-manifest" aria-label="Flight manifest">
         <div><dt>ROVER MASS <small>CALC</small></dt><dd>{results ? results.massKg.toFixed(1) : '—'} <i>kg</i></dd></div>
         <div><dt>INSTRUMENTS</dt><dd>{config ? config.instruments.length : '—'} <i>/ 7</i></dd></div>
         <div><dt>RESERVE</dt><dd>{config ? (config.reserve * 100).toFixed(0) : '—'}<i>%</i></dd></div>

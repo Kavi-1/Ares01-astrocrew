@@ -1,0 +1,33 @@
+{"passed":true,"description":"home has no horizontal overflow at 1440×1000","width":1440,"documentWidth":1440,"bodyWidth":1440,"mainWidth":1440,"mainScrollWidth":1440,"mainHeight":1000,"mainScrollHeight":1000}
+{"passed":true,"description":"home has no horizontal overflow at 1366×768","width":1366,"documentWidth":1366,"bodyWidth":1366,"mainWidth":1366,"mainScrollWidth":1366,"mainHeight":768,"mainScrollHeight":768}
+{"passed":true,"description":"home has no horizontal overflow at 820×900","width":820,"documentWidth":820,"bodyWidth":820,"mainWidth":820,"mainScrollWidth":820,"mainHeight":900,"mainScrollHeight":900}
+{"passed":true,"description":"home has no horizontal overflow at 390×900","width":390,"documentWidth":390,"bodyWidth":390,"mainWidth":390,"mainScrollWidth":390,"mainHeight":900,"mainScrollHeight":900}
+{"passed":true,"description":"Viewport changes retain the existing home renderer","activeIds":["0","0","0","0"]}
+{"passed":true,"description":"Home mission action accepts keyboard focus"}
+{"passed":true,"description":"failure uses the existing real mission outcome","heading":"MISSION FAILURE"}
+{"passed":true,"description":"failure distinguishes transmitted records from collected-only observations","firstTarget":"Ancient Lakebed Outcrop\nNOT COMPLETED"}
+{"passed":true,"description":"failure has no horizontal overflow at 1440×1000","width":1440,"documentWidth":1440,"bodyWidth":1440,"mainWidth":1440,"mainScrollWidth":1440,"mainHeight":1000,"mainScrollHeight":1159}
+{"passed":true,"description":"failure has no horizontal overflow at 1366×768","width":1366,"documentWidth":1366,"bodyWidth":1366,"mainWidth":1366,"mainScrollWidth":1366,"mainHeight":768,"mainScrollHeight":1159}
+{"passed":true,"description":"failure has no horizontal overflow at 820×900","width":820,"documentWidth":820,"bodyWidth":820,"mainWidth":820,"mainScrollWidth":820,"mainHeight":900,"mainScrollHeight":1177}
+{"passed":true,"description":"failure has no horizontal overflow at 390×900","width":390,"documentWidth":390,"bodyWidth":390,"mainWidth":390,"mainScrollWidth":390,"mainHeight":900,"mainScrollHeight":1335}
+{"passed":true,"description":"failure report replay returns to the existing home flow"}
+{"passed":true,"description":"Home mission action accepts keyboard focus"}
+{"passed":true,"description":"First target was reached by keyboard, braked and scanned with E"}
+{"passed":true,"description":"partial-onboard uses the existing real mission outcome","heading":"PARTIAL SUCCESS"}
+{"passed":true,"description":"partial-onboard distinguishes transmitted records from collected-only observations","firstTarget":"Ancient Lakebed Outcrop\nONBOARD · NOT RETURNED"}
+{"passed":true,"description":"partial-onboard has no horizontal overflow at 1440×1000","width":1440,"documentWidth":1440,"bodyWidth":1440,"mainWidth":1440,"mainScrollWidth":1440,"mainHeight":1000,"mainScrollHeight":1137}
+{"passed":true,"description":"partial-onboard has no horizontal overflow at 1366×768","width":1366,"documentWidth":1366,"bodyWidth":1366,"mainWidth":1366,"mainScrollWidth":1366,"mainHeight":768,"mainScrollHeight":1137}
+{"passed":true,"description":"partial-onboard has no horizontal overflow at 820×900","width":820,"documentWidth":820,"bodyWidth":820,"mainWidth":820,"mainScrollWidth":820,"mainHeight":900,"mainScrollHeight":1154}
+{"passed":true,"description":"partial-onboard has no horizontal overflow at 390×900","width":390,"documentWidth":390,"bodyWidth":390,"mainWidth":390,"mainScrollWidth":390,"mainHeight":900,"mainScrollHeight":1335}
+{"passed":true,"description":"partial-onboard report replay returns to the existing home flow"}
+{"passed":true,"description":"Home mission action accepts keyboard focus"}
+{"passed":true,"description":"First target was reached by keyboard, braked and scanned with E"}
+{"passed":true,"description":"partial-returned uses the existing real mission outcome","heading":"PARTIAL SUCCESS"}
+{"passed":true,"description":"partial-returned distinguishes transmitted records from collected-only observations","firstTarget":"Ancient Lakebed Outcrop\nRETURNED"}
+{"passed":true,"description":"partial-returned has no horizontal overflow at 1440×1000","width":1440,"documentWidth":1440,"bodyWidth":1440,"mainWidth":1440,"mainScrollWidth":1440,"mainHeight":1000,"mainScrollHeight":1137}
+{"passed":true,"description":"partial-returned has no horizontal overflow at 1366×768","width":1366,"documentWidth":1366,"bodyWidth":1366,"mainWidth":1366,"mainScrollWidth":1366,"mainHeight":768,"mainScrollHeight":1137}
+{"passed":true,"description":"partial-returned has no horizontal overflow at 820×900","width":820,"documentWidth":820,"bodyWidth":820,"mainWidth":820,"mainScrollWidth":820,"mainHeight":900,"mainScrollHeight":1154}
+{"passed":true,"description":"partial-returned has no horizontal overflow at 390×900","width":390,"documentWidth":390,"bodyWidth":390,"mainWidth":390,"mainScrollWidth":390,"mainHeight":900,"mainScrollHeight":1312}
+{"passed":true,"description":"partial-returned report replay returns to the existing home flow"}
+{"passed":true,"description":"No uncaught page errors","errors":[]}
+Captured 28 screenshots; 0 recorded findings. Full success was not played.

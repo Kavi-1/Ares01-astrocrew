@@ -18,7 +18,7 @@ export function calculateEngineering(config:RoverConfig=DEFAULT_CONFIG) {
   const eNominalWh=nominalBatteryWh(), eUsableWh=eNominalWh*(1-config.reserve), eDeliveredWh=eUsableWh*Math.sqrt(FIXED.roundTripEfficiency);
   const peakW=config.baselineW+Math.max(0,...activities.map(i=>i.powerW));
   const dataMbit=selected.reduce((s,i)=>s+(i.dataMbit??0),0);
-  const linkMbit=config.downlink==='UHF'?FIXED.uhfBps*FIXED.passS/1e6:FIXED.xbandBps*FIXED.solHours*3600/1e6;
+  const linkMbit=config.downlink==='UHF'?FIXED.uhfBps*FIXED.passS/1e6:FIXED.xbandBps*3600/1e6;
   const issues:string[]=[];
   if(config.instruments.some(id=>!INSTRUMENTS.some(i=>i.id===id))) issues.push('Unsupported instrument selection. Return to Mission Engineering and select only documented M2020 instruments.');
   if(![.2,.3,.4].includes(config.reserve)) issues.push('Battery reserve must use one of the modeled 20%, 30% or 40% policies.');
@@ -30,7 +30,7 @@ export function calculateEngineering(config:RoverConfig=DEFAULT_CONFIG) {
   if(!config.instruments.some(id=>['supercam','pixl','sherloc'].includes(id))) warnings.push('Payload limitation (ARES-01 objective design): none of the selected instruments supports the three geology targets. Mission launch remains possible, but those objectives cannot be performed.');
   if(netWh<0) warnings.push(`Projected routine energy deficit: ${netWh.toFixed(1)} Wh/sol under this assumed activity plan. Launch is allowed, but the reserve may be reached; reduce science cadence or use safe mode.`);
   if(dataMbit>linkMbit) warnings.push('Known instrument data volume exceeds the idealized link capacity; actual data volume or pass availability may differ.');
-  if(config.downlink==='X-band') warnings.push('X-band capacity assumes continuous operation at 500 bps; the actual DSN contact duration is unknown.');
+  if(config.downlink==='X-band') warnings.push('X-band capacity assumes a one-hour 500 bps contact per sol (approved game assumption); the actual DSN contact duration is unknown.');
   return {massKg,massMarginKg:FIXED.allowanceKg-massKg,eNominalWh,eUsableWh,eDeliveredWh,rtgW:rtgPowerW(),genWh,baseWh,activityWh,netWh,projectedSoc:Math.min(1,Math.max(0,1+netWh/Math.max(1,eNominalWh))),peakW,dataMbit,linkMbit,issues,warnings,selected:config.instruments};
 }
 export function validateRoverConfig(config:RoverConfig) { return calculateEngineering(config).issues; }

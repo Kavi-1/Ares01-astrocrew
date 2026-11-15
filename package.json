@@ -8,11 +8,19 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test:engineering": "node scripts/test-engine.mjs",
-    "test:models": "playwright test",
+    "test:models": "playwright test tests/models.spec.ts",
     "assets:portraits": "node scripts/generate-portraits.mjs",
     "test:preparation": "node scripts/test-preparation.mjs",
     "test:mission-budget": "node scripts/test-mission-budget.mjs",
-    "test:model-loading": "node scripts/test-model-loading.mjs"
+    "test:model-loading": "node scripts/test-model-loading.mjs",
+    "test:mission-energy": "node scripts/test-mission-energy.mjs",
+    "test:campaign": "node scripts/test-campaign.mjs && node scripts/test-campaign-boundaries.mjs",
+    "test:campaign-ui": "pnpm build && playwright test --config playwright.missions.config.ts",
+    "test:tutorial": "node scripts/test-tutorial.mjs",
+    "test:tutorial-ui": "pnpm build && playwright test --config playwright.tutorial.config.ts",
+    "test:presentation": "playwright test tests/presentation.spec.ts",
+    "test:mobility": "node scripts/test-mobility.mjs",
+    "test:mobility-ui": "pnpm build && playwright test --config playwright.mobility.config.ts"
   },
   "dependencies": {
     "@fontsource/dm-mono": "^5.3.0",

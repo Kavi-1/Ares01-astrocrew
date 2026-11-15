@@ -8,11 +8,12 @@ export type StationId = 'briefing' | 'payload' | 'power' | 'communications' | 'r
 export type ProposalPriority = 'science' | 'safety' | 'mass';
 export type DecisionStation = 'payload' | 'power' | 'communications';
 export type PreparationState = {
+  preparationOpen?: boolean; // Presentation only: distinguish Welcome from the saved crew-selection screen.
   stage: PreparationStage;
   activeStation: StationId | null;
   decisions: Partial<Record<DecisionStation, { mode: 'accepted' | 'takeover' | 'direct'; fingerprint: string }>>;
 };
-export const INITIAL_PREPARATION: PreparationState = { stage: 'entry', activeStation: null, decisions: {} };
+export const INITIAL_PREPARATION: PreparationState = { stage: 'entry', activeStation: null, decisions: {}, preparationOpen:false };
 export const STATION_OWNERS: Record<StationId, CrewId> = {
   briefing: 'lautaro', payload: 'aaryan', power: 'houssam', communications: 'huzaifa', review: 'kavi',
 };

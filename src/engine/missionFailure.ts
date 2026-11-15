@@ -1,7 +1,7 @@
 import type { RoverConfig } from '../nasa/data';
 import type { ReturnTypeEngineering } from './missionTypes';
 
-export type MissionOutcome = 'full-success' | 'partial-success' | 'recoverable-anomaly' | 'mission-failure' | 'mission-abort';
+export type MissionOutcome = 'full-success' | 'baseline-success' | 'partial-success' | 'recoverable-anomaly' | 'mission-failure' | 'mission-abort';
 export type MissionEventKind = 'power-budget' | 'power-reserve' | 'communication-backlog' | 'instrument-unavailable' | 'mobility-limit';
 export type MissionEvent = {
   id: string;
@@ -87,7 +87,7 @@ export function missionReportLessons(outcome: MissionOutcome, events: MissionEve
   if (events.some((event) => event.kind === 'instrument-unavailable')) lessons.add('Payload selection determines which science objectives are possible after launch; missing instruments cannot be added on Mars.');
   if (events.some((event) => event.kind === 'communication-backlog')) lessons.add('Collected science has value only after a modeled return link transmits it. Link capacities here are idealized, not contact predictions.');
   if (outcome === 'mission-abort') lessons.add('An abort preserves the rover and its unreturned science in this educational campaign model.');
-  if (outcome === 'mission-failure') lessons.add('The simulation treats an empty battery as mission-ending; Perseverance battery discharge limits are unavailable and are not represented.');
+  if (outcome === 'mission-failure') lessons.add('Rover loss requires three consecutive end-sol zero-energy readings. Perseverance battery discharge limits are unknown; reserve policies and safe-mode timing are game assumptions.');
   if (!lessons.size) lessons.add('The selected payload and operating plan supported the returned science objectives.');
   lessons.add('Thermal operating limits, battery discharge limits, and flight qualification criteria are unknown here and are not simulated.');
   return [...lessons];

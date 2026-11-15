@@ -1,6 +1,6 @@
 # Scientific provenance and equations
 
-Reviewed 15 November 2026 against commit `17dddad1ef31439a5a72ffd72d76e235bfb8d66e`. This register supports the retired development documents `ENGINEERING_DECISIONS_U1_U11.md`, `MISSION_BALANCE_FIXTURES.md`, and `OWNER_APPROVAL_ITEMS.md`, retained in Git history. It records research and proposals; it does not replace [GAMEPLAY.md](GAMEPLAY.md), change scientific constants, or approve new gameplay values.
+Reviewed 15 November 2026 against commit `17dddad1ef31439a5a72ffd72d76e235bfb8d66e`. This register supports the [engineering decisions](ENGINEERING_DECISIONS_U1_U11.md), [reference fixtures](MISSION_BALANCE_FIXTURES.md), and [owner approval items](OWNER_APPROVAL_ITEMS.md). It records research and proposals; it does not replace [GAMEPLAY.md](GAMEPLAY.md), change scientific constants, or approve new gameplay values.
 
 `GAMEPLAY.md` and `NASA_ENGINEERING.md` were read completely. Existing equations are retained with their assumptions exposed. Current source files were inspected; code presence is not evidence of scientific validity or tested gameplay compliance. Excluded design-reference directories were not inspected.
 

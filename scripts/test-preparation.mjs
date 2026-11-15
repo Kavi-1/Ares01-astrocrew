@@ -43,5 +43,18 @@ try {
   useGameStore.getState().reset();
   assert.equal(useGameStore.getState().preparation.stage,'entry');
   assert.deepEqual(useGameStore.getState().preparation.decisions,{});
+  const campaignEngine=await server.ssrLoadModule('/src/engine/campaign.ts');
+  let live={...campaignEngine.createCampaign(campaignEngine.DEFAULT_OPTIONS,DEFAULT_CONFIG),sol:2};
+  live=campaignEngine.commitPlan(live,{driveHours:0,scienceHours:8.5,science:true,weather:false,transmit:true});
+  live=campaignEngine.acquireTarget(live,'jezero-G-1',-18,6);
+  saved.set('ares-01-campaign',JSON.stringify({version:7,state:{campaign:live,missionPhase:'mars'}}));
+  await useGameStore.persist.rehydrate();assert.deepEqual(useGameStore.getState().campaign,live);
+  const earlyDraft=structuredClone(live);delete earlyDraft.scienceSpentHours;delete earlyDraft.plan.scienceHours;
+  saved.set('ares-01-campaign',JSON.stringify({version:7,state:{campaign:earlyDraft,missionPhase:'mars'}}));
+  await useGameStore.persist.rehydrate();assert.equal(useGameStore.getState().campaign.scienceSpentHours,2.5);assert.equal(useGameStore.getState().campaign.plan.scienceHours,8.5);
+  saved.set('ares-01-campaign',JSON.stringify({version:7,state:{campaign:{...live,elapsedHours:-1},missionPhase:'mars'}}));
+  await useGameStore.persist.rehydrate();assert.equal(useGameStore.getState().campaign,null);assert.equal(useGameStore.getState().missionPhase,'engineering');assert.match(useGameStore.getState().notice,/invalid/);
+  useGameStore.getState().reset();
+  console.log('PASS current and early-draft surface save hydration, hour normalization and invalid-save rejection');
   console.log('PASS '+checked+' proposal scenarios, all 36 station paths, save migration, preparation persistence and reset');
 } finally {await server.close();}

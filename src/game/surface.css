@@ -12,6 +12,15 @@
 .mars-world { position: absolute; inset: 0; }
 .mars-world canvas { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
 .mars-world canvas:active { cursor: grabbing; }
+.mars-world canvas:focus-visible { outline: 2px solid var(--cyan); outline-offset: -4px; }
+.drive-status { padding: 12px 16px; background: #090e19f5; border: 1px solid var(--line-strong); border-left: 3px solid var(--amber); font: 12px/1.55 var(--sans); }
+.drive-status b { display: block; margin-bottom: 4px; color: var(--amber); font: 500 10px/1.5 var(--mono); letter-spacing: .1em; }
+.drive-status span,.drive-status small { display: block; }
+.drive-status small { margin-top: 4px; color: var(--text-2); font-size: 11px; }
+.drive-status button { margin-top: 8px; }
+.drive-status[data-drive-state=ready] { border-left-color: var(--cyan); }
+.drive-status[data-drive-state=ready] b { color: var(--cyan); }
+.drive-status-standalone { position: absolute; left: var(--gutter); bottom: 170px; width: min(430px,calc(100% - 48px)); z-index: 9; }
 .game-shell > .mars-world > .model-status { top: 84px; right: var(--gutter); }
 .vignette {
   position: absolute;

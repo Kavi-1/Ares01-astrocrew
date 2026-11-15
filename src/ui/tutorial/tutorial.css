@@ -1,0 +1,48 @@
+/* The coach has no backdrop, pointer blocker, focus trap or camera effects. */
+[data-tutorial-tools] { display:inline-flex;align-items:center;flex-shrink:0;pointer-events:auto; }
+.tutorial-help-trigger { display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:8px 12px;background:#0b111ddd;border:1px solid #f4a86266;color:#ffe0b7;font:500 11px/1.4 var(--mono);cursor:pointer; }
+.tutorial-trigger-fallback { position:fixed;z-index:55;top:16px;right:16px; }
+.tutorial-highlight { outline:2px solid #36e0df!important;outline-offset:4px; }
+.tutorial-coach,.tutorial-help-panel { position:fixed;z-index:65;width:min(350px,calc(100vw - 24px));max-height:calc(100dvh - 185px);overflow:auto;box-sizing:border-box;padding:16px;background:#0a101cf5;color:#e6e8ed;border:1px solid #8c7051;border-top:2px solid #f4a862;box-shadow:0 10px 25px #0004;font:13px/1.6 var(--sans);text-align:left; }
+.tutorial-coach { pointer-events:auto; }
+.tutorial-coach-heading { display:flex;align-items:center;justify-content:space-between;gap:8px;font:500 10px/1.5 var(--mono);letter-spacing:.06em;color:#f4a862; }
+.tutorial-coach-heading i { font-style:normal;color:#36e0df; }
+.tutorial-coach-heading button { display:grid;place-items:center;min-width:44px;min-height:44px;padding:8px;border:1px solid #ffffff25;background:#101726;color:#e6e8ed; }
+.tutorial-coach h2,.tutorial-help-panel h2 { margin:10px 0;font:700 18px/1.25 var(--sans);letter-spacing:-.02em; }
+.tutorial-coach p,.tutorial-help-panel p { margin:8px 0;font-size:12px;line-height:1.65; }
+.tutorial-coach-foot { display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:12px;border-top:1px solid #ffffff16;padding-top:8px; }
+.tutorial-coach-foot small,.tutorial-muted { color:#aeb5c3; }
+.tutorial-coach-foot button,.tutorial-text-action { min-height:44px;padding:6px 8px;background:transparent;color:#ffcd96;border:1px solid #ffffff25;font:500 10px/1.5 var(--mono); }
+.tutorial-help-panel { width:min(380px,calc(100vw - 24px));max-height:calc(100dvh - 110px); }
+.tutorial-help-panel nav { display:flex;flex-wrap:wrap;gap:5px;margin:12px 0; }
+.tutorial-help-panel nav button { flex:1;min-height:44px;padding:8px;background:#121b2a;color:#dce0e7;border:1px solid #ffffff25;font:11px/1.5 var(--mono); }
+.tutorial-help-panel nav button[aria-pressed=true] { color:#ffcd96;border-color:#f4a862; }
+.tutorial-wide { display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;margin-top:8px;padding:8px 12px;background:#172032;color:#e5e9ef;border:1px solid #ffffff30;font:500 11px/1.5 var(--mono); }
+.tutorial-wide:disabled { opacity:.45; }
+.tutorial-help-panel label { display:grid;gap:7px;margin-top:12px; }
+.tutorial-help-panel select { width:100%;max-width:100%;min-width:0;min-height:44px;background:#172032;border:1px solid #ffffff30;color:#e5e9ef;padding:8px; }
+.tutorial-glossary { margin:8px 0; }
+.tutorial-glossary>div { padding:10px 0;border-bottom:1px solid #ffffff18; }
+.tutorial-glossary dt { color:#ffd1a0;font-weight:700;text-transform:capitalize; }
+.tutorial-glossary dd { margin:4px 0 0;font-size:12px;line-height:1.6; }
+[data-tutorial-ui] :is(button,select):focus-visible,.tutorial-help-trigger:focus-visible { outline:2px solid #36e0df;outline-offset:3px; }
+.surface-header-actions,.launch-header-actions { justify-self:end;display:flex;align-items:center;gap:10px; }
+.archive-help-actions { display:flex;align-items:center;gap:12px; }
+@media(max-width:600px) { .tutorial-coach { width:min(330px,calc(100vw - 24px));max-height:min(300px,calc(100dvh - 185px));padding:12px; }.tutorial-coach p{font-size:11px;}.tutorial-coach h2{font-size:16px;}.surface-header-actions{gap:6px;}.surface-header-actions .tutorial-help-trigger{padding:8px;}.surface-header-actions .tutorial-help-trigger span{display:none;}.launch-header-actions .launch-clock{display:none;}.archive-help-actions .archive-status{display:none;}.tutorial-help-panel{max-height:calc(100dvh - 100px);} }
+@media(prefers-reduced-motion:reduce) { .tutorial-coach,.tutorial-help-panel,.tutorial-highlight { animation:none!important;transition:none!important;scroll-behavior:auto!important; } }
+
+/* Automatic notes never intercept mission pointer input. Actions stay in the existing header. */
+.tutorial-coach { pointer-events:none;overflow:hidden; }
+.tutorial-tools-controls { display:inline-flex;gap:6px;align-items:center; }
+.tutorial-dismiss-trigger { display:grid;place-items:center;min-height:44px;min-width:44px;padding:8px;border:1px solid #36e0df77;color:#dce3ea;background:#0b111ddd; }
+.tutorial-coach-heading { min-height:15px; }
+.tutorial-coach-foot { margin-top:8px;padding-top:6px; }
+.tutorial-full-explanation { margin:12px 0;border-block:1px solid #ffffff20;padding:8px 0; }
+.tutorial-full-explanation summary { min-height:44px;padding:10px 0;cursor:pointer;color:#ffcd96; }
+.prep-top .prep-title { min-width:0; }
+
+@media(max-width:899px) {
+ .game-shell.with-surface-coach .sol-console { top:var(--tutorial-note-bottom); }
+ .game-shell.with-surface-coach .sol-console-body { max-height:min(55dvh,max(90px,calc(100dvh - var(--tutorial-note-bottom) - 285px))); }
+}
+@media(max-width:600px) { .surface-header-context { display:none; }.surface-top { column-gap:10px; }.surface-header-actions { gap:5px; } }

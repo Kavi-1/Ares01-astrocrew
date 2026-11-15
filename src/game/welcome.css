@@ -86,3 +86,16 @@
 @media (prefers-reduced-motion: reduce) {
   .welcome-screen *, .welcome-screen *::before, .welcome-screen *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Presentation preferences stay beside the entry action, independent of physics. */
+.welcome-onboarding { display: grid; gap: 10px; margin-top: 20px; font: 11px/1.6 var(--mono); }
+.welcome-onboarding fieldset { border: 1px solid #ffffff20; padding: 10px 13px; min-width: 0; margin: 0; }
+.welcome-onboarding legend { color: #8fd7d6; padding-inline: 5px; font-size: 10px; }
+.welcome-onboarding label { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; margin-right: 22px; cursor: pointer; }
+.welcome-onboarding input { accent-color: #ffc183; }
+.welcome-onboarding p { color: #aeb3c0; font-size: 10px; }
+.welcome-onboarding + .welcome-menu { margin-top: 18px; }
+.game-shell.is-welcome:has(.welcome-onboarding) .welcome-mission-copy { padding-block: 24px; }
+@media (min-width: 701px) { .welcome-screen:has(.welcome-onboarding) { overflow-y: auto; } .welcome-screen:has(.welcome-onboarding) .welcome-mission-copy { width: min(520px, 47vw); } }
+@media (max-width: 700px) { .game-shell.is-welcome:has(.welcome-onboarding) .welcome-mission-copy { padding-top: 230px; padding-bottom: 30px; } .welcome-onboarding { margin-top: 16px; } }
+@media (max-height: 780px) and (min-width: 701px) { .welcome-screen:has(.welcome-onboarding) h1 { font-size: clamp(40px,5vw,65px); margin-block: 10px; } .welcome-onboarding { gap: 6px; margin-top: 12px; } .welcome-onboarding fieldset { padding-block: 6px; } .welcome-onboarding + .welcome-menu { gap: 7px; margin-top: 12px; } .welcome-screen:has(.welcome-onboarding) .welcome-team { margin-top: 18px; } }

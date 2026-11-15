@@ -1,0 +1,65 @@
+.scenario-setup fieldset { border: 1px solid var(--line); padding: 16px; margin: 18px 0; min-width: 0; }
+.scenario-setup legend { color: var(--amber); padding: 0 8px; font: 500 12px var(--mono); }
+.scenario-choices { display: grid; gap: 10px; }
+.scenario-choices button { display: grid; text-align: left; gap: 8px; background: #101725; border: 1px solid var(--line); border-left: 3px solid transparent; padding: 15px; color: var(--text); }
+.scenario-choices button[aria-pressed=true] { border-color: var(--amber); background: #f4a86212; }
+.scenario-choices button span { font-size: 13px; line-height: 1.7; }
+.scenario-choices small { color: var(--text-2); font: 11px/1.6 var(--mono); }
+.launch-setup { margin: 22px 0; border-top: 1px solid var(--line); padding-top: 20px; }
+.scenario-checks { margin: 16px 0; }
+.scenario-checks > div { display: flex; gap: 15px; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 10px 0; font-size: 12px; }
+.scenario-checks dd { margin: 0; color: var(--cyan); text-align: right; }
+.mission-risk { display: flex; align-items: start; gap: 10px; padding: 12px; border: 1px solid #ff6b5f66; margin: 10px 0; font-size: 13px; }
+.mission-risk input { margin-top: 4px; }
+.sol-console { --sol-console-top: 90px; --sol-console-bottom: 165px; position: absolute; right: 24px; top: var(--sol-console-top); z-index: 7; display: flex; flex-direction: column; max-height: calc(100dvh - var(--sol-console-top) - var(--sol-console-bottom)); width: min(430px,calc(100% - 48px)); color: var(--text); font: 13px/1.6 var(--sans); }
+.sol-console > :not(details) { flex-shrink: 0; }
+.sol-console details { min-height: 0; flex: 0 1 auto; background: #090e19f5; border: 1px solid var(--line-strong); box-shadow: 0 12px 40px #0006; }
+.sol-console details[open] { display: flex; flex-direction: column; overflow: hidden; }
+.sol-console details[open]::details-content { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+.sol-console summary { flex-shrink: 0; padding: 12px 16px; cursor: pointer; font: 500 12px/1.7 var(--mono); }
+.sol-console summary b { color: var(--amber); }
+.sol-console summary small { display: block; color: var(--cyan); margin-top: 5px; }
+.sol-console-body { min-height: 0; flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; padding: 0 18px 18px; }
+.sol-console-body > p { margin: 12px 0; }
+.sol-console-body label { display: flex; align-items: center; gap: 10px; padding-block: 8px; }
+.sol-console-body input[type=number] { width: 70px; padding: 8px; background: #172032; border: 1px solid var(--line-strong); }
+.sol-meta { font-size: 11px; color: var(--text-2); line-height: 1.7; }
+.sol-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.sol-buttons button, .sol-end, .sol-commit { padding: 10px 12px; min-height: 44px; border: 1px solid var(--line-strong); background: #172032; color: var(--text); font: 500 11px/1.6 var(--mono); }
+.sol-buttons button:disabled { opacity: .4; }
+.sol-end { width: 100%; margin-top: 10px; background: var(--amber); color: #1b1207; border-color: var(--amber); }
+.sol-event { margin-block: 12px; padding: 14px; border-left: 2px solid var(--amber); background: #f4a8620a; }
+.sol-event p { margin-top: 7px; }
+.sol-message { color: var(--amber-bright); padding-block: 8px; }
+.sol-console-footer { padding: 10px 12px 12px; background: #090e19f5; border: 1px solid var(--line-strong); border-top: 0; box-shadow: 0 12px 30px #0004; }
+.sol-plan-explanation { margin: 0 0 8px; color: var(--text-2); font-size: 11px; line-height: 1.5; }
+.sol-plan-draft { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 0 0 8px; font: 10px/1.5 var(--mono); }
+.sol-plan-draft > span { color: var(--text-2); }
+.sol-plan-draft strong { font-weight: 500; color: var(--cyan); text-align: right; }
+.sol-console-footer .sol-message { max-height: 72px; overflow-y: auto; margin: 0 0 8px; padding: 0; font-size: 11px; line-height: 1.5; }
+.sol-footer-actions { display: flex; align-items: stretch; gap: 8px; }
+.sol-footer-actions .sol-commit { flex: 2 1 0; border-color: var(--amber); background: var(--amber); color: #1b1207; }
+.sol-footer-actions .sol-end { flex: 1 1 0; margin: 0; width: auto; background: #172032; border-color: var(--line-strong); color: var(--text); }
+.sol-footer-actions .sol-commit:focus-visible, .sol-footer-actions .sol-end:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.game-shell.has-campaign .objective { width: min(330px,26vw); }
+.game-shell.has-campaign .mission-actions .legacy-sol-end { display: none; }
+.campaign-result { padding: 18px; background: #0c101c; border-left: 2px solid #36e0df; margin: 18px 0; }
+.campaign-result dl > div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid #ffffff12; }
+.campaign-result dd { margin: 0; color: #36e0df; }
+@media(max-width:820px){.sol-console{--sol-console-top:82px;right:16px;width:min(430px,calc(100% - 32px));}.game-shell.has-campaign .objective{display:none;}.scenario-checks>div{flex-wrap:wrap;}.scenario-checks dd{margin-left:auto;}}
+@media(max-width:899px){.game-shell.with-surface-coach .sol-console{--sol-console-top:var(--tutorial-note-bottom);}.game-shell.with-surface-coach .sol-console .sol-console-body{max-height:none;}}
+
+.sol-console-body label:has(select){display:grid;gap:6px;}.sol-console-body select{min-width:0;max-width:100%;width:100%;padding:9px;background:#172032;border:1px solid var(--line-strong);color:var(--text);}
+
+/* Short screens still need a usable plan editor below the tutorial note.
+   Keep the explicit commit action and compact the repeated plan guidance. */
+@media(max-width:899px) and (max-height:700px) {
+  .sol-console { --sol-console-bottom:96px; }
+  .sol-console:has(details[open]) { --sol-console-bottom:64px; }
+  .sol-console .drive-status { padding:8px 12px; font-size:11px; }
+  .sol-console .drive-status[data-drive-state=planning] small { display:none; }
+  .sol-console summary { padding:8px 12px; }
+  .sol-console-footer { padding:8px; }
+  .sol-plan-draft { margin-bottom:6px; }
+  .sol-console-footer .sol-message { max-height:32px; margin-bottom:6px; }
+}

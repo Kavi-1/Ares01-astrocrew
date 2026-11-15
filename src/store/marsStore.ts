@@ -1,4 +1,6 @@
+import { acquireTarget } from '../engine/campaign';
 import { create } from 'zustand';
+import type { DriveContact } from '../engine/mobility';
 import { useGameStore } from './gameStore';
 const savedProgress=useGameStore.getState().missionProgress;
 
@@ -20,6 +22,8 @@ type MarsState = {
   speed: number;
   distance: number;
   warning: string;
+  driveContact: DriveContact | null;
+  setDriveContact: (contact: DriveContact | null) => void;
   begin: () => void;
   togglePause: () => void;
   updateTelemetry: (data: Partial<Telemetry>) => void;
@@ -35,10 +39,11 @@ export const useMarsStore = create<MarsState>((set,get) => ({
   phase: 'briefing', battery: savedProgress.battery, sol: savedProgress.sol, science: savedProgress.science, scanned: savedProgress.scannedTargets.length>0,
   scannedTargets: savedProgress.scannedTargets, nearbyTargetId: null, scanningTargetId: null, scanRequestId: 0,
   scanProgress: 0, scanMessage: '', lastDiscovery: '',
-  speed: 0, distance: 0, warning: '',
+  speed: 0, distance: 0, warning: '', driveContact: null,
+  setDriveContact: (driveContact) => set(s => s.driveContact?.code === driveContact?.code && s.driveContact?.reason === driveContact?.reason ? s : { driveContact }),
   begin: () => set({ phase: 'active' }),
   resetMission:()=>{useGameStore.getState().setMissionProgress({x:-18,z:12,heading:0,distance:0,battery:100,sol:1,scannedTargets:[],science:0});set({phase:'active',battery:100,sol:1,science:0,scanned:false,scannedTargets:[],nearbyTargetId:null,scanningTargetId:null,scanProgress:0,scanMessage:'',lastDiscovery:'',speed:0,distance:0,warning:''})},
-  togglePause: () => set((s) => ({ phase: s.phase === 'active' ? 'paused' : s.phase === 'paused' ? 'active' : s.phase })),
+  togglePause: () => set((s) => ({ phase: s.phase === 'active' ? 'paused' : s.phase === 'paused' ? 'active' : s.phase, speed: 0, driveContact: null })),
   updateTelemetry: (data) => set(data),
   requestScan: () => set((s) => ({ scanRequestId: s.scanRequestId + 1 })),
   beginScan: (targetId) => set({ scanningTargetId: targetId, scanProgress: 0, scanMessage: 'SPECTROMETER CALIBRATING' }),
@@ -49,6 +54,9 @@ export const useMarsStore = create<MarsState>((set,get) => ({
       : { nearbyTargetId, scanProgress, scanMessage }
   )),
   completeScan: (targetId, energyCost, reward, discovery, currentBattery, energyWh) => {
+    const game=useGameStore.getState();
+    if(game.campaign){const prior=game.campaign;const next=acquireTarget(prior,targetId,game.missionProgress.x,game.missionProgress.z);game.setCampaign(next);const complete=next.completed.includes(`science:${targetId}`)&&!prior.completed.includes(`science:${targetId}`);set({battery:useGameStore.getState().missionProgress.battery,scannedTargets:useGameStore.getState().missionProgress.scannedTargets,scanningTargetId:null,scanProgress:0,scanMessage:next.message,lastDiscovery:complete?discovery:get().lastDiscovery});return complete;}
+
     let completed = false;
     set((s) => {
       const availableBattery = currentBattery === undefined ? s.battery : Math.min(s.battery, currentBattery);
@@ -74,6 +82,7 @@ export const useMarsStore = create<MarsState>((set,get) => ({
 // Campaign routing owns the lifetime of surface controls. Reset transient rover
 // state as well as saved campaign state when starting over from the report.
 useGameStore.subscribe((state, previous) => {
+  if(state.campaign!==previous.campaign&&state.campaign){const p=state.missionProgress;const boundary=previous.campaign?.sol!==state.campaign.sol||state.campaign.safe;const driveBoundary=boundary||previous.campaign?.mode!==state.campaign.mode;useMarsStore.setState({battery:p.battery,sol:p.sol,science:p.science,scannedTargets:[...p.scannedTargets],...(boundary?{scanningTargetId:null,scanProgress:0}:{} ),...(driveBoundary?{driveContact:null,speed:0}:{} )});}
   if (state.missionPhase === previous.missionPhase) return;
   if (state.missionPhase === 'briefing') {
     const progress = state.missionProgress;

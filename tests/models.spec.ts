@@ -37,6 +37,8 @@ test('rover has six axle pivots, correct ground alignment and independent instru
 
 async function enterWorkshop(page: import('@playwright/test').Page, seat='Kavi') {
   await page.goto('/');
+  // This suite isolates the existing game controls; Guided behavior has its own browser suite.
+  const skip=page.getByRole('radio',{name:'Skip',exact:true});if(await skip.isVisible())await skip.check();
   await page.getByRole('button',{name:'ENTER MISSION CONTROL'}).click();
   if(seat!=='Kavi')await page.getByRole('button',{name:new RegExp('^'+seat+' ')}).click();
   await page.getByRole('button',{name:'Enter mission control',exact:true}).click();
@@ -137,6 +139,7 @@ test('hub review launches, rover drives, abort resets home',async({page})=>{
   await page.getByRole('button',{name:'BEGIN MARS APPROACH'}).click();
   await page.getByRole('button',{name:'DEPLOY ROVER'}).click();
   await expect(page.getByRole('button',{name:'End mission',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Commit sol plan',exact:true}).click();
   await page.keyboard.down('w');
   await page.waitForFunction(async()=>(await import('/src/store/marsStore.ts')).useMarsStore.getState().distance>.1);
   await page.keyboard.up('w');

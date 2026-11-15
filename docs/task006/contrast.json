@@ -1,0 +1,56 @@
+[
+  {
+    "element": "welcome body",
+    "foreground": "#bac5ce",
+    "background": "#0b1420",
+    "ratio": 10.54
+  },
+  {
+    "element": "welcome title",
+    "foreground": "#f4efe5",
+    "background": "#0b1420",
+    "ratio": 16.14
+  },
+  {
+    "element": "entry button",
+    "foreground": "#17212b",
+    "background": "#e9a66f",
+    "ratio": 7.87
+  },
+  {
+    "element": "report body",
+    "foreground": "#1d2d37",
+    "background": "#eee7da",
+    "ratio": 11.52
+  },
+  {
+    "element": "report secondary",
+    "foreground": "#586166",
+    "background": "#eee7da",
+    "ratio": 5.15
+  },
+  {
+    "element": "returned label",
+    "foreground": "#146272",
+    "background": "#eee7da",
+    "ratio": 5.66
+  },
+  {
+    "element": "onboard label",
+    "foreground": "#81511f",
+    "background": "#eee7da",
+    "ratio": 5.46
+  },
+  {
+    "element": "failure title",
+    "foreground": "#f19c8d",
+    "background": "#0b1520",
+    "ratio": 8.65
+  },
+  {
+    "element": "paper link",
+    "foreground": "#185e72",
+    "background": "#eee7da",
+    "ratio": 5.92
+  }
+]

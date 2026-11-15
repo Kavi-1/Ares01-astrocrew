@@ -1,0 +1,358 @@
+{
+  "label": "prod-ui-c",
+  "directory": "/home/kavi/code/Ares01/dist",
+  "repetitions": 1,
+  "harnessSha256": "e0900632d5ef57b001b2a87019829198710b8f4dc7d337f85da2e360b6c1daf9",
+  "environment": {
+    "cpu": "12th Gen Intel(R) Core(TM) i7-12700",
+    "logicalCpus": 20,
+    "systemMemoryBytes": 33510207488,
+    "platform": "linux",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "dpr": 1
+  },
+  "method": {
+    "runtime": "Production build served locally, no source transforms and no store injection. Normal app effects retained; production does not replay development StrictMode effects.",
+    "cache": "Server Cache-Control:no-store and CDP HTTP cache disabled. Cold=fresh browser context, warm=same-page Home/re-entry with existing bounded application byte cache. Warm retains workshop state; compare versions within each condition, not cold versus warm as a pure cache effect.",
+    "start": "Navigation start is sampled before the existing Enter Mission Control action. rendererObservedAt is Three.js constructor observation, after renderer initialization; it excludes constructor cost.",
+    "homeGate": "Every entry/home return waits for both the existing ready label and an observed original-rover mesh draw in the current connected MarsWorld renderer. This removes pre005/005 home-label readiness differences.",
+    "readiness": "All six Group roots tagged userData.crew and the original Imported_Perseverance root attached to the scene after a renderer call returns. Mesh proxies are excluded. DOM status disappearance is separate.",
+    "visibility": "First mesh onAfterRender callback is an actual frustum-eligible draw submission, not GPU completion or proof of unoccluded pixels.",
+    "parsing": "GLB parse attribution uses unique byte lengths measured from the exact build assets. Parse spans include asynchronous decode/scheduling.",
+    "unavailable": "Production rig preparation and React/progress CPU breakdown cannot be isolated without source instrumentation; see the separate matched development benchmark. Three.js resource counts are not VRAM. SwiftShader is not physical low-end hardware."
+  },
+  "assetByteLengths": {
+    "6670792": "/models/rover.glb",
+    "9011952": "/models/crew/houssam.glb",
+    "9016548": "/models/crew/huzaifa.glb",
+    "9812416": "/models/crew/kavi.glb",
+    "10522080": "/models/crew/rihabe.glb",
+    "12582312": "/models/crew/aaryan.glb",
+    "16802132": "/models/crew/lautaro.glb"
+  },
+  "runs": [
+    {
+      "repetition": 0,
+      "condition": "cold",
+      "rendererObservedAt": 15819.79999999702,
+      "navigationStart": 11209.69999999553,
+      "selected": "kavi",
+      "firstSceneRender": 15922.39999999851,
+      "allCrewSceneRender": 37216.69999999553,
+      "allAssetsSceneRender": 37216.69999999553,
+      "firstDrawn": {
+        "rover": 16456.39999999851,
+        "kavi": 18223.39999999851,
+        "aaryan": 21472,
+        "houssam": 24308.39999999851,
+        "huzaifa": 28113.69999999553,
+        "lautaro": 32815.89999999851,
+        "rihabe": 37156.89999999851
+      },
+      "firstAttachedRender": {
+        "rover": 16622.5,
+        "kavi": 18466.79999999702,
+        "aaryan": 21540.79999999702,
+        "houssam": 24369.29999999702,
+        "huzaifa": 28179,
+        "lautaro": 32881.5,
+        "rihabe": 37216.69999999553
+      },
+      "domReady": 37846.69999999553,
+      "statusChanges": [
+        {
+          "at": 16103.19999999553,
+          "text": "Preparing Perseverance…Downloading Kavi · 21% · 0/6 crew ready"
+        },
+        {
+          "at": 16268.29999999702,
+          "text": "Preparing Perseverance…Downloading Kavi · 85% · 0/6 crew ready"
+        },
+        {
+          "at": 16378.5,
+          "text": "Preparing Perseverance…Preparing Kavi… · 0/6 crew ready"
+        },
+        {
+          "at": 17219.19999999553,
+          "text": "Preparing Kavi… · 0/6 crew ready"
+        },
+        {
+          "at": 19467.39999999851,
+          "text": "Downloading Aaryan · 0.0 MB · 1/6 crew ready"
+        },
+        {
+          "at": 19471.29999999702,
+          "text": "Downloading Aaryan · 16% · 1/6 crew ready"
+        },
+        {
+          "at": 19603.60000000149,
+          "text": "Downloading Aaryan · 33% · 1/6 crew ready"
+        },
+        {
+          "at": 19835.10000000149,
+          "text": "Downloading Aaryan · 83% · 1/6 crew ready"
+        },
+        {
+          "at": 20125.10000000149,
+          "text": "Preparing Aaryan… · 1/6 crew ready"
+        },
+        {
+          "at": 22096.10000000149,
+          "text": "Downloading Houssam · 0.0 MB · 2/6 crew ready"
+        },
+        {
+          "at": 22243.19999999553,
+          "text": "Downloading Houssam · 23% · 2/6 crew ready"
+        },
+        {
+          "at": 22536.29999999702,
+          "text": "Downloading Houssam · 69% · 2/6 crew ready"
+        },
+        {
+          "at": 22825,
+          "text": "Downloading Houssam · 93% · 2/6 crew ready"
+        },
+        {
+          "at": 23012.60000000149,
+          "text": "Preparing Houssam… · 2/6 crew ready"
+        },
+        {
+          "at": 24957.89999999851,
+          "text": "Downloading Huzaifa · 0.0 MB · 3/6 crew ready"
+        },
+        {
+          "at": 25161.39999999851,
+          "text": "Downloading Huzaifa · 23% · 3/6 crew ready"
+        },
+        {
+          "at": 25665.5,
+          "text": "Downloading Huzaifa · 46% · 3/6 crew ready"
+        },
+        {
+          "at": 25887.60000000149,
+          "text": "Downloading Huzaifa · 69% · 3/6 crew ready"
+        },
+        {
+          "at": 26094.60000000149,
+          "text": "Downloading Huzaifa · 93% · 3/6 crew ready"
+        },
+        {
+          "at": 26368.5,
+          "text": "Preparing Huzaifa… · 3/6 crew ready"
+        },
+        {
+          "at": 28736.69999999553,
+          "text": "Downloading Lautaro · 0.0 MB · 4/6 crew ready"
+        },
+        {
+          "at": 28933.10000000149,
+          "text": "Downloading Lautaro · 12% · 4/6 crew ready"
+        },
+        {
+          "at": 29342.79999999702,
+          "text": "Downloading Lautaro · 24% · 4/6 crew ready"
+        },
+        {
+          "at": 29553.19999999553,
+          "text": "Downloading Lautaro · 37% · 4/6 crew ready"
+        },
+        {
+          "at": 29762.79999999702,
+          "text": "Downloading Lautaro · 49% · 4/6 crew ready"
+        },
+        {
+          "at": 29972.60000000149,
+          "text": "Downloading Lautaro · 74% · 4/6 crew ready"
+        },
+        {
+          "at": 30483.29999999702,
+          "text": "Downloading Lautaro · 87% · 4/6 crew ready"
+        },
+        {
+          "at": 30687.29999999702,
+          "text": "Downloading Lautaro · 99% · 4/6 crew ready"
+        },
+        {
+          "at": 31045.60000000149,
+          "text": "Preparing Lautaro… · 4/6 crew ready"
+        },
+        {
+          "at": 33496,
+          "text": "Downloading Rihabe · 0.0 MB · 5/6 crew ready"
+        },
+        {
+          "at": 33724.89999999851,
+          "text": "Downloading Rihabe · 19% · 5/6 crew ready"
+        },
+        {
+          "at": 34215.89999999851,
+          "text": "Downloading Rihabe · 39% · 5/6 crew ready"
+        },
+        {
+          "at": 34461.19999999553,
+          "text": "Downloading Rihabe · 59% · 5/6 crew ready"
+        },
+        {
+          "at": 34712.10000000149,
+          "text": "Downloading Rihabe · 79% · 5/6 crew ready"
+        },
+        {
+          "at": 34952.39999999851,
+          "text": "Downloading Rihabe · 99% · 5/6 crew ready"
+        },
+        {
+          "at": 35260.29999999702,
+          "text": "Preparing Rihabe… · 5/6 crew ready"
+        },
+        {
+          "at": 37846.69999999553,
+          "text": ""
+        }
+      ],
+      "renderCalls": 91,
+      "renderMs": 1162.099999934435,
+      "hookMs": 2.5999999940395355,
+      "resourcesAtReady": {
+        "geometries": 419,
+        "textures": 204
+      },
+      "drawAtReady": {
+        "calls": 444,
+        "triangles": 401645
+      },
+      "controlsUsable": 20800.69999999553,
+      "movementVerified": 22243.29999999702,
+      "cutoff": 38137.69999999553,
+      "timing": {
+        "navigationToControlsUsableMs": 9591,
+        "navigationToMovementVerifiedMs": 11033.60000000149,
+        "rendererToFirstSceneRenderMs": 102.60000000149012,
+        "rendererToFirstRoverDrawMs": 636.6000000014901,
+        "rendererToFirstSelectedCrewDrawMs": 2403.60000000149,
+        "rendererToAllCrewRenderMs": 21396.89999999851,
+        "rendererToAllAssetsRenderMs": 21396.89999999851,
+        "navigationToAllAssetsRenderMs": 26007,
+        "rendererToDomReadyMs": 22026.89999999851,
+        "domAfterActualMs": 630
+      },
+      "downloads": [
+        {
+          "url": "/models/crew/kavi.glb",
+          "start": 15823.89999999851,
+          "bytes": 9812416,
+          "headers": 16055.60000000149,
+          "status": 200,
+          "end": 16271
+        },
+        {
+          "url": "/models/crew/aaryan.glb",
+          "start": 18204.19999999553,
+          "bytes": 12582312,
+          "headers": 19468.29999999702,
+          "status": 200,
+          "end": 19949.39999999851
+        },
+        {
+          "url": "/models/crew/houssam.glb",
+          "start": 21460.10000000149,
+          "bytes": 9011952,
+          "headers": 22097.10000000149,
+          "status": 200,
+          "end": 22826.69999999553
+        },
+        {
+          "url": "/models/crew/huzaifa.glb",
+          "start": 24298.10000000149,
+          "bytes": 9016548,
+          "headers": 24958,
+          "status": 200,
+          "end": 26096
+        },
+        {
+          "url": "/models/crew/lautaro.glb",
+          "start": 28103,
+          "bytes": 16802132,
+          "headers": 28736.89999999851,
+          "status": 200,
+          "end": 30688
+        },
+        {
+          "url": "/models/crew/rihabe.glb",
+          "start": 32805.29999999702,
+          "bytes": 10522080,
+          "headers": 33496.19999999553,
+          "status": 200,
+          "end": 34953.10000000149
+        }
+      ],
+      "parses": [
+        {
+          "url": "/models/rover.glb",
+          "start": 15834.89999999851,
+          "end": 16413.5
+        },
+        {
+          "url": "/models/crew/kavi.glb",
+          "start": 16275.29999999702,
+          "end": 17898.10000000149
+        },
+        {
+          "url": "/models/crew/aaryan.glb",
+          "start": 19955.19999999553,
+          "end": 21113.79999999702
+        },
+        {
+          "url": "/models/crew/houssam.glb",
+          "start": 22830.69999999553,
+          "end": 24091.39999999851
+        },
+        {
+          "url": "/models/crew/huzaifa.glb",
+          "start": 26100.69999999553,
+          "end": 27902
+        },
+        {
+          "url": "/models/crew/lautaro.glb",
+          "start": 30697.60000000149,
+          "end": 32609.60000000149
+        },
+        {
+          "url": "/models/crew/rihabe.glb",
+          "start": 34957.69999999553,
+          "end": 36981.89999999851
+        }
+      ],
+      "heapBeforeExit": 200603334,
+      "cleanup": {
+        "heapAfterExitGC": 60177081,
+        "renderers": [
+          {
+            "rendererObservedAt": 15819.79999999702,
+            "disposed": 40744.89999999851,
+            "resourcesBeforeRendererDispose": {
+              "geometries": 0,
+              "textures": 1
+            },
+            "disposeMs": 0.20000000298023224,
+            "attached": false
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "browser": "151.0.7922.34",
+  "gpu": [
+    {
+      "vendorId": 65535,
+      "deviceId": 65535,
+      "vendorString": "Google Inc. (Google)",
+      "deviceString": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver-5.0.0)",
+      "driverVendor": "SwANGLE",
+      "driverVersion": "5.0.0"
+    }
+  ]
+}

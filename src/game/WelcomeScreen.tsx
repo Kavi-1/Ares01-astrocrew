@@ -1,20 +1,28 @@
 import { useState } from 'react';
 import { ArrowUpRight, ChevronDown, Radio, Rocket, ScrollText, SlidersHorizontal } from 'lucide-react';
 import ProjectCredits from './ProjectCredits';
+import { useGameStore } from '../store/gameStore';
 import './welcome.css';
 
 /** Presentation over the existing live world. No mission state is changed by the notes. */
 export default function WelcomeScreen({ onEnter }: { onEnter: () => void }) {
   const [controlsOpen, setControlsOpen] = useState(false);
+  const tutorialMode=useGameStore(s=>s.tutorialMode),hasLaunched=useGameStore(s=>s.tutorialHasLaunched);
+  const pace=useGameStore(s=>s.paceMode),setPace=useGameStore(s=>s.setPaceMode),setTutorialMode=useGameStore(s=>s.setTutorialMode);
+  const enter=()=>{useGameStore.getState().beginTutorialRun(!hasLaunched?tutorialMode:undefined);onEnter();};
   return <section className="welcome-screen" aria-labelledby="welcome-title">
-    <header className="welcome-masthead"><span className="welcome-emblem" aria-hidden="true">A</span><span>ASTROCREW<small>MISSION OPERATIONS</small></span><span className="welcome-masthead-end">MARS EXPLORATION PROGRAM</span></header>
+    <header className="welcome-masthead"><span className="welcome-emblem" aria-hidden="true">A</span><span>ASTROCREW<small>MISSION OPERATIONS</small></span><span className="welcome-masthead-end">MARS EXPLORATION PROGRAM</span><span data-tutorial-tools/></header>
     <div className="welcome-mission-copy">
       <p className="welcome-kicker"><span aria-hidden="true" /> [ ARES-01 // MARS EXPEDITION ]</p>
       <h1 id="welcome-title" aria-label="ARES-01">ARES <span>—01</span></h1>
       <p className="welcome-lead">ASTROCREW // JEZERO CRATER</p>
-      <p className="welcome-description">Build the mission. Bring the science home.</p>
+      <p className="welcome-description">You choose. The numbers decide. The report tells you why.</p>
+      <div className="welcome-onboarding" aria-label="Onboarding preferences">
+        {!hasLaunched&&<fieldset><legend>Your first mission</legend><label><input type="radio" name="welcome-tutorial" value="guided" checked={tutorialMode==='guided'} onChange={()=>setTutorialMode('guided')}/>Guided</label><label><input type="radio" name="welcome-tutorial" value="skip" checked={tutorialMode==='skip'} onChange={()=>setTutorialMode('skip')}/>Skip</label><p>Optional coach prompts in the real game. Dismiss any prompt with F2.</p></fieldset>}
+        <fieldset><legend>Mission pace</legend><label><input type="radio" name="welcome-pace" value="quick" checked={pace==='quick'} onChange={()=>setPace('quick')}/>Quick</label><label><input type="radio" name="welcome-pace" value="explore" checked={pace==='explore'} onChange={()=>setPace('explore')}/>Explore</label><p>{pace==='quick'?'Short dialogue and prefilled choices. No timed decisions.':'Full available crew dialogue, field notes and relevant advice. No time limit.'}</p></fieldset>
+      </div>
       <div className="welcome-menu">
-        <button className="welcome-enter" onClick={onEnter}>
+        <button className="welcome-enter" onClick={enter}>
           <span className="welcome-index" aria-hidden="true">[ 01 ]</span><span>ENTER MISSION CONTROL</span><Rocket size={20} aria-hidden="true" />
         </button>
         <button className="welcome-secondary" type="button" aria-expanded={controlsOpen} aria-controls="welcome-controls" onClick={() => setControlsOpen(!controlsOpen)}>

@@ -95,7 +95,8 @@ export default function CrewRoom(props: Props) {
     const down=(e:KeyboardEvent)=>{
       const key=e.key.toLowerCase();
       if(key==='escape'){stop();latest.current.onClose();return;}
-      if((e.target as HTMLElement)?.closest('input,textarea,select,[contenteditable=true]'))return;
+      if((e.target as HTMLElement)?.closest('input,textarea,select,[contenteditable=true],[data-tutorial-panel]'))return;
+      if((e.target as HTMLElement)?.closest('[data-tutorial-ui]')&&[' ', 'enter'].includes(key))return;
       if(latest.current.speaking)return;
       if(['w','a','s','d','arrowup','arrowleft','arrowdown','arrowright','e'].includes(key))e.preventDefault();
       if(key==='e'&&!e.repeat)interact.current();else input.current.add(key);

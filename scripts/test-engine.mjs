@@ -62,15 +62,24 @@ try {
   assert.equal(persisted.state.missionProgress.battery,81.5,'mission battery reserve persists in campaign state');
   useGameStore.getState().startSurfaceMission();
   assert.ok(useGameStore.getState().missionRecord,'confirmed rover creates a persisted active mission record');
+  const {commitPlan,acquireWeather,endSol,resolveRoute}=await server.ssrLoadModule('/src/engine/campaign.ts');
+  useGameStore.getState().setCampaign(acquireWeather(commitPlan(useGameStore.getState().campaign,{driveHours:0,science:true,weather:true,transmit:true})));
   useGameStore.getState().uplinkResults();
-  assert.deepEqual(useGameStore.getState().missionRecord.transmittedTargets,['ancient-outcrop'],'only scanned targets are returned');
+  assert.ok(useGameStore.getState().missionRecord.transmittedTargets.includes('weather:1:meda'),'only acquired and fully transmitted products return');
   const rpBeforeReturn=useGameStore.getState().agency.rp;
-  assert.equal(useGameStore.getState().endMission('complete',81.5),'partial-success','campaign end classifies returned subset');
-  assert.equal(useGameStore.getState().missionPhase,'report','campaign routes to report');
-  assert.equal(useGameStore.getState().agency.rp,rpBeforeReturn+25,'campaign receives reward only for returned science');
+  useGameStore.getState().endMission('complete',81.5);
+  assert.equal(useGameStore.getState().missionPhase,'mars','a non-abort finish cannot bypass the 30-sol duration');
+  while(useGameStore.getState().campaign.mode!=='finished'){
+    let campaign=useGameStore.getState().campaign;
+    if(campaign.events.some(e=>e.id==='E1'&&!e.resolved))campaign=resolveRoute(campaign,'reroute');
+    useGameStore.getState().setCampaign(endSol(campaign));
+  }
+  assert.equal(useGameStore.getState().missionRecord.outcome,'partial-success','returned environment evidence earns minimum tier');
+  assert.equal(useGameStore.getState().missionPhase,'report','completed duration routes to report');
+  assert.equal(useGameStore.getState().agency.rp,rpBeforeReturn,'weighted rubric does not invent an unapproved conversion to agency RP');
   const finalPersisted=JSON.parse(testStorage.get('ares-01-campaign'));
   assert.equal(finalPersisted.state.missionRecord.outcome,'partial-success','mission outcome persists');
-  assert.deepEqual(finalPersisted.state.missionRecord.transmittedTargets,['ancient-outcrop'],'uplink record persists');
+  assert.ok(finalPersisted.state.missionRecord.transmittedTargets.includes('weather:1:meda'),'returned product identity persists');
   const {useMarsStore}=await server.ssrLoadModule('/src/store/marsStore.ts');
   for (const requested of ['complete', 'abort']) {
     useGameStore.getState().reset();
@@ -78,7 +87,7 @@ try {
     useGameStore.getState().startSurfaceMission();
     useMarsStore.getState().begin();
     if (requested === 'abort') useMarsStore.getState().togglePause();
-    useGameStore.getState().endMission(requested, 80);
+    if(requested==='complete'){while(useGameStore.getState().campaign.mode!=='finished'){let c=useGameStore.getState().campaign;if(c.events.some(e=>e.id==='E1'&&!e.resolved))c=resolveRoute(c,'reroute');useGameStore.getState().setCampaign(endSol(c));}}else useGameStore.getState().endMission(requested,80);
     assert.equal(useGameStore.getState().missionPhase, 'report', `${requested} opens report`);
     assert.equal(useMarsStore.getState().phase, 'complete', `${requested} stops surface controls`);
     useGameStore.getState().reset();
@@ -95,5 +104,5 @@ try {
   useGameStore.getState().selectCrew('houssam');
   useGameStore.getState().reset();
   assert.equal(useGameStore.getState().selectedCrewId, 'kavi', 'new campaign resets selected crew');
-  console.log('PASS 60 engineering/campaign checks: NASA equations, constraints, assumptions, outcomes, recovery, rewards and persistence');
+  console.log('PASS engineering/campaign regression checks: NASA equations, constraints, assumptions, outcomes, recovery, rewards and persistence');
 } finally { await server.close(); }

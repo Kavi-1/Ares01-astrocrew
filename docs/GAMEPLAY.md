@@ -1,6 +1,6 @@
 # ARES-01 Gameplay and Mission Logic (Workstream 3)
 
-The source of truth for game rules. Rover data and equations ("Milestone 4"): [NASA_ENGINEERING.md](NASA_ENGINEERING.md). Look, assets and audio: [VISUALS.md](VISUALS.md). Setup and controls: [README.md](../README.md).
+The source of truth for game rules. Rover data and equations ("Milestone 4"): [NASA_ENGINEERING.md](NASA_ENGINEERING.md). Look, assets and audio: [VISUALS.md](VISUALS.md). What is built: [STATUS.md](STATUS.md).
 
 ## 1. Locked Design Rules
 

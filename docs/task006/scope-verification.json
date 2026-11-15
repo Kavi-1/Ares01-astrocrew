@@ -1,0 +1,35 @@
+{
+  "initial": {
+    "checked": 101,
+    "unchanged": 99,
+    "changed": [
+      {
+        "path": "src/game/MarsGame.tsx",
+        "before": "64d230d796425d7a0d1531ded47f927c3d0667a6c793e5235d9692f1f93b8d3b",
+        "after": "6bfbc15345f1252bcd7feed823ed54b17d84dcb2f7e5034f4ba0b97e4df4cb08"
+      },
+      {
+        "path": "src/game/MissionReport.tsx",
+        "before": "9f87ffdc449975e5a3bd2c48c874344092d1ae3f800ae9114e95d4553f5152b1",
+        "after": "6522eae4aa74bd0e075d1a378de9cc97f76bc1336bdc276877a25eca81c1c87a"
+      }
+    ]
+  },
+  "phaseA": {
+    "checked": 107,
+    "unchanged": 105,
+    "changed": [
+      {
+        "path": "src/game/MarsGame.tsx",
+        "before": "64d230d796425d7a0d1531ded47f927c3d0667a6c793e5235d9692f1f93b8d3b",
+        "after": "6bfbc15345f1252bcd7feed823ed54b17d84dcb2f7e5034f4ba0b97e4df4cb08"
+      },
+      {
+        "path": "src/game/MissionReport.tsx",
+        "before": "9f87ffdc449975e5a3bd2c48c874344092d1ae3f800ae9114e95d4553f5152b1",
+        "after": "6522eae4aa74bd0e075d1a378de9cc97f76bc1336bdc276877a25eca81c1c87a"
+      }
+    ]
+  },
+  "frozenProductionHarnessSha256": "e0900632d5ef57b001b2a87019829198710b8f4dc7d337f85da2e360b6c1daf9"
+}

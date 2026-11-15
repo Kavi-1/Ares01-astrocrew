@@ -1,3 +1,6 @@
+import { ScenarioSetup, LaunchSetup } from '../../game/MissionPlanning';
+import { launchBlocks, objectiveCapabilities, missionChecks } from '../../engine/campaign';
+import { getFailedCheckPreview } from '../../engine/tutorial';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Footprints, X } from 'lucide-react';
 import { CREW, getCrew, type CrewId, type CrewMember } from '../../data/crew';
@@ -12,6 +15,8 @@ import {
 import CrewRoom from './CrewRoom';
 import CrewPortrait from './CrewPortrait';
 import MissionProgress from '../components/MissionProgress';
+import FieldNotes from '../tutorial/FieldNotes';
+import '../tutorial/preparation-tutorial.css';
 import './prep.css';
 
 const RESPONSIBILITIES: Record<CrewId,string> = {
@@ -29,6 +34,9 @@ const STEPS: Record<PreparationStage,string> = { entry:'Choose a role', briefing
 type Results = ReturnType<typeof calculateEngineering>;
 
 export default function PreparationHub({ onHome }: {onHome:()=>void}) {
+  const launchFailures=useGameStore(s=>s.launchFailures);
+  const pace=useGameStore(s=>s.paceMode);
+  const missionOptions=useGameStore(s=>s.missionOptions),launchAttempt=useGameStore(s=>s.launchAttempt);
   const selected=useGameStore(s=>s.selectedCrewId), select=useGameStore(s=>s.selectCrew);
   const prep=useGameStore(s=>s.preparation), setPrep=useGameStore(s=>s.setPreparation);
   const config=useGameStore(s=>s.roverConfig), setConfig=useGameStore(s=>s.setRoverConfig);
@@ -38,11 +46,13 @@ export default function PreparationHub({ onHome }: {onHome:()=>void}) {
   const [priority,setPriority]=useState<ProposalPriority>('safety');
   const [draft,setDraft]=useState<RoverConfig>(config);
   const [message,setMessage]=useState('');
+  const [redPreviewOpen,setRedPreviewOpen]=useState(false);
+  useEffect(()=>{const dismiss=()=>setRedPreviewOpen(false);window.addEventListener('ares:tutorial-dismiss',dismiss);return()=>window.removeEventListener('ares:tutorial-dismiss',dismiss);},[]);
   // Confirms that a decision was recorded; it survives the plan refresh that clears `message`.
   const [receipt,setReceipt]=useState<{station:StationId;text:string}|null>(null);
   const station=prep.activeStation, entry=prep.stage==='entry';
   const fingerprint=configFingerprint(config);
-  useEffect(()=>{setDraft(config);setMessage('');},[fingerprint,station]); // Reset uncommitted edits when a different plan/station is opened.
+  useEffect(()=>{setDraft(config);setMessage('');setRedPreviewOpen(false);},[fingerprint,station]); // Reset uncommitted edits when a different plan/station is opened.
   const result=useMemo(()=>calculateEngineering(config),[config]);
   const draftResult=useMemo(()=>calculateEngineering(draft),[draft]);
   const proposal=useMemo(()=>isDecision(station)?proposeConfiguration(config,station,priority):null,[config,station,priority]);
@@ -85,7 +95,9 @@ export default function PreparationHub({ onHome }: {onHome:()=>void}) {
   const toggle=(id:InstrumentId)=>{
     setInstrument(id);
     const instruments=draft.instruments.includes(id)?draft.instruments.filter(i=>i!==id):[...draft.instruments,id];
-    setDraft({...draft,instruments,moxieRun:instruments.includes('moxie')&&draft.moxieRun});
+    const next={...draft,instruments,moxieRun:instruments.includes('moxie')&&draft.moxieRun};
+    if(!draft.instruments.includes(id))useGameStore.getState().recordTutorialInstrumentChange(draft,next,id);
+    setDraft(next);
   };
   const primary=()=>{
     if(prep.stage==='entry'){setFocus('lautaro');go('briefing','briefing');return;}
@@ -101,7 +113,7 @@ export default function PreparationHub({ onHome }: {onHome:()=>void}) {
   useEffect(()=>{
     if(!entry)return;
     const key=(e:KeyboardEvent)=>{
-      if((e.target as HTMLElement)?.closest('input,textarea,select,[contenteditable=true]'))return;
+      if((e.target as HTMLElement)?.closest('input,textarea,select,[contenteditable=true],[data-tutorial-panel]'))return;
       if(e.key==='ArrowLeft'){e.preventDefault();stepSeat(-1);}
       if(e.key==='ArrowRight'){e.preventDefault();stepSeat(1);}
     };
@@ -112,8 +124,10 @@ export default function PreparationHub({ onHome }: {onHome:()=>void}) {
   const decisionStatus=(id:StationId)=>isDecision(id)&&prep.decisions[id]?(prep.decisions[id]?.fingerprint===fingerprint?(prep.decisions[id]?.mode==='takeover'?'YOUR CONTROL':'REVIEWED'):'PLAN CHANGED'):'';
   const seat=getCrew(selected), seatStation=CREW_STATION[selected];
   const inspected=INSTRUMENTS.find(i=>i.id===instrument);
+  const redPreview=redPreviewOpen?getFailedCheckPreview(config,missionOptions):null;
+  const showRedPreview=()=>{setRedPreviewOpen(true);useGameStore.getState().markTutorialStepSeen('C5');};
 
-  return <main className={'mission-room-shell prep '+(station?'has-station':'')} data-stage={prep.stage}>
+  return <main className={'mission-room-shell prep '+(station?'has-station':'')} data-stage={prep.stage} data-pace={pace}>
     <CrewRoom focus={focus} selected={selected} speaking={entry||!!station} navigate={navigate}
       mode={entry?'seat':'hub'} shift={entry?-1.15:1.25}
       onClose={close} onSelect={id=>entry?takeSeat(id):open(CREW_STATION[id],id)}
@@ -126,7 +140,7 @@ export default function PreparationHub({ onHome }: {onHome:()=>void}) {
         <h1>{TITLES[prep.stage]}</h1>
         <p className="prep-sub">{entry?'Six specialists, one rover. Pick the responsibilities you want to own.':seat.name+' · '+seat.role}</p>
       </div>
-      <MissionProgress phase={entry||prep.stage==='briefing'?'briefing':'engineering'}/>
+      <MissionProgress phase={entry||prep.stage==='briefing'?'briefing':'engineering'}/><span data-tutorial-tools/>
     </header>
 
     {entry?<section className="seat-select" aria-label="Choose your crew member">
@@ -134,14 +148,14 @@ export default function PreparationHub({ onHome }: {onHome:()=>void}) {
         <p className="ax-label ax-label--amber">SEAT {String(CREW.findIndex(c=>c.id===selected)+1).padStart(2,'0')} <span className="ax-slash">//</span> {String(CREW.length).padStart(2,'0')}</p>
         <h2>{seat.name}</h2>
         <p className="seat-role">{seat.role}</p>
-        <blockquote>{seat.introduction}</blockquote>
+        <blockquote>{pace==='explore'?seat.introduction:seat.focus}</blockquote>
         <dl>
           <div><dt>Responsibility</dt><dd>{RESPONSIBILITIES[selected]}</dd></div>
           <div><dt>Your station</dt><dd>{STATION_LABELS[seatStation]}<small>{isDecision(seatStation)?'You set this decision directly.':'Advisory seat. Every engineering station brings you a proposal.'}</small></dd></div>
           <div><dt>Teammates</dt><dd>Accept a proposal, ask for a revision, or take over.<small>Your role determines which controls you own. You can always take over a teammate’s decision.</small></dd></div>
         </dl>
       </div>
-      <div className="seat-rail" role="group" aria-label="Crew seats">
+      <div className="seat-rail" data-coach="seats" role="group" aria-label="Crew seats">
         <button className="seat-step" aria-label="Previous crew member" onClick={()=>stepSeat(-1)}><ChevronLeft size={18} aria-hidden="true"/></button>
         {CREW.map(c=><button className="seat-tab" key={c.id} aria-pressed={selected===c.id} onClick={()=>takeSeat(c.id)}><CrewPortrait member={c} decorative/><span><b>{c.name}</b><small>{c.role}</small></span></button>)}
         <button className="seat-step" aria-label="Next crew member" onClick={()=>stepSeat(1)}><ChevronRight size={18} aria-hidden="true"/></button>
@@ -150,45 +164,43 @@ export default function PreparationHub({ onHome }: {onHome:()=>void}) {
     </section>:<>
       <Vitals result={result} preview={preview} config={config}/>
       {!station&&<p className="room-explore-note">Walk to a teammate and press <kbd className="ax-key">E</kbd>, click a rover marker, or open a station below.<small>Briefing → Workshop → Readiness review · No timed decisions</small></p>}
-      {station&&<section className="hub-panel" aria-label={STATION_LABELS[station]}>
+      {station&&<section className="hub-panel" data-station={station} aria-label={STATION_LABELS[station]}>
         <div className="hub-panel-heading">
           <div><span className="ax-label ax-label--amber">STATION <span className="ax-slash">//</span> {String(STATIONS.indexOf(station)+1).padStart(2,'0')}</span><h2>{STATION_LABELS[station]}</h2></div>
           <button className="console-close" aria-label="Close station" onClick={close}><X size={18} aria-hidden="true"/></button>
         </div>
         <div className="console-body">
+        <button className="station-help-button" type="button" onClick={()=>window.dispatchEvent(new CustomEvent('ares:station-help',{detail:station}))}>Station help</button>
+        {launchFailures.length>0&&<p className="hub-warning" role="alert">{launchFailures.at(-1)} Fix the mass check before the locked retry.</p>}
         {receipt?.station===station&&!changed&&<p className="hub-good console-receipt" role="status">{receipt.text}</p>}
         {station==='briefing'&&<>
-          <Speech member={getCrew('lautaro')} second={getCrew('rihabe')}><p>Perseverance will study three formations in Jezero Crater. Stop at each cyan marker to scan, then transmit the discoveries before ending the mission.</p></Speech>
-          <ol className="console-targets">{SCIENCE_TARGETS.map((t,index)=>{
-            const supported=supportedTargets(config).some(s=>s.id===t.id);
-            return <li className="hub-target" key={t.id}><span className="console-index" aria-hidden="true">{String(index+1).padStart(2,'0')}</span><div><b>{t.name}</b><p>{t.description}</p><small>{t.requiredInstruments.map(id=>INSTRUMENTS.find(i=>i.id===id)?.name).join(' / ')}</small></div><em className={'ax-chip '+(supported?'ax-chip--cyan':'ax-chip--amber')}>{supported?'SUPPORTED':'PAYLOAD REQUIRED'}</em></li>;
-          })}</ol>
-          <p className="hub-note">All three current targets share the same instrument compatibility. These observations provide geological evidence, not proof of life. New sites and weighted objectives are not modeled yet.</p>
+          <div data-coach="objectives"><ScenarioSetup /></div>
         </>}
         {isDecision(station)&&<>
-          <Speech member={member}>
+          <div data-coach={!direct&&proposal?"team-proposal":undefined}><Speech member={member}>
             <p className="hub-ownership">{direct?selected===member.id?'You own this decision.':'You have taken over this decision.':member.name+' proposes. You decide.'}</p>
+            {pace==='explore'&&<p className="crew-full-dialogue">{member.introduction}</p>}
             {!direct&&proposal&&<p>{proposal.reason}</p>}
             {direct&&station==='payload'&&<p>Click a rover marker to inspect it. Toggle hardware to preview the change before applying it.</p>}
-          </Speech>
+          </Speech></div>
           {!direct&&proposal&&<>
             <label className="hub-field">Ask to revise<select aria-label="Proposal priority" value={priority} onChange={e=>setPriority(e.target.value as ProposalPriority)}><option value="safety">More safety margin</option><option value="science">More science</option><option value="mass">Less mass</option></select></label>
             {proposal.config&&<><PlanSummary config={proposal.config}/><PlanDelta before={config} after={proposal.config}/></>}
             <div className="hub-button-row"><button className="ax-btn ax-btn--primary" onClick={accept} disabled={!proposal.config}>Accept proposal</button><button className="ax-btn" onClick={()=>record(station,'takeover',config)}>Take over</button></div>
           </>}
           {direct&&<>
-            {station==='payload'&&<div className="hub-instruments">{INSTRUMENTS.map((i,index)=><div key={i.id} className={draft.instruments.includes(i.id)?'is-installed':''}>
+            {station==='payload'&&<><InstrumentMargins before={config} after={draft} options={missionOptions}/><div className="hub-instruments" data-coach="instruments">{INSTRUMENTS.map((i,index)=><div key={i.id} className={draft.instruments.includes(i.id)?'is-installed':''}>
               <span className="console-index" aria-hidden="true">{index+1}</span>
               <button className={instrument===i.id?'active':''} onClick={()=>setInstrument(i.id)} aria-label={'Inspect '+i.name}>{i.name}</button>
               <span className="console-meta">{i.massKg} kg · {i.powerW} W</span>
               <label><input type="checkbox" checked={draft.instruments.includes(i.id)} onChange={()=>toggle(i.id)}/><span>{draft.instruments.includes(i.id)?'Installed':'Add'} {i.name}</span></label>
-            </div>)}</div>}
+            </div>)}</div></>}
             {station==='power'&&<>
               <label className="hub-field">Battery reserve<select aria-label="Battery reserve" value={draft.reserve} onChange={e=>setDraft({...draft,reserve:Number(e.target.value) as RoverConfig['reserve']})}><option value={.2}>20%</option><option value={.3}>30%</option><option value={.4}>40%</option></select></label>
               <label className="hub-field">Science cadence<select aria-label="Science cadence" value={draft.scienceCadence} onChange={e=>setDraft({...draft,scienceCadence:Number(e.target.value) as RoverConfig['scienceCadence']})}><option value={1}>Standard</option><option value={4}>Extended · 4× activity</option></select></label>
               <label className="hub-check"><input type="checkbox" disabled={!draft.instruments.includes('moxie')} checked={draft.moxieRun} onChange={e=>setDraft({...draft,moxieRun:e.target.checked})}/> Schedule MOXIE · 300 Wh{!draft.instruments.includes('moxie')?' (install MOXIE first)':''}</label>
             </>}
-            {station==='communications'&&<label className="hub-field">Downlink strategy<select aria-label="Downlink strategy" value={draft.downlink} onChange={e=>setDraft({...draft,downlink:e.target.value as RoverConfig['downlink']})}><option value="UHF">UHF relay · assumed 8-minute pass</option><option value="X-band">Direct X-band · optimistic continuous link</option></select></label>}
+            {station==='communications'&&<label className="hub-field">Downlink strategy<select aria-label="Downlink strategy" value={draft.downlink} onChange={e=>setDraft({...draft,downlink:e.target.value as RoverConfig['downlink']})}><option value="UHF">UHF relay · assumed 8-minute pass</option><option value="X-band">Direct X-band · assumed one-hour contact</option></select></label>}
             <PlanDelta before={config} after={draft}/>
             {draftResult.issues.map(issue=><p className="hub-error" role="alert" key={issue}>{issue}</p>)}
             {draftResult.warnings.map(warning=><p className="hub-warning" key={warning}>{warning}</p>)}
@@ -197,6 +209,7 @@ export default function PreparationHub({ onHome }: {onHome:()=>void}) {
           {station==='payload'&&inspected&&<article className="hub-target console-inspect"><div><b>{inspected.name}</b><p>{inspected.detail}</p><small>{instrument==='moxie'?'INTERNAL INSTRUMENT · inspection marker only':instrument==='meda'?'SHARED MAST ASSEMBLY · inspection marker only':'EXTERIOR HARDWARE · selected component highlighted'}</small></div><em className="ax-chip">{inspected.mount.toUpperCase()} MOUNT</em></article>}
         </>}
         {station==='review'&&<>
+          <div data-coach="readiness"><LaunchSetup /></div>
           <Speech member={getCrew('kavi')}><p>Review the mission as a team. Changes at another station can invalidate earlier decisions; the numbers below always reflect the current plan.</p></Speech>
           <p className={'console-verdict '+(result.issues.length?'hub-error':'hub-good')}>{result.issues.length?'BLOCKED · fix the engineering checks':'READY · modeled hard checks pass'}</p>
           <ul className="console-ledger" aria-label="Station decisions">{(['payload','power','communications'] as const).map(id=><li key={id}><span>{STATION_LABELS[id]}</span><small>{getCrew(STATION_OWNERS[id]).name}</small><em className={'ax-chip '+(decisionStatus(id)==='PLAN CHANGED'?'ax-chip--amber':decisionStatus(id)?'ax-chip--cyan':'')}>{decisionStatus(id)||'NOT REVIEWED'}</em></li>)}</ul>
@@ -207,8 +220,10 @@ export default function PreparationHub({ onHome }: {onHome:()=>void}) {
           <p className="hub-note">Warnings describe operational limitations. Launching retains those consequences; the crew cannot waive hard checks.</p>
           <div className="hub-button-row"><button className="ax-btn" onClick={()=>go('workshop',null)}>Return to workshop</button></div>
         </>}
-        <p className="hub-note">DOC / CALC / ASSUMED · resource totals use the existing educational engineering model. Costs and alternate relay orbits are not modeled here.</p>
-        <details className="hub-basis"><summary>Engineering basis & sources</summary><p>Mass allowance: 1,025 kg (scenario assumption). MMRTG: 110 W at beginning of mission. Peak electrical limit: 900 W. Energy uses power × duration, a 75 W assumed baseline, and the selected activity schedule.</p><p>Usable battery assumes two 43 Ah packs, 28 V, the selected reserve and √0.90 efficiency. UHF assumes one eight-minute 2 Mbps pass; X-band assumes continuous 500 bps. Actual contact time and science data volume vary.</p>{SOURCES.map(source=><a key={source.id} href={source.url} target="_blank" rel="noreferrer">{source.label}</a>)}</details>
+        {isDecision(station)&&<div className="red-check-lesson"><button className="red-check-toggle" data-coach="red-preview-trigger" type="button" aria-expanded={redPreviewOpen} onClick={showRedPreview}>Show me a red check</button>{redPreview&&<section className="red-check-preview" data-coach="red-preview" data-tutorial-preview="red-check" aria-label="Failed-check preview"><h3>{redPreview.title}</h3><p>{redPreview.explanation}</p><p className="preview-failed"><strong>{redPreview.failed.label}: {redPreview.failed.value.toFixed(1)} / {redPreview.failed.limit} {redPreview.failed.unit}</strong><br/>{redPreview.failure}</p><p className="preview-fixed"><strong>{redPreview.fixed.label}: {redPreview.fixed.value.toFixed(1)} / {redPreview.fixed.limit} {redPreview.fixed.unit}</strong><br/>{redPreview.fix}</p><p>This preview is not a launch decision. Your current mission remains unchanged.</p><button type="button" onClick={()=>setRedPreviewOpen(false)}>Close preview</button></section>}</div>}
+        {pace==='explore'&&<FieldNotes config={config}/>}
+        <p className="hub-note">DOC / CALC / ASSUMED · resource totals use the existing educational engineering model. Site, orbit and budget checks are shown at readiness review; the sol plan charges only executed activities.</p>
+        <details className="hub-basis"><summary>Engineering basis & sources</summary><p>Mass allowance: 1,025 kg (scenario assumption). MMRTG: 110 W at beginning of mission. Peak electrical limit: 900 W. Energy uses power × duration, a 75 W assumed baseline, and the selected activity schedule.</p><p>Usable battery assumes two 43 Ah packs, 28 V, the selected reserve and √0.90 efficiency. The chosen relay supplies its documented game-plan contact quota; X-band assumes a one-hour 500 bps contact per sol. Actual contact time and science data volume vary.</p>{SOURCES.map(source=><a key={source.id} href={source.url} target="_blank" rel="noreferrer">{source.label}</a>)}</details>
         {changed&&direct&&<p className="hub-warning">Unapplied preview · closing or changing station discards these edits.</p>}
         {message&&<p className="console-message" role="status">{message}</p>}
         </div>
@@ -225,7 +240,7 @@ export default function PreparationHub({ onHome }: {onHome:()=>void}) {
           <button className="dock-walk" aria-label={'Walk to '+STATION_LABELS[id]} title={'Walk to '+STATION_LABELS[id]} disabled={locked} onClick={()=>walk(id)}><Footprints size={14} aria-hidden="true"/></button>
         </div>;
       })}</nav>}
-      <button className="ax-btn ax-btn--primary prep-primary" disabled={prep.stage==='review'&&!!result.issues.length} onClick={primary}>{prep.stage==='entry'?'Enter mission control':prep.stage==='briefing'?'Begin workshop':prep.stage==='workshop'?'Review mission':'Approve & launch'}<ArrowRight size={16} aria-hidden="true"/></button>
+      <button className="ax-btn ax-btn--primary prep-primary" disabled={prep.stage==='review'&&!!launchBlocks(missionOptions,config,launchAttempt===2).length} onClick={primary}>{prep.stage==='entry'?'Enter mission control':prep.stage==='briefing'?'Begin workshop':prep.stage==='workshop'?'Review mission':'Approve & launch'}<ArrowRight size={16} aria-hidden="true"/></button>
     </footer>
   </main>;
 }
@@ -237,19 +252,28 @@ function Speech({member,second,children}:{member:CrewMember;second?:CrewMember;c
     <div><span className="console-speaker">{member.name}{second?' & '+second.name:''} <small>// {second?'Field science':member.role}</small></span>{children}</div>
   </div>;
 }
+function InstrumentMargins({before,after,options}:{before:RoverConfig;after:RoverConfig;options:Parameters<typeof missionChecks>[0]}) {
+  const a=calculateEngineering(before),b=calculateEngineering(after),costA=missionChecks(options,before).budget.totalCostUsdMillion,costB=missionChecks(options,after).budget.totalCostUsdMillion;
+  const rows=[['Mass',a.massKg,b.massKg,'kg'],['Peak',a.peakW,b.peakW,'W'],['Data',a.dataMbit,b.dataMbit,'Mbit'],['Budget',costA,costB,'$M']] as const;
+  return <div className="instrument-live-margins" data-coach="margins" aria-label="Instrument preview margins"><small>APPLIED → PREVIEW</small><dl>{rows.map(([label,from,to,unit])=><div key={label}><dt>{label}</dt><dd>{from.toFixed(1)} → <strong>{to.toFixed(1)}</strong> {unit}</dd></div>)}</dl></div>;
+}
 function PlanSummary({config}:{config:RoverConfig}){
   return <div className="hub-plan"><b>{config.instruments.length} instruments</b><p>{config.instruments.map(id=>INSTRUMENTS.find(i=>i.id===id)?.name).join(', ')||'No instruments'}</p><small>{config.reserve*100}% reserve · {config.scienceCadence===1?'Standard':'Extended'} science · {config.downlink} · MOXIE {config.moxieRun?'scheduled':'off'}</small></div>;
 }
 function PlanDelta({before,after}:{before:RoverConfig;after:RoverConfig}){
   const a=calculateEngineering(before),b=calculateEngineering(after);
-  const values:[string,number,number,string][]=[['Mass',a.massKg,b.massKg,'kg'],['Energy margin',a.netWh,b.netWh,'Wh/sol'],['Usable battery',a.eDeliveredWh,b.eDeliveredWh,'Wh'],['Science data',a.dataMbit,b.dataMbit,'Mbit/sol'],['Link capacity',a.linkMbit,b.linkMbit,'Mbit/sol'],['Supported targets',supportedTargets(before).length,supportedTargets(after).length,'/ 3']];
+  const options=useGameStore(s=>s.missionOptions);
+  const budgetBefore=missionChecks(options,before).budget,budgetAfter=missionChecks(options,after).budget;
+  const values:[string,number,number,string][]=[['Budget',budgetBefore.totalCostUsdMillion,budgetAfter.totalCostUsdMillion,'USD M'],['Peak power',a.peakW,b.peakW,'W'],['Mass',a.massKg,b.massKg,'kg'],['Energy margin',a.netWh,b.netWh,'Wh/sol'],['Usable battery',a.eDeliveredWh,b.eDeliveredWh,'Wh'],['Science data',a.dataMbit,b.dataMbit,'Mbit/sol'],['Link capacity',a.linkMbit,b.linkMbit,'Mbit/sol'],['Supported targets',supportedTargets(before).length,supportedTargets(after).length,'/ 3']];
   return <dl className="hub-deltas">{values.map(([name,from,to,unit])=><div key={name} className={Math.abs(to-from)>.00001?'is-changed':''}><dt>{name}</dt><dd>{to.toFixed(name==='Supported targets'?0:1)} <small>{unit}</small>{Math.abs(to-from)>.00001&&<span>{to>from?'+':''}{(to-from).toFixed(1)} change</span>}</dd></div>)}</dl>;
 }
 
 /** Always-visible mission margins, read straight from the engineering model. */
 function Vitals({result,preview,config}:{result:Results;preview:RoverConfig|null;config:RoverConfig}){
   const next=useMemo(()=>preview?calculateEngineering(preview):null,[preview]);
-  const targets=supportedTargets(config).length, nextTargets=preview?supportedTargets(preview).length:null;
+  const options=useGameStore(s=>s.missionOptions);
+  const budget=missionChecks(options,config).budget,nextBudget=preview?missionChecks(options,preview).budget:null;
+  const targets=Object.values(objectiveCapabilities(config)).filter(Boolean).length, nextTargets=preview?Object.values(objectiveCapabilities(preview)).filter(Boolean).length:null;
   const fmt=(value:number,digits=0)=>value.toLocaleString('en-US',{maximumFractionDigits:digits,minimumFractionDigits:digits});
   const rows:{label:string;value:string;unit:string;ratio:number;note:string;next?:string|null}[]=[
     {label:'Mass',value:fmt(result.massKg,1),unit:`/ ${fmt(FIXED.allowanceKg)} kg`,ratio:result.massKg/FIXED.allowanceKg,note:`${fmt(result.massMarginKg,1)} kg margin`,next:next&&Math.abs(next.massKg-result.massKg)>.001?fmt(next.massKg,1):null},
@@ -257,13 +281,14 @@ function Vitals({result,preview,config}:{result:Results;preview:RoverConfig|null
     {label:'Energy per sol',value:(result.netWh>=0?'+':'')+fmt(result.netWh),unit:'Wh margin',ratio:(result.baseWh+result.activityWh)/Math.max(1,result.genWh),note:`${fmt(result.baseWh+result.activityWh)} of ${fmt(result.genWh)} Wh used`,next:next&&Math.abs(next.netWh-result.netWh)>.5?(next.netWh>=0?'+':'')+fmt(next.netWh):null},
     {label:'Usable battery',value:fmt(result.eDeliveredWh),unit:'Wh',ratio:1-result.eDeliveredWh/Math.max(1,result.eNominalWh),note:`${fmt(config.reserve*100)}% held in reserve`,next:next&&Math.abs(next.eDeliveredWh-result.eDeliveredWh)>.5?fmt(next.eDeliveredWh):null},
     {label:'Downlink',value:fmt(result.dataMbit,1),unit:`/ ${fmt(result.linkMbit,1)} Mbit`,ratio:result.dataMbit/Math.max(1,result.linkMbit),note:`${config.downlink} · per sol`,next:next&&(Math.abs(next.dataMbit-result.dataMbit)>.05||Math.abs(next.linkMbit-result.linkMbit)>.05)?`${fmt(next.dataMbit,1)} / ${fmt(next.linkMbit,1)}`:null},
+    {label:'Budget',value:fmt(budget.totalCostUsdMillion),unit:`/ ${fmt(budget.budget.amountUsdMillion)} USD M`,ratio:budget.totalCostUsdMillion/budget.budget.amountUsdMillion,note:`${fmt(budget.remainingBudgetUsdMillion)} USD M remaining`,next:nextBudget&&nextBudget.totalCostUsdMillion!==budget.totalCostUsdMillion?fmt(nextBudget.totalCostUsdMillion):null},
     {label:'Science targets',value:String(targets),unit:`/ ${SCIENCE_TARGETS.length} supported`,ratio:targets/SCIENCE_TARGETS.length,note:`${config.instruments.length} of ${INSTRUMENTS.length} instruments`,next:nextTargets!==null&&nextTargets!==targets?String(nextTargets):null},
   ];
-  return <aside className="prep-vitals" aria-label="Mission margins">
+  return <aside className="prep-vitals" data-coach="margins" aria-label="Mission margins">
     <p className="ax-label">MISSION MARGINS <span className="ax-slash">//</span> {preview?<span className="vitals-mode is-preview">PREVIEW</span>:<span className="vitals-mode">CURRENT PLAN</span>}</p>
-    <dl>{rows.map((row,index)=>{
-      // The last two gauges fill as capability grows; the others fill as a limit is consumed.
-      const consumed=index<5&&index!==3, state=consumed?(row.ratio>1?'is-over':row.ratio>.9?'is-tight':''):'';
+    <dl>{rows.map(row=>{
+      // Capacity gauges and consumed-limit gauges use their existing engineering meanings.
+      const consumed=!['Usable battery','Science targets'].includes(row.label), state=consumed?(row.ratio>1?'is-over':row.ratio>.9?'is-tight':''):'';
       return <div key={row.label} className={state}>
         <dt>{row.label}</dt>
         <dd><b>{row.value}</b> <small>{row.unit}</small>{row.next&&<em>→ {row.next}</em>}</dd>

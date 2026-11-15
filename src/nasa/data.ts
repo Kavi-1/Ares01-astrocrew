@@ -19,6 +19,6 @@ export const INSTRUMENTS: Instrument[] = [
   {id:'rimfax',name:'RIMFAX',massKg:3,powerW:10,hours:.661,mount:'rear',detail:'Ground penetrating radar · 3 kg upper bound; 10 W in 5–10 W published range'},
 ];
 export const DEFAULT_INSTRUMENTS: InstrumentId[] = INSTRUMENTS.map(i=>i.id);
-export const FIXED = {platform:'Mars 2020 · Perseverance',massKg:1025,rtgKg:45,batteryKg:26.5,batteryAh:43,packs:2,voltageV:28,rtgW:110,rtgEodlW:72,rtgEodlYear:17,solHours:88775/3600,wheelDiameterM:.525,wheels:6,obstacleM:.4,slopeLimitDeg:24,peakW:900,allowanceKg:1025,baseW:75,reserve:.2,roundTripEfficiency:.9,uhfBps:2_000_000,passS:480,xbandBps:500} as const;
+export const FIXED = {platform:'Mars 2020 · Perseverance',massKg:1025,rtgKg:45,batteryKg:26.5,batteryAh:43,packs:2,voltageV:28,rtgW:110,rtgEodlW:72,rtgEodlYear:17,solHours:88775/3600,wheelDiameterM:.525,driveSpeedMps:.042,wheels:6,obstacleM:.4,slopeLimitDeg:24,peakW:900,allowanceKg:1025,baseW:75,reserve:.2,roundTripEfficiency:.9,uhfBps:2_000_000,passS:480,xbandBps:500} as const;
 export type RoverConfig = { instruments: InstrumentId[]; reserve: .2|.3|.4; baselineW: number; downlink:'UHF'|'X-band'; moxieRun:boolean; scienceCadence:1|4 };
 export const DEFAULT_CONFIG: RoverConfig = {instruments:DEFAULT_INSTRUMENTS,reserve:.2,baselineW:75,downlink:'UHF',moxieRun:false,scienceCadence:1};

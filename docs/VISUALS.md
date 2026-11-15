@@ -1,6 +1,6 @@
 # ARES-01 Visuals, Assets and Audio
 
-How the game looks and sounds, and how 3D assets get into it. Gameplay rules live in [GAMEPLAY.md](GAMEPLAY.md); rover numbers and sources in [NASA_ENGINEERING.md](NASA_ENGINEERING.md); setup and controls in [README.md](../README.md).
+How the game looks and sounds, and how 3D assets get into it. Gameplay rules live in [GAMEPLAY.md](GAMEPLAY.md); rover numbers and sources in [NASA_ENGINEERING.md](NASA_ENGINEERING.md); what is built in [STATUS.md](STATUS.md).
 
 *Replaces the Mars Operations Visual Specification, the Asset Generation Plan and the visual sections of the old design guide (in git history at commit `c20aa4d`). Where those disagreed, the value used by the current code wins, and the choice is noted.*
 
