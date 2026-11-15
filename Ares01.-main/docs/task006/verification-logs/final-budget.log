@@ -1,7 +1,0 @@
-
-> ares-01@0.1.0 test:mission-budget
-> node scripts/test-mission-budget.mjs
-
-2:37:30 AM [vite] (client) Re-optimizing dependencies because vite config has changed
-PASS fixtures A–E: 2700 within budget; 2780/2840 over budget; removal saves 105; fixed costs 2155
-PASS 1239 mission-budget cases: 5 fixtures, 1152 exhaustive combinations, 78 boundary/validation cases, 4 determinism/immutability/provenance cases
