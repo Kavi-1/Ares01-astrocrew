@@ -1,86 +1,163 @@
-# ARES-01
+# ARES-01 — Build the Mission. Bring the Science Home.
 
-A browser game for the 2026 NASA Space Apps Challenge "Space Mission Design Game". You lead a six-person team planning a Perseverance-class Mars rover mission: pick the science goal, choose instruments, rocket and relay orbit within a real budget, launch, then drive the rover on Mars and send the science home. Every choice trades off mass, power, data, budget and time, and the report explains why the mission succeeded or failed.
+**Team ASTROCREW · 2026 NASA Space Apps Challenge · Space Mission Design Game**
 
-Built with React, TypeScript, Three.js, Zustand and Vite. Runs locally, with no account or backend.
+ARES-01 is a browser-based Mars mission design game featuring a Perseverance-inspired rover. Lead a six-person virtual crew, make engineering trade-offs, launch, explore Mars and return scientific observations. **Your decisions shape the mission's outcome.**
 
-## Run
+> **Independent educational project by ASTROCREW.** Not an official NASA product or endorsed by NASA or JPL.
 
-Requirements: Node.js 20.19+ and pnpm.
+## The challenge
 
-Run commands from the repository root:
+Space mission design balances science against launch capacity, mass, energy, communications, time, cost and risk. ARES-01 makes these trade-offs tangible: a more capable instrument can expand scientific access while increasing resource requirements.
 
-```sh
+This project addresses the **[2026 Space Mission Design Game challenge](https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/)** through an interactive, educational mission simulation.
+
+## Play and demo
+
+- **[Play ARES-01](https://ares01-astrocrew.vercel.app/)** — public browser game; no account required.
+- **[View the demo](https://docs.google.com/presentation/d/1zIt9-3P3KQw-xXMPhGbLWeiW11gltPOr/edit?usp=sharing&ouid=103721580173308071919&rtpof=true&sd=true)** — ASTROCREW's presentation.
+- **[Source code](https://github.com/Kavi-1/Ares01-astrocrew)** — this repository.
+
+The demo covers gameplay, engineering, teamwork, NASA references and technology.
+
+## Meet Team ASTROCREW
+
+ARES-01 is an **original project conceived, designed and directed by ASTROCREW**. The six in-game crew characters represent the team members:
+
+| Team member | In-game crew representation |
+| --- | --- |
+| **Rihabe Ouabine** | Rihabe |
+| **Kavi Lu** | Kavi |
+| **Choubik Houssam** | Houssam |
+| **Muhammad Huzaifa Saqib** | Huzaifa |
+| **Aaryan Shlok** | Aaryan |
+| **Lautaro Leguizamon** | Lautaro |
+
+## What players do
+
+1. **Choose a role.** Join five rule-based teammates whose specialties shape their proposals.
+2. **Define the science.** Choose Jezero, Northeast Syrtis or Columbia Hills and rank geology, potential-biosignature context and environmental objectives.
+3. **Design the mission.** Choose from seven Perseverance instruments and balance payload, power reserve, communications, launch vehicle, relay orbit, launch window and budget.
+4. **Review engineering margins.** Check calculations, revise plans and make risk decisions where allowed.
+5. **Launch and explore.** Reach Mars, plan each sol, drive, investigate targets, operate instruments and choose observations to transmit.
+6. **Read the results.** Review science returned, resource trade-offs and decisions in the mission dossier; replay with different choices.
+
+The game defines a **30-sol mission** and a **20-sol variant** for a budget override. Quieter sols can advance automatically. **Guided / Skip** tutorials and **Quick / Explore** pacing support different play styles.
+
+### A mission shaped by engineering
+
+ARES-01 models a Perseverance-class rover powered by an MMRTG. Players balance mass, peak load, battery reserve, science-data volume and relay capacity. The selected reserve (20%, 30% or 40%) is a **protected charge threshold**. Charge follows modeled generation and consumption, and the game distinguishes science **collected** from science **returned to Earth**.
+
+The **$2.7 billion educational budget**, component prices and mission options include game assumptions. See [gameplay specifications](docs/GAMEPLAY.md) for the cost breakdown.
+
+## Controls
+
+| Context | Input | Action |
+| --- | --- | --- |
+| Mars surface | `W` / `A` / `S` / `D` or arrow keys | Drive and steer when the active sol plan permits movement |
+| Mars surface | `Space` | Brake |
+| Mars surface | `Shift` | Boost where permitted |
+| Mars surface | `E` or **Start Scan** | Examine an eligible target while stopped in range |
+| Mars surface | Drag / scroll | Orbit / zoom the camera |
+| Mission control | `WASD` / arrows or click floor | Navigate the crew/workshop room |
+| Mission control | `E` | Interact with a nearby crew member |
+| Mission control | Rover inspection markers | Focus on instruments |
+
+**If the rover does not move:** select **Commit sol plan** when in **Planning** mode. The driving status explains restrictions from mission state, drive allocation, safe mode, damage or terrain.
+
+## Technology
+
+- **React + TypeScript + Vite** — browser application
+- **Three.js** — 3D rover, crew, mission rooms and Martian terrain
+- **Zustand** — client-side state and persistence
+- **Playwright + Node test scripts** — UI, model, mission and engineering checks
+- **CSS** — responsive mission-control interface
+
+Gameplay runs entirely in the browser.
+
+## Run locally
+
+**Node.js 24 recommended.** Run from the repository root:
+
+```bash
 pnpm install --frozen-lockfile
-pnpm dev                # start the game at the URL Vite prints
-pnpm build              # production build
-pnpm preview            # serve the production build locally
+pnpm dev
 ```
 
-For npm, use `npm ci` and the equivalent `npm run <script>` commands. Both existing lockfiles are retained.
+Open the URL printed by Vite. For a production build:
 
-Add `?visual=v2` to the URL for the improved Mars visuals, and `?quality=low` or `?quality=high` to change graphics quality.
-
-## Checks
-
-```sh
-pnpm test:engineering     # NASA engineering and save-game checks
-pnpm test:preparation     # crew proposals, navigation and preparation saves
-pnpm test:mission-budget  # mission budget fixtures and boundary cases
-pnpm test:model-loading   # model download, retry, cache and disposal checks
-pnpm exec playwright install chromium
-pnpm test:models          # browser, presentation and mission-flow tests
+```bash
+pnpm build
+pnpm preview
 ```
 
-Playwright starts its own development server. Set `CHROMIUM_PATH` to use an existing Chromium executable, or `ARES_TEST_PORT` to change the default test port (5176).
+For npm, use `npm ci`, `npm run dev`, `npm run build` and `npm run preview`.
 
-## Controls (on Mars)
+## Testing
 
-| Key | Action |
+```bash
+pnpm build
+pnpm test:engineering
+pnpm test:preparation
+pnpm test:mission-budget
+pnpm test:mission-energy
+pnpm test:campaign
+pnpm test:tutorial
+pnpm test:mobility
+pnpm test:model-loading
+pnpm test:models
+```
+
+Additional browser suites: `test:campaign-ui`, `test:tutorial-ui`, `test:mobility-ui` and `test:presentation`. Install Chromium with `pnpm exec playwright install chromium`, or set `CHROMIUM_PATH` to an existing installation.
+
+## NASA data, educational resources and scientific integrity
+
+ARES-01 distinguishes three kinds of inputs:
+
+| Label | Meaning |
 | --- | --- |
-| `W` `A` `S` `D` or arrow keys | Drive and steer |
-| `Shift` / `Space` | Boost / brake |
-| `E` (or **Start Scan**) | Scan a science target when stopped in range |
-| Drag / scroll | Orbit / zoom the camera |
-| `Esc` | Pause |
+| **DOCUMENTED** | A value supported by a cited NASA/JPL source |
+| **CALCULATED** | A result derived from stated equations and inputs |
+| **ASSUMED** | An educational approximation or gameplay parameter |
 
-In mission control, walk with `W` `A` `S` `D` or the arrow keys (or click the floor), press `E` to talk to the nearest teammate, and click a numbered rover marker to inspect that instrument. On the crew-selection screen, `←` `→` compare seats and dragging turns the selected crew member.
+The game uses static NASA/JPL engineering references, compiled in [src/nasa/data.ts](src/nasa/data.ts), alongside mission-design research:
 
-## Repository layout
+- [Perseverance instruments](https://science.nasa.gov/mission/mars-2020-perseverance/science-instruments/), [power systems](https://www.jpl.nasa.gov/news/press_kits/mars_2020/landing/mission/spacecraft/power/) and [rover components](https://science.nasa.gov/mission/mars-2020-perseverance/rover-components/): instrument mass, power, data volumes, battery and rover specifications.
+- [NASA — Design and Develop Science Missions](https://www.nasa.gov/wp-content/uploads/2025/04/250323-design-and-develop-science-mission.pdf): mission lifecycle, requirements and mission segments, used in supporting documentation.
+- [NASA Goddard — Mission Design Lab](https://etd.gsfc.nasa.gov/capabilities/integrated-design-center/mission-design-lab/): trade studies and mission architecture, used in supporting documentation.
+- [NASA/JPL — Mars 2020 Perseverance rover](https://science.nasa.gov/mission/mars-2020-perseverance/): rover and mission context.
+- [NASA — Mars Perseverance Rover 3D Model](https://science.nasa.gov/resource/mars-perseverance-rover-3d-model/): reference content for the adapted rover model.
 
-```text
-src/
-  data/         Mission, crew, instrument and cost data
-  engine/       Mission rules, budgets and preparation calculations
-  game/         Game screens, Mars world and screen styles
-  models/       3D asset loading, models and crew animation
-  nasa/         NASA reference data and engineering equations
-  ops/visual/   Terrain, atmosphere, rover details and effects
-  store/        Campaign and Mars state
-  ui/           Shared components, crew interfaces and design styles
-public/         Rover and crew models, portrait images
-scripts/        Checks, asset generation, captures and profiling tools
-tests/          Playwright browser tests
-docs/           Gameplay, science, visual and attribution references
-```
+Further reading: [Engineering equations](docs/NASA_ENGINEERING.md) · [Scientific provenance](docs/SCIENTIFIC_PROVENANCE_AND_EQUATIONS.md) · [Challenge alignment](docs/SPACE_APPS_CHALLENGE_ALIGNMENT.md).
 
-The application entry point, package manifests and build/test configuration live at the repository root. Production output is generated in `dist/`.
+**Educational scope:** Terrain, scenarios, hazard factors, cost allocations and some observation schedules are game models. They are not NASA-validated flight plans. Potential biosignature context does not establish evidence of life.
 
-## Documents
+## Assets, rights and credits
 
-| Document | Contents |
-| --- | --- |
-| [docs/GAMEPLAY.md](docs/GAMEPLAY.md) | **Source of truth for game rules:** stages, decisions, margin checks, budget, relay orbits, events, crew seats, tutorial, scoring, who delivers what |
-| [docs/NASA_ENGINEERING.md](docs/NASA_ENGINEERING.md) | Real Perseverance data, equations and sources, each tagged documented, calculated or assumed |
-| [docs/VISUALS.md](docs/VISUALS.md) | UI style, rover, terrain, lighting, camera, Blender model rules, crew characters, audio |
-| [docs/SCIENTIFIC_PROVENANCE_AND_EQUATIONS.md](docs/SCIENTIFIC_PROVENANCE_AND_EQUATIONS.md) | Scientific sources, assumptions and research proposals; proposed values are not automatically implemented game rules |
-| [docs/SPACE_APPS_CHALLENGE_ALIGNMENT.md](docs/SPACE_APPS_CHALLENGE_ALIGNMENT.md) | Challenge requirements, educational references and the dated alignment review |
-| [docs/ASSET_LICENSING_AND_ATTRIBUTION.md](docs/ASSET_LICENSING_AND_ATTRIBUTION.md) | Model and font provenance, attribution and asset licensing records |
+**Team-created assets:** ASTROCREW designed the six crew-character models, original visual assets and game presentation with AI assistance.
 
-These references include design intent and dated research; they do not imply that every proposed feature is implemented. Retired development plans, status reports, audits, patch bundles and verification captures remain available in Git history.
+**NASA-origin rover:** The adapted model incorporates NASA/JPL-Caltech content matching the official [Perseverance model](https://science.nasa.gov/resource/mars-perseverance-rover-3d-model/). Its intermediate editing history remains under review.
 
-## Ground rules
+See [asset licensing and attribution](docs/ASSET_LICENSING_AND_ATTRIBUTION.md) for the inventory, third-party notices and outstanding clearance. NASA and third-party assets retain their respective usage terms.
 
-- **Real versus fiction:** every number is tagged documented, calculated or assumed. Never invent a NASA figure.
-- **MMRTG only:** the rover is Perseverance-class; no solar panels.
-- **No NASA branding:** no NASA logo, patches or NASA-attributed quotes in the game. The ARES-01 agency, crew and story are fictional.
+## Originality and AI-assisted production
+
+**The idea and engineering direction are original ASTROCREW work.** The team defined the scientific objectives, directed implementation and reviewed the results.
+
+**OpenAI Codex and ChatGPT** assisted with code, game content, 3D assets, iteration, testing, debugging, deployment and documentation. The team determined how to apply NASA/JPL scientific references.
+
+## Project documentation and current limitations
+
+- [`docs/GAMEPLAY.md`](docs/GAMEPLAY.md) — authoritative gameplay specification.
+- [`docs/NASA_ENGINEERING.md`](docs/NASA_ENGINEERING.md) — engineering models and NASA sources.
+- [`docs/ENGINEERING_DECISIONS_U1_U11.md`](docs/ENGINEERING_DECISIONS_U1_U11.md) — proposed choices and assumptions, including which require approval.
+- [`docs/OWNER_APPROVAL_ITEMS.md`](docs/OWNER_APPROVAL_ITEMS.md) — unresolved decision and approval register.
+- [`docs/COMPLIANCE_MATRIX.md`](docs/COMPLIANCE_MATRIX.md) — requirements traceability; its original baseline classifications may predate recent code changes.
+- [`docs/ARES01_UI_REDESIGN_REPORT.md`](docs/ARES01_UI_REDESIGN_REPORT.md) — interface changes, screenshots and testing notes.
+- [`docs/ROVER_MOVEMENT_FIX_REPORT.md`](docs/ROVER_MOVEMENT_FIX_REPORT.md) — driving and sol-plan interaction repair.
+
+Full mission integration, low-end GPU performance and asset clearance remain subjects of release validation. Older audits describe earlier versions; consult the running build and current tests for present behavior.
+
+---
+
+**ARES-01 · Team ASTROCREW** — Build the mission. Bring the science home.
