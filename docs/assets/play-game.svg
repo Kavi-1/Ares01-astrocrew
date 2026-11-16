@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="42" viewBox="0 0 160 42" role="img" aria-labelledby="title">
+  <title id="title">Play ARES-01</title>
+  <rect x="0.5" y="0.5" width="159" height="41" rx="7" fill="#F1BB89" stroke="#D69E6E"/>
+  <path d="M19 14L29 21L19 28V14Z" fill="#17202B"/>
+  <text x="42" y="26" fill="#17202B" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" letter-spacing="0.8">PLAY ARES-01</text>
+</svg>

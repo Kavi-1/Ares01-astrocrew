@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">ARES-01 — ASTROCREW</title>
+  <desc id="desc">A dark mission-design banner with copper ARES-01 lettering, an illustrated Mars, and an orbital path.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1280" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B131E"/>
+      <stop offset="1" stop-color="#151B23"/>
+    </linearGradient>
+    <radialGradient id="mars" cx="0" cy="0" r="1" gradientTransform="translate(932 138) rotate(48) scale(244)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E4B088"/>
+      <stop offset="0.42" stop-color="#A56546"/>
+      <stop offset="0.78" stop-color="#5E3B30"/>
+      <stop offset="1" stop-color="#26242A"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(1000 194) scale(240 200)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D5976C" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#D5976C" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" stroke="#AFC4D5" stroke-opacity="0.045"/>
+    </pattern>
+    <clipPath id="planet"><circle cx="1002" cy="192" r="122"/></clipPath>
+  </defs>
+  <rect x="1" y="1" width="1278" height="398" rx="16" fill="url(#background)" stroke="#34404C"/>
+  <rect x="2" y="2" width="1276" height="396" rx="15" fill="url(#grid)"/>
+  <path d="M40 64V40H64M1216 40H1240V64M40 336V360H64M1216 360H1240V336" stroke="#82929E" stroke-opacity="0.65"/>
+  <circle cx="68" cy="73" r="4" fill="#8CD0CC"/>
+  <text x="85" y="79" fill="#C6D0D8" font-family="monospace" font-size="17" letter-spacing="3">ASTROCREW / MISSION DESIGN</text>
+  <text x="64" y="218" fill="#F3F2ED" font-family="Arial, Helvetica, sans-serif" font-size="130" font-weight="700" letter-spacing="-6">ARES<tspan fill="#F1BB89">–01</tspan></text>
+  <path d="M68 254H121" stroke="#F1BB89" stroke-width="3"/>
+  <text x="138" y="260" fill="#AFBDC9" font-family="monospace" font-size="19" letter-spacing="3">A MISSION SHAPED BY YOUR CHOICES</text>
+  <path d="M68 318H703" stroke="#34404C"/>
+  <g font-family="monospace" font-size="17" letter-spacing="2">
+    <text x="68" y="351" fill="#F1BB89">01</text><text x="103" y="351" fill="#C6D0D8">DESIGN</text>
+    <path d="M224 346H265M259 342L265 346L259 350" stroke="#617681"/>
+    <text x="294" y="351" fill="#F1BB89">02</text><text x="329" y="351" fill="#C6D0D8">EXPLORE</text>
+    <path d="M470 346H511M505 342L511 346L505 350" stroke="#617681"/>
+    <text x="540" y="351" fill="#F1BB89">03</text><text x="575" y="351" fill="#C6D0D8">RETURN</text>
+  </g>
+  <ellipse cx="1000" cy="194" rx="240" ry="200" fill="url(#glow)"/>
+  <ellipse cx="1002" cy="192" rx="191" ry="56" transform="rotate(-30 1002 192)" stroke="#8CD0CC" stroke-opacity="0.25"/>
+  <circle cx="1002" cy="192" r="139" stroke="#D8A77F" stroke-opacity="0.18" stroke-dasharray="2 8"/>
+  <circle cx="1002" cy="192" r="122" fill="url(#mars)" stroke="#D7A27B" stroke-opacity="0.4"/>
+  <g clip-path="url(#planet)" stroke="#E8BA93" stroke-opacity="0.24" stroke-width="2">
+    <path d="M880 123C910 109 941 137 972 133S1022 105 1069 115S1120 154 1142 139"/>
+    <path d="M877 139C909 125 941 153 973 149S1022 121 1069 131S1121 170 1144 155"/>
+    <path d="M874 155C910 143 941 169 974 165S1022 137 1069 147S1122 186 1146 171"/>
+    <path d="M875 221C922 196 937 223 979 225S1031 201 1064 213S1101 242 1133 223"/>
+    <path d="M876 237C923 212 938 239 980 241S1032 217 1065 229S1102 258 1134 239"/>
+    <path d="M877 253C924 228 939 255 981 257S1033 233 1066 245S1103 274 1135 255"/>
+    <path d="M920 290C950 273 994 289 1028 278S1070 280 1100 297"/>
+  </g>
+  <path d="M837 288C808 264 859 218 944 169C1027 121 1120 91 1153 99" stroke="#8CD0CC" stroke-width="1.5"/>
+  <circle cx="862" cy="231" r="7" fill="#8CD0CC" stroke="#101922" stroke-width="3"/>
+  <path d="M1146 284H1175V308" stroke="#80969E"/>
+  <text x="1108" y="341" fill="#B6C6CC" font-family="monospace" font-size="16" letter-spacing="3">MARS</text>
+  <g stroke="#8CD0CC" stroke-opacity="0.6">
+    <path d="M790 91H800M795 86V96M1183 166H1193M1188 161V171"/>
+  </g>
+  <g fill="#8C9DA9"><circle cx="826" cy="165" r="1.5"/><circle cx="1170" cy="67" r="1.5"/><circle cx="819" cy="322" r="1.5"/><circle cx="1086" cy="47" r="1"/></g>
+</svg>
