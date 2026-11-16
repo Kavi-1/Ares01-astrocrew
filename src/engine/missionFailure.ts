@@ -2,7 +2,7 @@ import type { RoverConfig } from '../nasa/data';
 import type { ReturnTypeEngineering } from './missionTypes';
 
 export type MissionOutcome = 'full-success' | 'baseline-success' | 'partial-success' | 'recoverable-anomaly' | 'mission-failure' | 'mission-abort';
-export type MissionEventKind = 'power-budget' | 'power-reserve' | 'communication-backlog' | 'instrument-unavailable' | 'mobility-limit';
+export type MissionEventKind = 'power-budget' | 'power-reserve' | 'communication-backlog' | 'instrument-unavailable' | 'mobility-limit' | 'sampling-decision';
 export type MissionEvent = {
   id: string;
   kind: MissionEventKind;

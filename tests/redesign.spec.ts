@@ -15,6 +15,10 @@ const format = (value: number, digits = 0) => value.toLocaleString('en-US', { mi
 
 async function enterWorkshop(page: Page, seat = 'Kavi') {
   await page.goto('/');
+  // These checks cover engineering/mission controls; the dedicated tutorial
+  // suite tests Guided, whose Escape key intentionally dismisses its note.
+  const skip=page.getByRole('radio',{name:'Skip',exact:true});
+  if(await skip.isVisible())await skip.check();
   await page.getByRole('button', { name: 'ENTER MISSION CONTROL' }).click();
   if (seat !== 'Kavi') await page.getByRole('button', { name: new RegExp('^' + seat + ' ') }).click();
   await page.getByRole('button', { name: 'Enter mission control', exact: true }).click();
@@ -58,6 +62,7 @@ test('mission margins mirror the engineering model, preview pending edits and co
   await enterWorkshop(page, 'Houssam');
   const rail = page.getByRole('complementary', { name: 'Mission margins' });
   const current = await model(page);
+  const baselineConfig = (await state(page)).config;
   await expect(rail).toContainText('CURRENT PLAN');
   await expect(rail).toContainText(format(current.massKg, 1));
   await expect(rail).toContainText(format(current.eDeliveredWh));
@@ -70,7 +75,7 @@ test('mission margins mirror the engineering model, preview pending edits and co
   await expect(rail).toContainText('PREVIEW');
   await expect(rail).toContainText(`→ ${format(pending.eDeliveredWh)}`);
   // A preview never changes the plan.
-  expect((await state(page)).config.reserve).toBe(.2);
+  expect((await state(page)).config).toEqual(baselineConfig);
   await expect(rail).toContainText(format(current.eDeliveredWh));
 
   await page.getByRole('button', { name: 'Apply changes', exact: true }).click();
@@ -106,13 +111,23 @@ test('launch manifest and surface instruments show the confirmed mission', async
   await expect(page.getByRole('list', { name: 'Flight stages' }).locator('[aria-current="step"]')).toContainText('PAD CHECKOUT');
 
   for (const name of ['BEGIN COUNTDOWN', 'CONFIRM LIFTOFF', 'BEGIN MARS APPROACH', 'DEPLOY ROVER']) await page.getByRole('button', { name }).click();
-  await expect(page.getByRole('button', { name: 'End mission', exact: true })).toBeVisible();
-  await expect(page.locator('.battery em')).toHaveText('RESERVE POLICY 30%');
-  expect(await page.locator('.battery-reserve').evaluate(element => (element as HTMLElement).style.left)).toBe('30%');
-  const targets = page.getByRole('list', { name: 'Science targets' }).getByRole('listitem');
-  await expect(targets).toHaveCount(3);
-  await expect(targets.first()).toHaveClass('is-next');
-  await expect(targets.first()).toContainText('NEXT');
+  await expect(page.getByRole('button', { name: 'Continue expedition', exact: true })).toBeVisible();
+  expect(await page.locator('.field-battery b').evaluate(element => (element as HTMLElement).style.left)).toBe('30%');
+  const surface = await page.evaluate(async () => {
+    const s = (await import('/src/store/gameStore.ts')).useGameStore.getState();
+    const { scenarioTargets } = await import('/src/data/scenarios.ts');
+    return { campaign: s.campaign!, targets: scenarioTargets(s.campaign!.options.site) };
+  });
+  expect(surface.campaign.config).toEqual(confirmed.config);
+  expect(surface.campaign.config.reserve).toBe(.3);
+  await expect(page.getByRole('complementary', { name: 'Field mission', exact: true })).toHaveAttribute('data-active-sol', '1');
+  await expect(page.getByRole('complementary', { name: 'Field mission', exact: true })).toContainText('SOL 1 / 30');
+  await expect(page.getByRole('button', { name: /^Log weather/ })).toContainText('0/10 sols');
+  // The canonical campaign replaced the old three-marker demo with four
+  // geology and four co-located context bundles, released on specific sols.
+  expect(surface.targets).toHaveLength(8);
+  expect(surface.targets.filter(t => t.objective === 'G').map(t => t.availableSol)).toEqual([2, 5, 12, 16]);
+  expect(surface.targets.filter(t => t.objective === 'B').map(t => t.availableSol)).toEqual([3, 8, 17, 19]);
 
   // Pause is a real state change, not a cosmetic overlay.
   await page.keyboard.press('Escape');

@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-const press=async(page:Page,name:string)=>{const b=page.getByRole('button',{name,exact:true});await b.focus();await b.press('Enter');};
+const press=async(page:Page,name:string)=>{const scope=name==='Reroute safely'?page.getByRole('complementary',{name:'Sol operations',exact:true}):page;const b=scope.getByRole('button',{name,exact:true});await b.focus();await b.press('Enter');};
 async function briefing(page:Page){await page.goto('/?visual=v2&quality=low');const skip=page.getByRole('radio',{name:'Skip',exact:true});if(await skip.isVisible())await skip.check();await press(page,'ENTER MISSION CONTROL');await press(page,'Enter mission control');await expect(page.getByRole('region',{name:'Science briefing',exact:true})).toBeVisible();}
 const errors=(page:Page)=>{const list:string[]=[];page.on('pageerror',e=>list.push(e.message));return list;};
 test.use({viewport:{width:640,height:600},reducedMotion:'reduce'});
@@ -37,7 +37,7 @@ for(const site of ['Jezero','Northeast Syrtis','Columbia Hills'])test(`${site}: 
  if(site==='Columbia Hills')await page.getByRole('checkbox',{name:/Accept hard landing/}).check();
  await press(page,'Approve & launch');
  await press(page,'BEGIN COUNTDOWN');await press(page,'CONFIRM LIFTOFF');
- await press(page,'BEGIN MARS APPROACH');await press(page,'DEPLOY ROVER');
+ await press(page,'BEGIN MARS APPROACH');await press(page,'DEPLOY ROVER');await press(page,'Engineering');
  await expect(page.getByRole('complementary',{name:'Sol operations'})).toBeVisible();
  if(site==='Columbia Hills')await expect(page.locator('.sol-console [role=alert]')).toContainText('S6 hard landing');
  if(site==='Jezero'){for(const width of [390,1440]){
@@ -59,6 +59,7 @@ for(const site of ['Jezero','Northeast Syrtis','Columbia Hills'])test(`${site}: 
  await press(page,'End sol 1');
  for(let sol=2;sol<=30;sol++){
   await expect(page.locator('.sol-console summary')).toContainText(`SOL ${sol} / 30`);
+  if(sol===8){page.once('dialog',dialog=>dialog.accept());await press(page,'Move on without sample');}
   if(sol===5&&site!=='Columbia Hills')await press(page,'Reroute safely');
   if(sol===5&&site==='Columbia Hills')await expect(page.getByRole('button',{name:'Reroute safely',exact:true})).toHaveCount(0);
   await press(page,sol===30?'Complete final sol':'End sol');
@@ -91,12 +92,13 @@ test('accepted budget overrun runs 20 sols; a mass failure gives one locked retr
  await expect(page.getByRole('checkbox',{name:/Mass failure locked/})).toBeDisabled();
  await page.getByLabel('Launch vehicle',{exact:true}).selectOption('heavy');
  await expect(page.locator('.launch-setup')).toContainText('$2840 / $2700 M');
- await press(page,'Approve & launch');await press(page,'BEGIN COUNTDOWN');await press(page,'CONFIRM LIFTOFF');await press(page,'BEGIN MARS APPROACH');await press(page,'DEPLOY ROVER');
+ await press(page,'Approve & launch');await press(page,'BEGIN COUNTDOWN');await press(page,'CONFIRM LIFTOFF');await press(page,'BEGIN MARS APPROACH');await press(page,'DEPLOY ROVER');await press(page,'Engineering');
  await expect(page.locator('.sol-console summary')).toContainText('SOL 1 / 20');
  await press(page,'Commit sol plan');await page.locator('.sol-console summary').focus();await page.locator('.sol-console summary').press('Enter');
  await press(page,'Record MEDA weather');await press(page,'End sol 1');
  for(let sol=2;sol<=20;sol++){
   await expect(page.locator('.sol-console summary')).toContainText(`SOL ${sol} / 20`);
+  if(sol===8){page.once('dialog',dialog=>dialog.accept());await press(page,'Move on without sample');}
   if(sol===5)await press(page,'Reroute safely');
   await press(page,sol===20?'Complete final sol':'End sol');
  }
@@ -111,18 +113,20 @@ test('accepted budget overrun runs 20 sols; a mass failure gives one locked retr
 });
 
 test('actual rover movement and G/B scans use the activity ledger once each',async({page})=>{
- test.setTimeout(300_000);const uncaught=errors(page);await briefing(page);await press(page,'Begin workshop');await press(page,'Review mission');await press(page,'Approve & launch');await press(page,'BEGIN COUNTDOWN');await press(page,'CONFIRM LIFTOFF');await press(page,'BEGIN MARS APPROACH');await press(page,'DEPLOY ROVER');
- await press(page,'End sol');await press(page,'Commit sol plan');
+ test.setTimeout(300_000);const uncaught=errors(page);await briefing(page);await press(page,'Begin workshop');await press(page,'Review mission');await press(page,'Approve & launch');await press(page,'BEGIN COUNTDOWN');await press(page,'CONFIRM LIFTOFF');await press(page,'BEGIN MARS APPROACH');await press(page,'DEPLOY ROVER');await press(page,'Engineering');
+ await press(page,'End sol');await press(page,'Commit sol plan');await press(page,'Engineering');
  await page.getByRole('button',{name:'Pause',exact:true}).focus();await page.keyboard.down('w');
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('ares-01-campaign')!).state.missionProgress.distance)).toBeGreaterThan(.1);
  await page.keyboard.up('w');await page.keyboard.down(' ');
+ await page.getByText('Science context and quick observation',{exact:true}).focus();await page.getByText('Science context and quick observation',{exact:true}).press('Enter');
  await page.getByRole('button',{name:/START SCAN/}).focus();await page.getByRole('button',{name:/START SCAN/}).press('Enter');
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('ares-01-campaign')!).state.campaign.completed),{timeout:90_000}).toContain('science:jezero-G-1');
  await page.keyboard.up(' ');
  const savedScan=await page.evaluate(()=>JSON.parse(localStorage.getItem('ares-01-campaign')!).state.campaign);
- await page.reload();await expect(page.getByRole('complementary',{name:'Sol operations'})).toBeVisible();
+ await page.reload();await press(page,'Engineering');await expect(page.getByRole('complementary',{name:'Sol operations'})).toBeVisible();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('ares-01-campaign')!).state.campaign)).toEqual(savedScan);
- await press(page,'End sol 2');await press(page,'Commit sol plan');
+ await press(page,'End sol 2');await press(page,'Commit sol plan');await press(page,'Engineering');
+ await page.getByText('Science context and quick observation',{exact:true}).focus();await page.getByText('Science context and quick observation',{exact:true}).press('Enter');
  await page.getByRole('button',{name:/START SCAN/}).focus();await page.getByRole('button',{name:/START SCAN/}).press('Enter');
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('ares-01-campaign')!).state.campaign.completed),{timeout:90_000}).toContain('science:jezero-B-1');
  const c=await page.evaluate(()=>JSON.parse(localStorage.getItem('ares-01-campaign')!).state.campaign);
@@ -130,7 +134,7 @@ test('actual rover movement and G/B scans use the activity ledger once each',asy
  expect(c.products.filter((p:{id:string})=>p.id.startsWith('jezero-B-1:'))).toHaveLength(2);
  expect(c.energy.filter((e:{id:string})=>e.id==='activity:jezero-B-1:sherloc')).toHaveLength(1);
  expect(c.energy.find((e:{id:string})=>e.id==='activity:jezero-B-1:sherloc').storedWh).toBeLessThan(2408);
- await press(page,'End sol 3');
+ await press(page,'Engineering');await press(page,'End sol 3');
  const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('ares-01-campaign')!).state.campaign);
  expect(after.products.every((p:{bits:number;sentBits:number})=>p.bits===p.sentBits)).toBe(true);
  expect(uncaught).toEqual([]);

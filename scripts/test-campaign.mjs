@@ -27,6 +27,7 @@ try {
    assert.equal(c.mode,'operations',c.message);checks++;
    if(sol<=10)c=e.acquireWeather(c);
    if(!c.mobilityDisabled){for(const target of scenarioTargets(site.id).filter(t=>t.availableSol===sol)){c=e.acquireTarget(c,target.id,target.x,target.z);}}
+   if(c.events.some(event=>event.id==='D12'&&!event.resolved))c=e.declineUnusualRock(c);
    const saved=e.restoreCampaign(e.snapshotCampaign(c));assert.deepEqual(e.endSol(saved),e.endSol(c));checks++;
    c=e.endSol(c);
   }

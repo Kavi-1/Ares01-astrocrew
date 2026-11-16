@@ -97,9 +97,25 @@ export async function createRoverModel(instruments: InstrumentId[], options: Mod
       }
     };
     setInstruments(instruments);
+    const scienceNodes=new Map<InstrumentId,Array<{node:THREE.Object3D;rotation:THREE.Euler}>>();
+    for(const [instrument,names] of Object.entries(INSTRUMENT_NODES)){
+      scienceNodes.set(instrument as InstrumentId,names.flatMap(name=>{
+        const node=model.getObjectByName(name);return node?[{node,rotation:node.rotation.clone()}]:[];
+      }));
+    }
     return {
       root,
       setInstruments,
+      // Optional named-node posing keeps unknown or differently rigged assets
+      // intact. These small aim cues are presentation, never flight kinematics.
+      setSciencePose(instrument:InstrumentId|null,progress:number,yaw:number){
+        scienceNodes.forEach((nodes,id)=>nodes.forEach(({node,rotation})=>{
+          node.rotation.copy(rotation);
+          if(id!==instrument)return;
+          if(id==='mastcam-z'||id==='supercam')node.rotation.y+=THREE.MathUtils.clamp(yaw,-.32,.32);
+          else if(id==='pixl'||id==='sherloc')node.rotation.x-=.06+progress*.04;
+        }));
+      },
       update(distance: number, steeringAngle: number, pitch: number, roll: number) {
         root.rotation.set(pitch, 0, roll);
         wheels.forEach((wheel, i) => {

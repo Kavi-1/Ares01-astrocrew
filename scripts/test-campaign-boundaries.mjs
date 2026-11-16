@@ -32,6 +32,7 @@ try{
   if(mox.mode==='planning')mox=e.commitPlan(mox,moxPlan);
   mox=sol<=2?e.runMoxie(mox):e.acquireWeather(mox);
   const before=mox.energyWh,duplicate=sol<=2?e.acquireWeather(mox):e.acquireWeather(mox);near(duplicate.energyWh,before);
+  if(mox.events.some(event=>event.id==='D12'&&!event.resolved))mox=e.declineUnusualRock(mox);
   mox=e.endSol(mox);
  }
  near(e.scienceSummary(mox).fractions.E,1);

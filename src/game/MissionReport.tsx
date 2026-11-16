@@ -1,4 +1,5 @@
-import { scienceSummary, type Campaign } from '../engine/campaign';
+import { dataSummary, scienceSummary, type Campaign } from '../engine/campaign';
+import { activeExpeditionSols } from '../engine/expedition';
 import { OBJECTIVES, getScenario } from '../data/scenarios';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, Check, Circle, FileText, Radio, Rocket, ShieldCheck, TriangleAlert, X } from 'lucide-react';
@@ -67,6 +68,7 @@ export function MissionReportView({ record, mission, progress, debrief, onRestar
   const pageIndex = pages.findIndex(page => page.id === active);
   const page = pages[pageIndex];
   const result=campaign?scienceSummary(campaign):null;
+  const scienceData=campaign?dataSummary(campaign):null;
   const returned = result?OBJECTIVES.filter(o=>result.fractions[o.id]>0).map(o=>o.id):record?.transmittedTargets ?? [];
   const reward = scienceRewardForReturnedTargets(returned, SCIENCE_TARGETS);
   const tone = (outcome === 'full-success'||outcome==='baseline-success') ? 'success' : isIncident ? 'failure' : outcome ? 'caution' : 'unavailable';
@@ -125,12 +127,19 @@ export function MissionReportView({ record, mission, progress, debrief, onRestar
         <section id="dossier-page" className={`dossier-page page-${active}`} aria-labelledby="dossier-page-title">
           <div className="dossier-section-heading"><h2 id="dossier-page-title" ref={pageHeading} tabIndex={-1} aria-live="polite" aria-atomic="true">{page.title}</h2><span>SECTION {String(pageIndex + 1).padStart(2, '0')}</span></div>
           <p className="dossier-page-intro">{page.note}</p>
-          {active === 'science' && campaign && result && <div className="campaign-result">
+          {active === 'science' && campaign && result && scienceData && <div className="campaign-result">
             <h3>{getScenario(campaign.options.site).name} / {campaign.totalSols}-sol mission</h3>
             <p>Scientific value <strong>{result.sciencePoints.toFixed(2)} / 30</strong> · {result.tier.toUpperCase()} recovery tier · mission-performance {result.performancePoints} / 30.</p>
             <p>These are the two implemented rubric categories, not a claimed complete 100-point score.</p>
             <dl>{campaign.options.ranking.map((id,index)=><div key={id}><dt>{OBJECTIVES.find(o=>o.id===id)?.name}<small> · {[50,30,20][index]}% weight</small></dt><dd>{(result.fractions[id]*100).toFixed(0)}% complete with returned evidence</dd></div>)}</dl>
-            <p>{campaign.history.length} committed sols · {campaign.products.filter(p=>p.sentBits<p.bits).length} products still onboard · {campaign.energy.reduce((a,e)=>a+e.unservedWh,0).toFixed(2)} Wh unserved demand.</p>
+            <p>{campaign.history.length} committed sols / {campaign.totalSols} physical sols · {activeExpeditionSols(campaign).length} scheduled field sols · {campaign.energy.reduce((a,e)=>a+e.unservedWh,0).toFixed(2)} Wh unserved demand.</p>
+            <dl aria-label="Science data accounting">
+              <div><dt>Science collected</dt><dd>{(scienceData.collectedBits/1e6).toFixed(2)} Mbit</dd></div>
+              <div><dt>Returned to Earth</dt><dd>{(scienceData.returnedBits/1e6).toFixed(2)} Mbit</dd></div>
+              <div><dt>Onboard, not returned</dt><dd>{(scienceData.onboardBits/1e6).toFixed(2)} Mbit{scienceData.unreturnedBits>0?' · unreturned at mission close':''}</dd></div>
+              <div><dt>Unrecoverable after rover loss</dt><dd>{(scienceData.lostBits/1e6).toFixed(2)} Mbit</dd></div>
+            </dl>
+            <p>{campaign.products.filter(p=>p.sentBits<p.bits).length} products were not fully returned. A partial instrument bundle earns zero objective credit until every required product returns. Normal mission closure preserves unreturned backlog; only rover loss makes it unrecoverable.</p>
             {campaign.majorFailures.map(cause=><p className="report-alert" key={cause}>{cause}</p>)}
           </div>}
           {active === 'science' && !campaign && <>

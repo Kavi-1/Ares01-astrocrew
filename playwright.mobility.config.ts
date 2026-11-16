@@ -17,7 +17,7 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: 'pnpm exec vite preview --host 127.0.0.1 --port 5198 --strictPort',
+    command: 'npm run preview -- --host 127.0.0.1 --port 5198 --strictPort',
     url: 'http://127.0.0.1:5198',
     reuseExistingServer: false,
   },

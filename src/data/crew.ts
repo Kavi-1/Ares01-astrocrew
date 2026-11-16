@@ -13,6 +13,6 @@ export function eventAdviser(kind: string): CrewMember {
   if (kind.startsWith('power')) return getCrew('houssam');
   if (kind === 'communication-backlog') return getCrew('huzaifa');
   if (kind === 'mobility-limit') return getCrew('lautaro');
-  if (kind === 'instrument-unavailable') return getCrew('rihabe');
+  if (kind === 'instrument-unavailable' || kind === 'sampling-decision') return getCrew('rihabe');
   return getCrew('kavi');
 }

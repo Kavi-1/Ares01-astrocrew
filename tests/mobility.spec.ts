@@ -1,7 +1,8 @@
 import { test, expect, type Page } from '@playwright/test';
-import type { Campaign } from '../src/engine/campaign';
+import { restoreCampaign, type Campaign } from '../src/engine/campaign';
 import type { MissionProgress } from '../src/store/gameStore';
 import type { RoverConfig } from '../src/nasa/data';
+import { getScenario, type SiteId } from '../src/data/scenarios';
 
 // Every fixture begins as a native, launched campaign. Restored boundary states
 // below exercise actual production input/physics, never a replacement outcome.
@@ -22,9 +23,10 @@ test.use({ viewport: { width: 640, height: 700 }, reducedMotion: 'reduce' });
 
 const saved = (page: Page): Promise<SavedGame> => page.evaluate(() => JSON.parse(localStorage.getItem('ares-01-campaign')!));
 const driving = (page: Page) => page.getByRole('status', { name: 'Driving status', exact: true });
-const speed = (page: Page) => page.locator('.telemetry > div').first().locator('b');
-const press = async (page: Page, name: string) => {
-  const button = page.getByRole('button', { name, exact: true });
+const speed = (page: Page) => page.locator('[data-rover-speed]');
+const press = async (page: Page, name: string | RegExp) => {
+  const scope = name === 'Reroute safely' ? page.getByRole('complementary', { name: 'Sol operations', exact: true }) : page;
+  const button = scope.getByRole('button', { name, exact: true });
   await button.focus();
   await button.press('Enter');
 };
@@ -33,7 +35,7 @@ const errors = (page: Page) => {
   page.on('pageerror', error => list.push(error.message));
   return list;
 };
-async function launch(page: Page) {
+async function launch(page: Page, site: SiteId = 'jezero') {
   console.log('[mobility] Native mission launch');
   await page.addInitScript(() => {
     const prefix = 'ares-mobility-restoration:';
@@ -45,11 +47,24 @@ async function launch(page: Page) {
   await page.goto('/?visual=v2&quality=low');
   const skip = page.getByRole('radio', { name: 'Skip', exact: true });
   if (await skip.isVisible()) await skip.check();
+  await press(page, 'ENTER MISSION CONTROL');
+  await press(page, 'Enter mission control');
+  await press(page, new RegExp('^' + getScenario(site).name + ' '));
+  await press(page, 'Begin workshop');
+  if (site === 'columbia') {
+    // Keep the real landing constraint: lighten the payload through the UI,
+    // retaining all instruments required for the three science objectives.
+    await press(page, /^Payload workshop /);
+    await press(page, 'Take over');
+    await page.getByRole('checkbox', { name: 'Installed MOXIE', exact: true }).uncheck();
+    await page.getByRole('checkbox', { name: 'Installed SuperCam', exact: true }).uncheck();
+    await press(page, 'Apply changes');
+  }
   for (const name of [
-    'ENTER MISSION CONTROL', 'Enter mission control', 'Begin workshop',
     'Review mission', 'Approve & launch', 'BEGIN COUNTDOWN', 'CONFIRM LIFTOFF',
     'BEGIN MARS APPROACH', 'DEPLOY ROVER',
   ]) await press(page, name);
+  await press(page, 'Engineering');
   await expect(page.getByRole('complementary', { name: 'Sol operations', exact: true })).toBeVisible();
   await expect(page.locator('.sol-console summary')).toContainText('SOL 1 / 30');
   console.log('[mobility] Surface deployed, Sol 1 planning');
@@ -88,9 +103,56 @@ async function restore(page: Page, base: SavedGame, change: (state: SavedGame['s
   // next document hydrates, so it cannot be overwritten between write/reload.
   await page.evaluate(value => { window.name = 'ares-mobility-restoration:' + JSON.stringify(value); }, next);
   await page.reload();
+  await press(page, 'Engineering');
   await expect(page.getByRole('complementary', { name: 'Sol operations', exact: true })).toBeVisible();
   await focusDrive(page);
-  expect((await saved(page)).state.campaign).toEqual(next.state.campaign);
+  // Boundary fixtures must pass the same canonical legacy normalization as the
+  // saved production campaign; pending choices are answered through the UI.
+  expect((await saved(page)).state.campaign).toEqual(restoreCampaign(JSON.stringify(next.state.campaign)));
+}
+
+for (const site of ['jezero', 'syrtis', 'columbia'] as const) {
+  test(`${getScenario(site).name}: native WASD driving survives cameras, the next sol and reload`, async ({ page }, testInfo) => {
+    const uncaught = errors(page);
+    await launch(page, site);
+    await expect(page.locator('.mars-world')).toHaveAttribute('data-model-status', 'ready');
+    expect((await saved(page)).state.campaign.mobilityDisabled).toBe(false);
+    await press(page, 'Commit sol plan');
+    await press(page, 'Engineering');
+    await expect(driving(page)).toHaveAttribute('data-drive-state', 'ready');
+    // Real key events and persisted world positions, with no pose fixtures.
+    await focusDrive(page);
+    await move(page, ['s'], 2);
+    for (const keys of [['w'], ['s'], ['w', 'a'], ['w', 'd']]) {
+      const { before, after } = await move(page, keys, .3);
+      const projection = -Math.sin(before.heading) * (after.x - before.x) - Math.cos(before.heading) * (after.z - before.z);
+      expect(keys[0] === 's' ? -projection : projection).toBeGreaterThan(0);
+      if (keys.includes('a')) expect(after.heading).toBeGreaterThan(before.heading);
+      if (keys.includes('d')) expect(after.heading).toBeLessThan(before.heading);
+    }
+    const driven = (await saved(page)).state;
+    expect(driven.campaign.driveMeters).toBeGreaterThan(3);
+    expect(driven.campaign.energy.some(entry => entry.id === 'drive:1' && entry.servedWh > 0)).toBe(true);
+    await page.keyboard.press('c');
+    await expect(page.getByRole('button', { name: 'Mast camera', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await page.keyboard.press('r');
+    await move(page, ['s']);
+    await press(page, 'Engineering');
+    await press(page, 'End sol 1');
+    await expect(driving(page)).toHaveAttribute('data-drive-state', 'planning');
+    await press(page, 'Commit sol plan');
+    await press(page, 'Engineering');
+    await focusDrive(page);
+    await move(page, ['w']);
+    const beforeReload = (await saved(page)).state;
+    await page.reload();
+    await expect(driving(page)).toHaveAttribute('data-drive-state', 'ready');
+    expect((await saved(page)).state.missionProgress.distance).toBe(beforeReload.missionProgress.distance);
+    await focusDrive(page);
+    await move(page, ['s']);
+    await page.screenshot({ path: testInfo.outputPath(`${site}-wasd.png`) });
+    expect(uncaught).toEqual([]);
+  });
 }
 
 test('Sol 2 planning explains the stop; native keyboard, science, pause, new sols and save/load retain driving', async ({ page }) => {
@@ -145,8 +207,12 @@ test('Sol 2 planning explains the stop; native keyboard, science, pause, new sol
   await press(page, 'Commit sol plan');
   await expect(driving(page)).toHaveAttribute('data-drive-state', 'ready');
   console.log('[mobility] Sol 2 planning/focus/mobile footer verified; plan committed');
-  // No canvas click or page reload is required after a focused commit button.
+  // The field instruments are outside the optional engineering drawer.
+  await press(page, 'Engineering');
+  // No canvas click or page reload is required after the focused field button.
   await move(page, ['w']);
+  await page.getByText('Science context and quick observation', { exact: true }).focus();
+  await page.getByText('Science context and quick observation', { exact: true }).press('Enter');
   await expect(page.getByRole('button', { name: /START SCAN/ })).toBeVisible();
   await page.getByRole('button', { name: /START SCAN/ }).focus();
   await page.getByRole('button', { name: /START SCAN/ }).press('Enter');
@@ -154,6 +220,10 @@ test('Sol 2 planning explains the stop; native keyboard, science, pause, new sol
   console.log('[mobility] Native science observation completed');
   expect((await saved(page)).state.campaign.mode).toBe('operations');
   await expect(driving(page)).toHaveAttribute('data-drive-state', 'ready');
+  // Formations now have real collision footprints. Back out through native
+  // controls before testing independent directions in the open approach lane.
+  await focusDrive(page);
+  await move(page, ['s'], 8);
   // All drive keys act on the actual world after the scientific observation.
   for (const keys of [['w'], ['s'], ['w', 'a'], ['w', 'd'], ['ArrowUp'], ['ArrowDown'], ['ArrowUp', 'ArrowLeft'], ['ArrowUp', 'ArrowRight']]) {
     console.log(`[mobility] Native keys ${keys.join('+')}`);
@@ -164,6 +234,9 @@ test('Sol 2 planning explains the stop; native keyboard, science, pause, new sol
     if (keys.includes('a') || keys.includes('ArrowLeft')) expect(after.heading).toBeGreaterThan(before.heading);
     if (keys.includes('d') || keys.includes('ArrowRight')) expect(after.heading).toBeLessThan(before.heading);
   }
+  // Re-open the approach lane for the following independent brake/help/pause
+  // checks rather than accumulating forward travel into the observed outcrop.
+  await move(page, ['s'], 8);
   const driven = (await saved(page)).state;
   expect(driven.campaign.driveMeters).toBeGreaterThan(1);
   expect(driven.campaign.energyWh).toBeLessThan(2408);
@@ -209,6 +282,7 @@ test('Sol 2 planning explains the stop; native keyboard, science, pause, new sol
   await move(page, ['w']);
   console.log('[mobility] Pause/resume and fresh key verified');
   // Likewise, End Sol resets the drive gate and waits for a fresh press after commit.
+  await press(page, 'Engineering');
   await page.keyboard.down('w');
   await press(page, 'End sol 2');
   await expect(driving(page)).toHaveAttribute('data-drive-state', 'planning');
@@ -221,6 +295,7 @@ test('Sol 2 planning explains the stop; native keyboard, science, pause, new sol
   await move(page, ['ArrowUp']);
   const beforeReload = (await saved(page)).state;
   await page.reload();
+  await press(page, 'Engineering');
   await expect(driving(page)).toHaveAttribute('data-drive-state', 'ready');
   const reloaded = (await saved(page)).state;
   expect(reloaded.campaign).toEqual(beforeReload.campaign);
@@ -282,6 +357,10 @@ test('real power, allocation, recovery, hazard and damage gates remain effective
   // Finish an actual final-sol transition: the report must own input afterward.
   await restore(page, base, s => { s.campaign.sol = 30; s.missionProgress.sol = 30; });
   console.log('[mobility] Final-sol report transition');
+  if ((await saved(page)).state.campaign.events.some(event => event.id === 'D12' && !event.resolved)) {
+    page.once('dialog', dialog => dialog.accept());
+    await press(page, 'Move on without sample');
+  }
   await press(page, 'End sol 30');
   await expect(page.getByRole('button', { name: 'Open mission dossier', exact: true })).toBeVisible();
   const ended = (await saved(page)).state;

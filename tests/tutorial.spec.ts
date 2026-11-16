@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 
 test.use({viewport:{width:640,height:700},reducedMotion:'reduce'});
-const press=async(page:Page,name:string)=>{const b=page.getByRole('button',{name,exact:true});await b.focus();await b.press('Enter');};
+const press=async(page:Page,name:string)=>{const scope=name==='Reroute safely'?page.getByRole('complementary',{name:'Sol operations',exact:true}):page;const b=scope.getByRole('button',{name,exact:true});await b.focus();await b.press('Enter');};
 const state=(page:Page)=>page.evaluate(()=>JSON.parse(localStorage.getItem('ares-01-campaign')!).state);
 const coach=(page:Page,id:string)=>page.locator(`[data-tutorial-prompt="${id}"]`);
 const missionOnly=(s:Record<string,unknown>)=>Object.fromEntries(Object.entries(s).filter(([key])=>!key.startsWith('tutorial')&&key!=='paceMode'));
@@ -146,7 +146,7 @@ test('actual launch, first drive/scan, scheduled event and report are coached wi
  await page.getByRole('checkbox',{name:/Accept budget overrun/}).check();
  await press(page,'Approve & launch');await press(page,'BEGIN COUNTDOWN');await expect(coach(page,'C7:launch')).toBeVisible();
  await expect(coach(page,'C7:launch')).toContainText(/1375|1,375/);await dismiss(page);
- await press(page,'CONFIRM LIFTOFF');await press(page,'BEGIN MARS APPROACH');await expect(coach(page,'C7:landing')).toBeVisible();await dismiss(page);await press(page,'DEPLOY ROVER');
+ await press(page,'CONFIRM LIFTOFF');await press(page,'BEGIN MARS APPROACH');await expect(coach(page,'C7:landing')).toBeVisible();await dismiss(page);await press(page,'DEPLOY ROVER');await press(page,'Engineering');
  await expect(page.getByRole('complementary',{name:'Sol operations',exact:true})).toBeVisible();
  await expect(coach(page,'C8:plan')).toBeVisible();
  const firstSol=await state(page),physicalBefore=firstSol.campaign;
@@ -160,7 +160,7 @@ test('actual launch, first drive/scan, scheduled event and report are coached wi
  await viewportProof(page,'first-sol-coach');expect((await state(page)).campaign).toEqual(physicalBefore);
  await page.screenshot({path:'work-logs/tutorial-screenshots/first-sol.png',fullPage:true});
  await dismiss(page);await press(page,'Commit sol plan');await expect(coach(page,'C8:drive')).toBeVisible();await dismiss(page);
- await press(page,'End sol 1');await press(page,'Commit sol plan');
+ await press(page,'End sol 1');await press(page,'Commit sol plan');await press(page,'Engineering');
  const beforeFocusedHelp=(await state(page)).campaign;await press(page,'Help');await press(page,'Close help');
  await expect(page.getByRole('button',{name:'Help',exact:true})).toBeFocused();await page.keyboard.press(' ');
  await expect(page.getByRole('complementary',{name:'Mission help',exact:true})).toBeVisible();await press(page,'Close help');
@@ -169,9 +169,10 @@ test('actual launch, first drive/scan, scheduled event and report are coached wi
  await expect.poll(async()=>(await state(page)).missionProgress.distance).toBeGreaterThan(.1);await page.keyboard.up('w');
  await page.getByRole('button',{name:'Pause',exact:true}).focus();await page.keyboard.down(' ');
  await expect(coach(page,'C8:scan')).toBeVisible();await dismiss(page);
+ await page.getByText('Science context and quick observation',{exact:true}).focus();await page.getByText('Science context and quick observation',{exact:true}).press('Enter');
  await page.getByRole('button',{name:/START SCAN/}).focus();await page.getByRole('button',{name:/START SCAN/}).press('Enter');
  await expect.poll(async()=>(await state(page)).campaign.completed,{timeout:90_000}).toContain('science:jezero-G-1');await page.keyboard.up(' ');
- await expect(coach(page,'C8:end')).toBeVisible();await dismiss(page);await press(page,'End sol 2');
+ await expect(coach(page,'C8:end')).toBeVisible();await dismiss(page);await press(page,'Engineering');await press(page,'End sol 2');
  for(let sol=3;sol<5;sol++)await press(page,'End sol');
  await expect(coach(page,'C9:event')).toBeVisible();await expect(coach(page,'C9:event')).toContainText(/5/);
  const scheduled=(await state(page)).campaign.events.find((e:{id:string})=>e.id==='E1');expect(scheduled.sol).toBe(5);

@@ -138,7 +138,7 @@ test('hub review launches, rover drives, abort resets home',async({page})=>{
   await page.getByRole('button',{name:'CONFIRM LIFTOFF'}).click();
   await page.getByRole('button',{name:'BEGIN MARS APPROACH'}).click();
   await page.getByRole('button',{name:'DEPLOY ROVER'}).click();
-  await expect(page.getByRole('button',{name:'End mission',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Continue expedition',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Commit sol plan',exact:true}).click();
   await page.keyboard.down('w');
   await page.waitForFunction(async()=>(await import('/src/store/marsStore.ts')).useMarsStore.getState().distance>.1);

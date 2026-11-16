@@ -1,6 +1,6 @@
 export type VisualQuality = 'low' | 'medium' | 'high';
 
-/** Art tuning for ?visual=v2; dimensions marked DOC come from the NASA engineering data. */
+/** Cinematic presentation defaults; dimensions marked DOC come from the NASA engineering data. */
 export const visualConfig = {
   terrain: { widthM: 420, segments: 288, fogClear: 0.0012, fogHaze: 0.004, textureRepeat: 8 },
   camera: { fov: 42, introFov: 47, far: 6000, distance: 9.5, minDistance: 4.5, maxDistance: 28, elevation: 24, minElevation: 6, maxElevation: 65, targetHeight: 0.9, clearance: 0.8, yawResumeMs: 2500, idleOrbitAfter: 20 },
@@ -13,10 +13,19 @@ export const visualConfig = {
 } as const;
 
 export function visualV2Enabled(search = typeof window === 'undefined' ? '' : window.location.search) {
-  return new URLSearchParams(search).get('visual') === 'v2';
+  return new URLSearchParams(search).get('visual') !== 'v1';
 }
 
-export function visualQuality(search = typeof window === 'undefined' ? '' : window.location.search): VisualQuality {
+export type VisualCapabilities = {hardwareConcurrency?:number;deviceMemory?:number};
+
+/** Local presentation heuristic only; scientific simulation never reads quality. */
+export function visualQuality(
+  search = typeof window === 'undefined' ? '' : window.location.search,
+  capabilities:VisualCapabilities = typeof window === 'undefined' || typeof navigator === 'undefined'
+    ? {} : {hardwareConcurrency:navigator.hardwareConcurrency,deviceMemory:(navigator as Navigator&{deviceMemory?:number}).deviceMemory},
+): VisualQuality {
   const value = new URLSearchParams(search).get('quality');
-  return value === 'low' || value === 'high' ? value : 'medium';
+  if(value==='low'||value==='medium'||value==='high')return value;
+  const limited=(quantity:number|undefined)=>typeof quantity==='number'&&Number.isFinite(quantity)&&quantity>0&&quantity<=4;
+  return limited(capabilities.hardwareConcurrency)||limited(capabilities.deviceMemory)?'low':'medium';
 }

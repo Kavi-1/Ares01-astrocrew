@@ -62,7 +62,7 @@ try {
   assert.equal(persisted.state.missionProgress.battery,81.5,'mission battery reserve persists in campaign state');
   useGameStore.getState().startSurfaceMission();
   assert.ok(useGameStore.getState().missionRecord,'confirmed rover creates a persisted active mission record');
-  const {commitPlan,acquireWeather,endSol,resolveRoute}=await server.ssrLoadModule('/src/engine/campaign.ts');
+  const {commitPlan,acquireWeather,endSol,resolveRoute,declineUnusualRock}=await server.ssrLoadModule('/src/engine/campaign.ts');
   useGameStore.getState().setCampaign(acquireWeather(commitPlan(useGameStore.getState().campaign,{driveHours:0,science:true,weather:true,transmit:true})));
   useGameStore.getState().uplinkResults();
   assert.ok(useGameStore.getState().missionRecord.transmittedTargets.includes('weather:1:meda'),'only acquired and fully transmitted products return');
@@ -72,6 +72,7 @@ try {
   while(useGameStore.getState().campaign.mode!=='finished'){
     let campaign=useGameStore.getState().campaign;
     if(campaign.events.some(e=>e.id==='E1'&&!e.resolved))campaign=resolveRoute(campaign,'reroute');
+    if(campaign.events.some(e=>e.id==='D12'&&!e.resolved))campaign=declineUnusualRock(campaign);
     useGameStore.getState().setCampaign(endSol(campaign));
   }
   assert.equal(useGameStore.getState().missionRecord.outcome,'partial-success','returned environment evidence earns minimum tier');
@@ -87,7 +88,7 @@ try {
     useGameStore.getState().startSurfaceMission();
     useMarsStore.getState().begin();
     if (requested === 'abort') useMarsStore.getState().togglePause();
-    if(requested==='complete'){while(useGameStore.getState().campaign.mode!=='finished'){let c=useGameStore.getState().campaign;if(c.events.some(e=>e.id==='E1'&&!e.resolved))c=resolveRoute(c,'reroute');useGameStore.getState().setCampaign(endSol(c));}}else useGameStore.getState().endMission(requested,80);
+    if(requested==='complete'){while(useGameStore.getState().campaign.mode!=='finished'){let c=useGameStore.getState().campaign;if(c.events.some(e=>e.id==='E1'&&!e.resolved))c=resolveRoute(c,'reroute');if(c.events.some(e=>e.id==='D12'&&!e.resolved))c=declineUnusualRock(c);useGameStore.getState().setCampaign(endSol(c));}}else useGameStore.getState().endMission(requested,80);
     assert.equal(useGameStore.getState().missionPhase, 'report', `${requested} opens report`);
     assert.equal(useMarsStore.getState().phase, 'complete', `${requested} stops surface controls`);
     useGameStore.getState().reset();

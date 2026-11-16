@@ -5,6 +5,7 @@ dist/
 !.env.example
 /test-results/
 /playwright-report/
+/work-logs/
 .vercel/
 .DS_Store
 *.tsbuildinfo

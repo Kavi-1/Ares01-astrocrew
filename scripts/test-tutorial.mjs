@@ -112,6 +112,7 @@ try {
    if(c.mode==='planning')c=e.commitPlan(c,{driveHours:0,scienceHours:8.5,science:true,weather:true,transmit:true});
    const prompt=t.getTutorialPrompt({...surface,campaign:c},[]);if(prompt&&mode==='guided')s().markTutorialStepSeen(prompt.id);
    if(sol<=10)c=e.acquireWeather(c);
+   if(c.events.some(event=>event.id==='D12'&&!event.resolved))c=e.declineUnusualRock(c);
    c=e.endSol(c);
   }
   return {campaign:c,summary:e.scienceSummary(c)};

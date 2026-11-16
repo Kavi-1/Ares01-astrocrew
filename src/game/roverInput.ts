@@ -1,7 +1,7 @@
 /** Canonical tokens shared by keyboard input and the live Three.js controller. */
 export function roverKey(event: Pick<KeyboardEvent, 'key' | 'code'>): string {
   const physical: Record<string, string> = {
-    KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyE: 'e',
+    KeyC: 'c', KeyR: 'r', KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', KeyE: 'e',
     ArrowUp: 'arrowup', ArrowDown: 'arrowdown', ArrowLeft: 'arrowleft', ArrowRight: 'arrowright',
     Space: ' ', ShiftLeft: 'shift', ShiftRight: 'shift', Escape: 'escape',
   };

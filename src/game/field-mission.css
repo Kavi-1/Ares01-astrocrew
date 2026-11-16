@@ -1,0 +1,324 @@
+/* The surface remains the canvas. Only contextual controls receive pointer input. */
+.field-hud {
+  --field-edge: 24px;
+  --field-top: 90px;
+  --field-ink: #eee8df;
+  --field-muted: #bec7c3;
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  color: var(--field-ink);
+  font: 12px/1.55 var(--sans);
+  pointer-events: none;
+}
+.field-hud *, .field-hud *::before, .field-hud *::after { box-sizing: border-box; }
+.field-hud > * { pointer-events: auto; }
+.field-hud button { font: inherit; cursor: pointer; }
+.field-hud button:disabled { cursor: default; opacity: .45; }
+.field-hud :is(button,summary):focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.field-hud :is(h2,h3,p) { margin: 0; }
+.field-hud.is-inactive > * { visibility: hidden; pointer-events: none; }
+
+.field-mission {
+  position: absolute;
+  z-index: 2;
+  top: var(--field-top);
+  left: var(--field-edge);
+  width: min(330px, calc(100% - 2 * var(--field-edge)));
+  max-height: min(38dvh, 300px);
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  padding: 0 0 0 14px;
+  border-left: 2px solid #dda76f;
+  text-shadow: 0 2px 12px #0a101ae6;
+  scrollbar-width: thin;
+}
+.field-chapter { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #e7be90; font: 10px/1.4 var(--mono); letter-spacing: .09em; }
+.field-chapter i { padding-inline: 3px; font-style: normal; color: #c1c6bf; }
+.field-chapter button { display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 28px; color: #e5d6c3; border: 1px solid #c9a57c60; background: #0d171b9c; font-size: 18px; }
+.field-mission h2 { max-width: 25ch; margin-top: 5px; font: 600 clamp(18px,1.7vw,24px)/1.17 var(--sans); letter-spacing: -.035em; }
+.field-mission > :not(.field-brief-body):not(.field-coach-slot) { flex-shrink: 0; }
+.field-subtitle { margin-top: 5px !important; color: #e3d7c8; font-size: 11px; line-height: 1.5; }
+.field-brief-body { min-height: 0; overflow-y: auto; margin-top: 10px; scrollbar-width: thin; }
+.field-brief-body p { color: #ece5db; font-size: 12px; line-height: 1.65; }
+.field-brief-body b { color: #f1c99b; font-weight: 600; }
+.field-brief-body small { display: block; margin-top: 7px; color: #c6d0c9; font-size: 10px; line-height: 1.6; }
+.field-model-label { display: block; margin-top: 9px; color: #c2c9c4; font: 8px/1.6 var(--mono); letter-spacing: .025em; }
+.field-commit { margin-top: 12px; width: 100%; min-height: 40px; font-size: 11px; }
+.field-coach-slot { min-height: 0; max-height: 150px; overflow-y: auto; scrollbar-width: thin; pointer-events: auto; }
+.field-coach-slot:empty { display: none; }
+.field-coach-slot .tutorial-coach { position: static !important; inset: auto !important; transform: none !important; width: 100% !important; max-height: none !important; margin-top: 8px; overflow: visible; padding: 8px 0; color: #dedfd1; background: transparent; border: 0; box-shadow: none; pointer-events: auto; font-size: 11px; }
+.field-coach-slot .tutorial-coach h2 { margin: 6px 0; font-size: 15px; }
+.field-coach-slot .tutorial-coach p { margin: 5px 0; font-size: 10px; line-height: 1.6; }
+.field-coach-slot .tutorial-coach-heading { font-size: 8px; }
+.field-coach-slot .tutorial-coach-foot { margin-top: 5px; padding-top: 4px; font-size: 9px; }
+.field-mission:has(.field-coach-slot:not(:empty)) .field-brief-body { display: none; }
+.field-hud:has(.field-decision) .field-mission :is(.field-subtitle,.field-model-label) { display: none; }
+.field-hud:has(.field-decision) .field-coach-slot { max-height: 72px; }
+.field-hud:has(.field-decision) .field-mission h2 { font-size: 18px; }
+.field-hud:has(.field-decision) .field-commit { display: none; }
+
+.field-camera-controls { position: absolute; z-index: 4; top: var(--field-top); right: var(--field-edge); display: flex; gap: 4px; padding: 4px; background: #101a1cbb; border: 1px solid #c7b39640; }
+.field-camera-controls button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 30px; min-width: 32px; padding: 5px 9px; color: #d0dad4; background: transparent; border: 1px solid transparent; font: 9px/1.4 var(--mono); text-transform: uppercase; }
+.field-camera-controls button[aria-pressed=true] { color: #f5d7b5; border-color: #d1a27190; background: #c1955c1c; }
+.field-camera-controls button:hover { border-color: #a8c8be80; }
+.field-world-anchor { position: absolute; display: flex; align-items: center; flex-direction: column; gap: 3px; max-width: 200px; padding: 7px; transform: translate(-50%,-100%); color: #d8eeea; background: transparent; border: 0; text-shadow: 0 2px 8px #0c131b; }
+.field-world-anchor > span { display: grid; place-items: center; width: 30px; height: 30px; font: 30px/1 var(--sans); filter: drop-shadow(0 1px 4px #10212a); }
+.field-world-anchor small { max-width: 190px; padding: 3px 6px; background: #142124b3; border: 1px solid #a8cfca55; color: #d4e0d9; font: 9px/1.4 var(--mono); text-align: center; }
+.field-world-anchor i { margin-left: 5px; color: #f3c899; font-style: normal; white-space: nowrap; }
+.field-world-anchor.is-selected > span { color: #f1c897; }
+.field-world-anchor.is-selected small { border-color: #e4bb8d; }
+.field-world-anchor:hover small { background: #142124ed; border-color: #b9e3db; }
+.field-bearing { position: absolute; top: 91px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 9px; max-width: min(340px,30vw); padding: 7px 10px; border-bottom: 1px solid #b6c5b94d; text-shadow: 0 1px 8px #061018; color: #e3e9df; font: 10px/1.4 var(--mono); pointer-events: none; }
+.field-bearing svg { flex: 0 0 18px; color: #d4e9df; }
+.field-bearing span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.field-bearing b { color: #f0c695; font-weight: 400; white-space: nowrap; }
+
+.field-science-slot { position: absolute; z-index: 4; right: var(--field-edge); bottom: 98px; width: min(320px,calc(100% - 2 * var(--field-edge))); pointer-events: none; }
+.field-science-slot .field-science { max-height: max(180px,calc(100dvh - 250px)); pointer-events: auto; }
+.field-decision { position: absolute; top: 275px; left: var(--field-edge); width: min(330px,calc(100% - 2 * var(--field-edge))); max-height: max(150px,calc(100dvh - 465px)); overflow-y: auto; padding: 13px 15px; color: #eae3d8; background: #111c20ee; border: 1px solid #b88a5b85; border-left: 3px solid #d6a26d; scrollbar-width: thin; }
+.field-hud:has(.field-decision) .field-brief-body { display: none; }
+.field-decision > small, .field-environment > small:first-child, .field-discovery > small { display: block; margin-bottom: 5px; color: #e3ba8b; font: 9px/1.5 var(--mono); letter-spacing: .08em; }
+.field-decision h3 { margin-bottom: 7px; font-size: 16px; line-height: 1.3; letter-spacing: -.025em; }
+.field-decision p { margin-bottom: 10px; color: #c8d1c8; font-size: 11px; line-height: 1.6; }
+.field-decision button, .field-return-priority button { min-height: 36px; padding: 7px 10px; color: #e7d4bb; background: #29312b; border: 1px solid #b4936b8c; font: 10px/1.45 var(--mono); }
+.field-decision button + button { margin-top: 6px; margin-left: 6px; }
+.field-decision .field-risk { color: #edb9a4; background: #4b29242e; border-color: #d3927870; }
+
+.field-status { position: absolute; z-index: 4; left: var(--field-edge); bottom: 143px; width: min(380px,calc(100% - 2 * var(--field-edge))); }
+.field-status .drive-status { max-height: 92px; overflow: auto; padding: 7px 11px; background: #0e1a1dd4; border: 0; border-left: 2px solid #c79d70; box-shadow: none; font-size: 11px; line-height: 1.5; scrollbar-width: thin; }
+.field-status .drive-status b { display: none; }
+.field-status .drive-status small { margin-top: 3px; font-size: 10px; }
+.field-status .drive-status[data-drive-state=ready] { padding-block: 3px; background: transparent; border-left-color: #b4d4c5; text-shadow: 0 1px 7px #081019; }
+.field-status .drive-status[data-drive-state=ready] small { display: block; font-size: 9px; line-height: 1.3; }
+.field-status .drive-status button { min-height: 30px; margin-top: 5px; padding: 4px 10px; font-size: 10px; }
+.field-telemetry { position: absolute; left: var(--field-edge); bottom: 91px; display: flex; align-items: baseline; gap: 22px; color: #f0e6d9; text-shadow: 0 1px 8px #050f16; font: 14px/1.3 var(--mono); pointer-events: none; }
+.field-telemetry > span { position: relative; display: block; white-space: nowrap; }
+.field-telemetry small { display: block; margin-top: 3px; color: #c8d3ca; font: 9px/1.4 var(--mono); }
+.field-battery { position: absolute; top: -8px; left: 0; right: 0; display: block; height: 2px; background: #152421bf; }
+.field-battery em { position: absolute; inset: 0 auto 0 0; background: #b6d9c4; }
+.field-battery b { position: absolute; top: -2px; width: 1px; height: 6px; background: #f0c698; }
+.field-tools { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: stretch; gap: 5px; width: max-content; max-width: calc(100% - 220px); padding: 5px; background: #101c20e8; border: 1px solid #b5ac944f; box-shadow: 0 8px 24px #07101555; }
+.field-tools button { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; column-gap: 7px; row-gap: 1px; min-height: 42px; max-width: 156px; padding: 7px 11px; color: #d6ded5; background: transparent; border: 1px solid transparent; font-size: 10px; line-height: 1.35; }
+.field-tools button svg { flex: 0 0 17px; }
+.field-tools button small { color: #a8bfb2; font: 8px/1.4 var(--mono); }
+.field-tools button:hover:not(:disabled), .field-tools button[aria-expanded=true] { border-color: #bfc9af77; background: #a2af7e14; }
+.field-tools .field-continue { color: #211c15; border-color: #dbb382; background: #d6ad7c; font-weight: 700; }
+.field-tools .field-continue:hover { color: #161a17; border-color: #f3cca0; background: #edc593; }
+
+.field-environment { position: absolute; z-index: 5; top: 50%; left: 50%; width: min(430px,calc(100% - 32px)); max-height: calc(100dvh - 245px); overflow: auto; transform: translate(-50%,-50%); padding: 20px; color: #e7e3d7; background: #101d22f5; border: 1px solid #a4bdb387; box-shadow: 0 16px 48px #06111788; scrollbar-width: thin; }
+.field-environment h3 { font-size: 23px; font-weight: 600; line-height: 1.2; letter-spacing: -.035em; }
+.field-environment p { margin-top: 12px; font-size: 12px; color: #c3cfc5; line-height: 1.65; }
+.field-environment > small:not(:first-child) { display: block; margin-top: 9px; font: 9px/1.6 var(--mono); color: #c2cfc3; }
+.field-environment > button { width: 100%; min-height: 39px; margin-top: 9px; font-size: 11px; }
+.field-sensor-view { position: relative; display: grid; place-items: center; height: 95px; margin-top: 15px; overflow: hidden; background: #14272a; border-block: 1px solid #a7c2aa42; }
+.field-sensor-view i { position: absolute; inset: 22px -20%; border-top: 1px solid #9ac5be88; border-radius: 50%; transform: rotate(-5deg); }
+.field-sensor-view i:nth-child(2) { inset-block: 43px; transform: rotate(8deg); }
+.field-sensor-view i:nth-child(3) { inset-block: 68px; transform: rotate(-2deg); }
+.field-sensor-view span { position: relative; padding: 6px 9px; background: #132327d9; color: #cbe1cf; font: 10px/1.5 var(--mono); letter-spacing: .13em; }
+.field-sensor-view.moxie { background: linear-gradient(115deg,#352b2220,#62523455); }
+.field-sensor-view.moxie span { color: #eccd9b; }
+.field-hud:has(.field-environment) :is(.field-science-slot,.field-discovery,.field-decision) { visibility: hidden; pointer-events: none; }
+.field-discovery { position: absolute; left: 50%; top: 150px; width: min(420px,calc(100% - 40px)); max-height: 210px; overflow: auto; transform: translateX(-50%); padding: 15px 36px 15px 18px; background: linear-gradient(110deg,#142428ed,#152122c9); border-left: 2px solid #bcd8bc; box-shadow: 0 10px 30px #0a111b40; scrollbar-width: thin; }
+.field-discovery h3 { font-size: 22px; font-weight: 500; line-height: 1.2; letter-spacing: -.035em; }
+.field-discovery p { margin-top: 7px; color: #cdd8cc; font-size: 11px; line-height: 1.6; }
+.field-discovery button { margin-top: 8px; padding: 4px 0; border: 0; background: transparent; color: #edd0a8; font: 9px/1.5 var(--mono); }
+.field-discovery button[aria-label] { position: absolute; top: 5px; right: 9px; width: 24px; height: 28px; margin: 0; font-size: 20px; }
+.field-notice { position: absolute; left: 50%; bottom: 88px; transform: translateX(-50%); width: min(480px,calc(100% - 48px)); max-height: 88px; overflow: auto; padding: 9px 12px; color: #e2d4bd; background: #142126f0; border: 1px solid #aab59a77; font: 10px/1.6 var(--mono); cursor: pointer; }
+
+.field-drawer { position: absolute; z-index: 10; top: 82px; right: var(--field-edge); bottom: 88px; width: min(430px,calc(100% - 2 * var(--field-edge))); overflow-y: auto; overscroll-behavior: contain; padding: 0 18px 18px; color: #e3e2d6; background: #101b22fa; border: 1px solid #9b927967; box-shadow: 0 12px 40px #09101677; scrollbar-width: thin; scrollbar-color: #887864 transparent; }
+.field-drawer > header { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 55px; margin-inline: -18px; padding: 10px 14px 10px 18px; background: #101b22; border-bottom: 1px solid #d1c2a130; }
+.field-drawer > header strong { font-size: 16px; font-weight: 600; letter-spacing: -.02em; }
+.field-drawer > header button { display: grid; place-items: center; min-height: 36px; min-width: 36px; color: #e2dfce; background: #243133; border: 1px solid #bcc8b45e; }
+.field-drawer > p { margin-top: 14px; color: #becdc2; font-size: 12px; line-height: 1.7; }
+.field-drawer dl { margin-block: 15px; }
+.field-drawer dl > div { display: flex; justify-content: space-between; gap: 12px; padding-block: 9px; border-bottom: 1px solid #c5c7a825; font: 11px/1.6 var(--mono); }
+.field-drawer dd { margin: 0; color: #ddc69c; }
+.field-drawer .field-assumption { padding-left: 10px; border-left: 2px solid #caa77977; font-size: 10px; color: #b5c7bb; }
+.field-return-priority { display: flex; gap: 6px; margin-block: 14px; }
+.field-return-priority button { flex: 1; padding-inline: 5px; font-size: 9px; }
+.field-return-priority button[aria-pressed=true] { border-color: #e8c18a; background: #785a3238; }
+.field-drawer > .ax-btn { width: 100%; min-height: 42px; font-size: 11px; }
+.field-drawer > ol { padding-left: 19px; color: #c9d4c8; font-size: 11px; }
+.field-drawer > ol li { margin-block: 10px; }
+.field-drawer > ol li span { display: block; color: #d2ba91; font: 9px/1.6 var(--mono); }
+.field-note { margin-top: 18px; padding-top: 13px; border-top: 1px solid #c5c7a82b; }
+.field-note > small { color: #e4c49a; font: 9px/1.6 var(--mono); }
+.field-note h3 { margin-top: 5px; font-size: 16px; font-weight: 500; }
+.field-note p { margin-block: 8px; color: #c0cfc2; font-size: 11px; line-height: 1.7; }
+.field-hud:has(.field-drawer) :is(.field-science-slot,.field-camera-controls,.field-decision,.field-environment,.field-discovery,.field-notice) { visibility: hidden; pointer-events: none; }
+.field-hud:has(.field-drawer) .field-tools { z-index: 11; }
+.field-hud .field-drawer .sol-console, .game-shell.with-surface-coach .field-drawer .sol-console { position: static; inset: auto; display: block; width: 100%; max-height: none; margin-top: 16px; font-size: 12px; }
+.field-drawer .sol-console details, .field-drawer .sol-console details[open] { display: block; max-height: none; overflow: visible; background: #142128; border-color: #c3b9993d; box-shadow: none; }
+.field-drawer .sol-console details[open]::details-content { display: block; max-height: none; overflow: visible; }
+.field-drawer .sol-console .sol-console-body { display: block; max-height: none; overflow: visible; padding: 0 12px 12px; }
+.field-drawer .sol-console summary { padding: 11px 12px; }
+.field-drawer .sol-console .sol-console-footer { padding: 12px; background: #142128; box-shadow: none; border-color: #c3b9993d; }
+.field-drawer .sol-console :is(input,select) { color: #e3e2d6; }
+.field-drawer .sol-footer-actions { flex-wrap: wrap; }
+.field-drawer .sol-footer-actions > button { min-width: 100px; }
+
+/* Campaign controls now live in the field layers above. Preserve the abort dialog. */
+.game-shell.is-field-expedition > :is(.objective,.hud-bottom,.scan-wrap,.science-stamp,.world-notice,.mission-events,.sol-console,.drive-status-standalone) { display: none; }
+.game-shell.is-field-expedition > .mission-actions { z-index: 7; top: auto; left: auto; right: 24px; bottom: 20px; width: auto; min-width: 0; }
+.game-shell.is-field-expedition > .mission-actions > button:not(.abort-trigger) { display: none; }
+.game-shell.is-field-expedition .mission-actions .abort-trigger { flex: none; min-height: 42px; padding: 8px 12px; justify-content: center; font-size: 10px; background: #191e20c9; }
+.game-shell.is-field-expedition > .mars-world > .model-status { top: 138px; right: 24px; max-width: 300px; padding: 5px 8px; font-size: 9px; }
+
+@media (max-width: 1150px) {
+  .field-tools { left: 24px; transform: none; max-width: calc(100% - 140px); gap: 2px; }
+  .field-tools button { padding-inline: 8px; max-width: 140px; }
+  .field-bearing { top: 141px; left: auto; right: 24px; transform: none; max-width: 285px; }
+  .field-mission { width: 290px; }
+  .field-discovery { left: 24px; top: 300px; transform: none; width: 330px; max-height: 160px; }
+  .field-hud:has(.field-discovery) .field-brief-body { display: none; }
+}
+
+@media (max-width: 899px) {
+  .field-hud { --field-edge: 12px; --field-top: 114px; }
+  .field-mission { width: min(280px,calc(50% - 22px)); max-height: 230px; padding-left: 10px; }
+  .field-chapter { font-size: 8px; letter-spacing: .025em; }
+  .field-mission h2 { font-size: 19px; }
+  .field-subtitle { font-size: 10px; }
+  .field-brief-body p { font-size: 11px; }
+  .field-model-label { font-size: 7px; }
+  .field-camera-controls { top: 74px; padding: 3px; }
+  .field-camera-controls button { min-height: 29px; padding-inline: 7px; font-size: 8px; }
+  .field-camera-controls button svg { display: none; }
+  .field-bearing { top: 120px; right: 94px; max-width: 200px; font-size: 8px; padding-inline: 0; }
+  .field-science-slot { bottom: 176px; width: min(320px,calc(50% - 20px)); }
+  .field-science-slot .field-science { max-height: calc(100dvh - 350px); min-height: 0; }
+  .field-status { width: min(280px,calc(50% - 22px)); bottom: 151px; }
+  .field-status .drive-status { max-height: 90px; font-size: 10px; padding-inline: 8px; }
+  .field-status .drive-status small { font-size: 9px; }
+  .field-telemetry { bottom: 112px; gap: 14px; font-size: 12px; }
+  .field-telemetry small { display: inline; margin: 0 0 0 3px; font-size: 8px; }
+  .field-tools { left: 12px; right: 12px; bottom: 10px; width: auto; max-width: none; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 3px; padding: 4px; }
+  .field-tools button { max-width: none; min-width: 0; min-height: 38px; padding: 5px 7px; font-size: 9px; column-gap: 5px; }
+  .field-tools button small { font-size: 7px; }
+  .field-tools button svg { width: 14px; flex-basis: 14px; }
+  .field-continue { grid-column: auto; }
+  .field-decision { top: 264px; width: min(280px,calc(50% - 22px)); max-height: calc(100dvh - 520px); min-height: 95px; padding: 10px; }
+  .field-decision h3 { font-size: 14px; }
+  .field-decision p { font-size: 10px; }
+  .field-decision button { width: 100%; font-size: 9px; }
+  .field-decision button + button { margin-left: 0; }
+  .field-discovery { top: 230px; left: 12px; width: min(280px,calc(50% - 22px)); max-height: min(140px,calc(100dvh - 480px)); padding: 10px 27px 10px 12px; }
+  .field-discovery h3 { font-size: 17px; }
+  .field-discovery p { font-size: 10px; line-height: 1.5; }
+  .field-discovery > small { font-size: 8px; }
+  .field-hud:has(.field-discovery) .field-decision { visibility: hidden; pointer-events: none; }
+  .field-environment { top: 120px; bottom: 177px; max-height: none; transform: translateX(-50%); width: min(430px,calc(100% - 24px)); padding: 15px; }
+  .field-environment h3 { font-size: 20px; }
+  .field-environment p { font-size: 11px; }
+  .field-notice { top: 74px; bottom: auto; left: 12px; transform: none; max-height: 34px; width: calc(100% - 240px); padding: 3px 6px; font-size: 8px; line-height: 1.55; }
+  .field-drawer { top: 74px; bottom: 106px; padding-inline: 14px; }
+  .field-drawer > header { margin-inline: -14px; padding-left: 14px; }
+  .field-hud:has(.field-drawer) :is(.field-mission,.field-bearing,.field-status,.field-telemetry) { visibility: hidden; pointer-events: none; }
+  .game-shell.is-field-expedition > .mission-actions { top: 115px; right: 12px; bottom: auto; }
+  .game-shell.is-field-expedition .mission-actions .abort-trigger { min-height: 31px; padding: 5px 8px; font-size: 9px; }
+  .game-shell.is-field-expedition .mission-actions .abort-trigger svg { width: 12px; }
+  .game-shell.is-field-expedition > .mars-world > .model-status { top: 155px; right: 12px; max-width: 210px; font-size: 8px; }
+}
+
+@media (max-width: 559px) {
+  .field-mission { width: calc(100% - 110px); max-height: 168px; }
+  .field-mission h2 { font-size: 17px; }
+  .field-subtitle { display: none; }
+  .field-mission .field-brief-body { max-height: 85px; overflow: auto; margin-top: 6px; }
+  .field-brief-body small { font-size: 9px; }
+  .field-model-label { margin-top: 6px; font-size: 7px; }
+  .field-commit { min-height: 34px; margin-top: 7px; padding: 6px 8px; font-size: 10px; }
+  .field-bearing { top: auto; bottom: 187px; left: 12px; right: auto; max-width: calc(100% - 24px); padding: 4px 6px; font-size: 8px; background: #112025ad; border: 0; }
+  .field-bearing svg { width: 14px; height: 14px; flex-basis: 14px; }
+  .field-science-slot { right: 12px; bottom: 216px; width: min(320px,calc(100% - 24px)); }
+  .field-science-slot .field-science { max-height: calc(100dvh - 400px); }
+  .field-hud:has(.field-science-slot .field-science) .field-mission { max-height: 68px; overflow: auto; }
+  .field-hud:has(.field-science-slot .field-science) .field-brief-body { display: none; }
+  .field-hud:has(.field-science-slot .field-science) .field-mission:has(.field-coach-slot:not(:empty)) { max-height: 145px; overflow: visible; }
+  .field-coach-slot { max-height: 78px; }
+  .field-hud:has(.field-coach-slot:not(:empty)) .field-science-slot .field-science { max-height: calc(100dvh - 482px); }
+  .field-hud:has(.field-commit) .field-science-slot { visibility: hidden; pointer-events: none; }
+  .field-hud:has(.field-commit) .field-mission { max-height: calc(100dvh - 335px); overflow: visible; }
+  .field-status { bottom: 143px; width: calc(100% - 24px); }
+  .field-status .drive-status { max-height: 39px; padding-block: 3px; font-size: 9px; }
+  .field-status .drive-status small { font-size: 8px; }
+  .field-status .drive-status[data-drive-state=editing] { max-height: 75px; background: #0e1a1df5; }
+  .field-telemetry { bottom: 110px; left: 12px; right: 12px; justify-content: space-between; gap: 6px; font-size: 11px; }
+  .field-telemetry small { display: block; margin: 2px 0 0; font-size: 7px; }
+  .field-tools button { min-height: 39px; font-size: 8px; padding: 5px 4px; }
+  .field-tools button small { display: none; }
+  .field-world-anchor small { max-width: 160px; font-size: 8px; }
+  .field-decision { top: 190px; width: calc(100% - 24px); max-height: calc(100dvh - 410px); min-height: 90px; }
+  .field-hud:has(.field-decision) .field-science-slot { visibility: hidden; pointer-events: none; }
+  .field-hud:has(.field-decision) .field-mission { max-height: 68px; }
+  .field-discovery { top: 112px; width: calc(100% - 100px); max-height: 94px; padding: 7px 26px 7px 10px; }
+  .field-discovery h3 { font-size: 15px; }
+  .field-discovery p { font-size: 9px; line-height: 1.45; margin-top: 4px; }
+  .field-discovery > small { font-size: 7px; margin-bottom: 2px; }
+  .field-discovery button { font-size: 8px; margin-top: 3px; }
+  .field-hud:has(.field-discovery) .field-mission:not(:has(.field-coach-slot:not(:empty))) { visibility: hidden; pointer-events: none; }
+  .field-hud:has(.field-coach-slot:not(:empty)) .field-discovery { top: auto; bottom: 218px; max-height: 82px; width: calc(100% - 24px); }
+  .field-hud:has(.field-coach-slot:not(:empty)):has(.field-discovery) .field-science-slot { bottom: 308px; }
+  .field-hud:has(.field-coach-slot:not(:empty)):has(.field-discovery) .field-science-slot .field-science { max-height: calc(100dvh - 572px); }
+  .field-hud:has(.field-discovery) .field-science-slot .field-science { max-height: calc(100dvh - 438px); }
+  .field-environment { top: 112px; bottom: 214px; padding: 12px; }
+  .field-sensor-view { height: 64px; margin-top: 10px; }
+  .field-environment p { margin-top: 9px; font-size: 10px; }
+  .field-environment > small:not(:first-child) { font-size: 8px; }
+  .field-drawer { top: 74px; bottom: 106px; width: calc(100% - 24px); }
+  .field-drawer > p { font-size: 11px; }
+  .field-return-priority button { font-size: 8px; }
+}
+
+@media (min-width: 900px) and (max-height: 700px) {
+  .field-hud { --field-top: 82px; }
+  .field-mission { max-height: 180px; }
+  .field-mission h2 { font-size: 20px; }
+  .field-brief-body p { font-size: 11px; line-height: 1.5; }
+  .field-brief-body small { font-size: 9px; }
+  .field-science-slot { bottom: 93px; }
+  .field-science-slot .field-science { max-height: calc(100dvh - 245px); }
+  .field-decision { top: 270px; max-height: calc(100dvh - 485px); }
+  .field-discovery { top: 135px; max-height: 150px; }
+  .field-discovery h3 { font-size: 19px; }
+  .field-discovery p { font-size: 10px; }
+  .field-status { bottom: 139px; }
+  .field-status .drive-status { max-height: 68px; }
+  .field-drawer { top: 78px; bottom: 82px; }
+  .field-sensor-view { height: 68px; }
+}
+
+@media (max-width: 559px) and (max-height: 700px) {
+  .field-hud:has(.field-coach-slot:not(:empty)) .field-discovery { top: 157px; bottom: auto; left: auto; right: 12px; width: 78px; max-height: 100px; padding: 6px; overflow-wrap: anywhere; }
+  .field-hud:has(.field-coach-slot:not(:empty)) .field-discovery h3 { font-size: 11px; line-height: 1.25; }
+  .field-hud:has(.field-coach-slot:not(:empty)) .field-discovery p { display: none; }
+  .field-hud:has(.field-coach-slot:not(:empty)) .field-discovery > small { padding-right: 12px; font-size: 6px; }
+  .field-hud:has(.field-coach-slot:not(:empty)) .field-discovery button { font-size: 7px; }
+  .field-hud:has(.field-coach-slot:not(:empty)) .field-discovery button[aria-label] { top: 2px; right: 1px; width: 16px; height: 16px; font-size: 15px; }
+  .field-hud:has(.field-coach-slot:not(:empty)):has(.field-discovery) .field-science-slot { bottom: 216px; }
+  .field-hud:has(.field-coach-slot:not(:empty)):has(.field-discovery) .field-science-slot .field-science { max-height: calc(100dvh - 482px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field-hud *, .field-hud *::before, .field-hud *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+.field-plan-draft { display:block;color:var(--text-2);font:10px/1.5 var(--mono);margin:8px 0; }
+/* Missing optional models remain retryable without covering field controls. */
+@media(max-width:900px) {
+  .game-shell.is-field-expedition > .mars-world > .model-status {
+    top:67px;left:12px;right:auto;display:flex;align-items:center;gap:5px;
+    width:max-content;max-width:180px;min-height:35px;max-height:41px;
+    padding:3px 6px;font-size:0;background:#101a1ce8;
+  }
+  .game-shell.is-field-expedition > .mars-world > .model-status::before { content:'Preparing rover';font:9px/1.3 var(--mono);color:var(--text-2); }
+  .game-shell.is-field-expedition > .mars-world[data-model-status=fallback] > .model-status::before { content:'Backup rover'; }
+  .game-shell.is-field-expedition > .mars-world > .model-status button { font:9px/1.3 var(--mono);min-height:27px;padding:3px 5px;margin:0;white-space:nowrap; }
+  .game-shell.is-field-expedition:has(.field-notice) > .mars-world > .model-status { visibility:hidden; }
+}
+.field-hud:has(.field-science.is-observing) .field-notice { visibility:hidden;pointer-events:none; }
+.field-hud:has(.field-science.is-observing) .field-decision[data-event-id=D12] { visibility:hidden;pointer-events:none; }
+.field-drawer .field-coach-slot { flex-shrink:0; }
+.field-drawer .field-coach-slot .tutorial-coach { max-height:130px; }

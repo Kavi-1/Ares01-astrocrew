@@ -17,6 +17,7 @@ export default function TutorialLayer({view}:{view:View}) {
   const scope=[view,state.preparation.stage,state.preparation.activeStation,view==='launch'?(state.launchStage>=4?'landing':state.launchStage>=1?'result':'ready'):'',view==='surface'?state.campaign?.mode:'',view==='surface'?state.campaign?.sol:'',state.tutorialInstrumentChange?JSON.stringify(state.tutorialInstrumentChange):''].join('/');
   const [active,setActive]=useState<Active>(null),[help,setHelp]=useState(false),[tab,setTab]=useState<'help'|'glossary'|'tutorial'>('help');
   const [station,setStation]=useState<string>(''),[slot,setSlot]=useState<Element|null>(null),[historyId,setHistoryId]=useState('');
+  const [fieldSlot,setFieldSlot]=useState<Element|null>(null);
   const launcher=useRef<HTMLButtonElement>(null),coach=useRef<HTMLElement>(null),helpPanel=useRef<HTMLElement>(null);
   const [position,setPosition]=useState<{left:number;top:number}>({left:16,top:140});
   const auto=state.tutorialMode==='guided'?getTutorialPrompt(context,state.tutorialStepsSeen):null;
@@ -35,7 +36,7 @@ export default function TutorialLayer({view}:{view:View}) {
   },[active,auto?.id,scope,state.markTutorialStepSeen]);
 
   useEffect(()=>{
-    const locate=()=>setSlot(document.querySelector('[data-tutorial-tools]'));
+    const locate=()=>{setSlot(document.querySelector('[data-tutorial-tools]'));setFieldSlot(document.querySelector('[data-field-coach]'));};
     locate();const observer=new MutationObserver(locate);observer.observe(document.getElementById('root')!,{childList:true,subtree:true});
     return()=>observer.disconnect();
   },[view]);
@@ -70,6 +71,10 @@ export default function TutorialLayer({view}:{view:View}) {
       const panel=coach.current;if(!panel)return;
       const current=findTarget();if(current!==target){if(target)observer?.unobserve(target);target?.classList.remove('tutorial-highlight');target=current;target?.classList.add('tutorial-highlight');if(target)observer?.observe(target);}
       const shell=document.querySelector<HTMLElement>('.game-shell'),solConsole=document.querySelector<HTMLElement>('.sol-console');
+      if(view==='surface'&&fieldSlot&&surface.phase==='active'){
+        shell?.classList.remove('with-surface-coach');shell?.style.removeProperty('--tutorial-note-bottom');
+        panel.style.width='';panel.style.maxHeight='';position({left:0,top:0});return;
+      }
       // Surface notes reserve space beside or above the complete sol console,
       // regardless of which sub-control the current concept highlights.
       if(view==='surface'&&shell&&solConsole){
@@ -104,7 +109,7 @@ export default function TutorialLayer({view}:{view:View}) {
     const domObserver=new MutationObserver(place);domObserver.observe(document.getElementById('root')!,{childList:true,subtree:true});
     window.addEventListener('resize',place);window.addEventListener('scroll',place,true);
     return()=>{listening=false;const shell=document.querySelector<HTMLElement>('.game-shell');shell?.classList.remove('with-surface-coach');shell?.style.removeProperty('--tutorial-note-bottom');target?.classList.remove('tutorial-highlight');observer?.disconnect();domObserver.disconnect();window.removeEventListener('resize',place);window.removeEventListener('scroll',place,true);};
-  },[visible?.id,visible?.target,help,scope]);
+  },[visible?.id,visible?.target,help,scope,fieldSlot,surface.phase]);
   useLayoutEffect(()=>{
     if(!help||!helpPanel.current)return;
     const r=launcher.current?.getBoundingClientRect(),p=helpPanel.current;
@@ -119,13 +124,14 @@ export default function TutorialLayer({view}:{view:View}) {
   const canReopen=!!state.tutorialLastPromptId&&!!getTutorialPrompt(context,[],state.tutorialLastPromptId);
   const button=<span className="tutorial-tools-controls" data-tutorial-ui>{!help&&visible&&<button key="dismiss" className="tutorial-dismiss-trigger" aria-label="Dismiss prompt" title="Dismiss coach (F2 / Esc)" onClick={dismiss}><X size={16} aria-hidden="true"/></button>}<button key="help" ref={launcher} type="button" className="tutorial-help-trigger" aria-label="Help" aria-expanded={help} onClick={()=>{setStation('');setTab('help');setHelp(!help);}}><CircleHelp size={16} aria-hidden="true"/><span>Help</span></button></span>;
 
-  return <>
-    {slot?createPortal(button,slot):<div className="tutorial-trigger-fallback">{button}</div>}
-    {!help&&visible&&<aside ref={coach} className="tutorial-coach" style={position} data-tutorial-ui data-tutorial-prompt={visible.id} role="complementary" aria-label="Tutorial coach">
+  const coachCard=!help&&visible&&<aside ref={coach} className="tutorial-coach" style={position} data-tutorial-ui data-tutorial-prompt={visible.id} role="complementary" aria-label="Tutorial coach">
       <div className="tutorial-coach-heading"><span>{visible.step} <i>//</i> {progress} / 9 CONCEPTS SEEN</span></div>
       <h2>{visible.title}</h2><p aria-live="polite" aria-atomic="true">{visible.body[0]}</p>
       <div className="tutorial-coach-foot"><small>F2 / Esc dismiss · Help for the full explanation</small></div>
-    </aside>}
+    </aside>;
+  return <>
+    {slot?createPortal(button,slot):<div className="tutorial-trigger-fallback">{button}</div>}
+    {fieldSlot&&view==='surface'&&surface.phase==='active'?createPortal(coachCard,fieldSlot):coachCard}
     {help&&<aside ref={helpPanel} className="tutorial-help-panel" data-tutorial-ui data-tutorial-panel role="complementary" aria-label="Mission help">
       <div className="tutorial-coach-heading"><span>ASTROCREW <i>//</i> FIELD GUIDE</span><button aria-label="Close help" onClick={closeHelp}><X size={16} aria-hidden="true"/></button></div>
       <nav aria-label="Help sections"><button aria-pressed={tab==='help'} onClick={()=>setTab('help')}>Help</button><button aria-pressed={tab==='glossary'} onClick={()=>setTab('glossary')}>Glossary</button><button aria-pressed={tab==='tutorial'} onClick={()=>setTab('tutorial')}>Tutorial menu</button></nav>

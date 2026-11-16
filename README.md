@@ -103,7 +103,7 @@ ARES-01 is an **original project conceived, designed and directed by ASTROCREW**
   </tr>
 </table>
 
-The game defines a **30-sol mission** and a **20-sol variant** for a budget override. Quieter sols can advance automatically. **Guided / Skip** tutorials and **Quick / Explore** pacing support different play styles.
+Explore **10–11 active field sols** within a **30-sol mission** (20 with a budget override). Continue the expedition to advance quieter days while power and communications remain modeled. Staged instrument readings, crew briefings and a field notebook connect observations to mission decisions. **Guided / Skip** tutorials and **Quick / Explore** pacing support different play styles.
 
 ### A mission shaped by engineering
 
@@ -120,7 +120,9 @@ The **$2.7 billion educational budget**, component prices and mission options in
 | <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> / arrows | Drive and steer when the active sol plan permits movement |
 | <kbd>Space</kbd> | Brake |
 | <kbd>Shift</kbd> | Boost where permitted |
-| <kbd>E</kbd> / **Start Scan** | Examine an eligible target while stopped in range |
+| <kbd>E</kbd> / **Confirm reading** | Confirm an instrument reading while stopped in range |
+| <kbd>C</kbd> / <kbd>R</kbd> | Cycle chase, mast and survey cameras / reset the camera |
+| <kbd>Esc</kbd> | Pause / resume |
 | Drag / scroll | Orbit / zoom the camera |
 
 ### In mission control
@@ -131,7 +133,7 @@ The **$2.7 billion educational budget**, component prices and mission options in
 | <kbd>E</kbd> | Interact with a nearby crew member |
 | Rover inspection markers | Focus on instruments |
 
-> **If the rover does not move:** select **Commit sol plan** when in **Planning** mode. The driving status explains restrictions from mission state, drive allocation, safe mode, damage or terrain.
+> **If the rover does not move:** select **Commit sol plan** when in **Planning** mode. The driving status explains restrictions from mission state, drive allocation, safe mode, damage or terrain. For Columbia Hills, reduce payload mass to pass the landing check.
 
 ## Technology
 
@@ -184,11 +186,12 @@ pnpm test:mission-energy
 pnpm test:campaign
 pnpm test:tutorial
 pnpm test:mobility
+pnpm test:expedition
 pnpm test:model-loading
 pnpm test:models
 ```
 
-Additional browser suites: `test:campaign-ui`, `test:tutorial-ui`, `test:mobility-ui` and `test:presentation`. Install Chromium with `pnpm exec playwright install chromium`, or set `CHROMIUM_PATH` to an existing installation.
+Additional browser suites: `test:campaign-ui`, `test:tutorial-ui`, `test:mobility-ui` (WASD at all three sites), `test:expedition-ui`, `test:instruments-ui` and `test:presentation`. Install Chromium with `pnpm exec playwright install chromium`, or set `CHROMIUM_PATH` to an existing installation.
 
 </details>
 

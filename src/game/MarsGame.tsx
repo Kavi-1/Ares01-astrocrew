@@ -1,4 +1,5 @@
-import SolControls from './MissionPlanning';
+import FieldMission from './FieldMission';
+import { requestContextScience } from './FieldScience';
 import TutorialLayer from '../ui/tutorial/TutorialLayer';
 import { scenarioTargets, getScenario } from '../data/scenarios';
 import PreparationHub from '../ui/crew/PreparationHub';
@@ -136,7 +137,13 @@ export default function MarsGame() {
       const key = roverKey(e);
       if (phase === 'active' && [' ', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) e.preventDefault();
       if (key === 'escape' && !e.repeat) togglePause();
-      if (key === 'e' && !e.repeat && phase === 'active') requestScan();
+      if (key === 'e' && !e.repeat && phase === 'active') {
+        const use=new CustomEvent('ares:field-interact',{cancelable:true});
+        window.dispatchEvent(use);
+        if(!use.defaultPrevented){if(useGameStore.getState().campaign)requestContextScience();else requestScan();}
+      }
+      if (key === 'c' && !e.repeat && phase === 'active') useMarsStore.getState().cycleCamera();
+      if (key === 'r' && !e.repeat && phase === 'active') useMarsStore.getState().resetCamera();
       // Ignore an OS repeat whose original press was cleared by a pause, dialog
       // or sol transition. The next drive needs a fresh deliberate key press.
       if (phase === 'active' && DRIVE_KEYS.has(key) && driveAllowed && (!e.repeat || keys.current.has(key))) keys.current.add(key);
@@ -170,7 +177,7 @@ export default function MarsGame() {
     {drivingCode === 'ready' && <small>{driveStatus.action}</small>}
   </div>;
 
-  return <><div className={`phase-curtain ${phaseFade}`}/><main className={`game-shell${isWelcome ? ' is-welcome' : ''}${campaign?' has-campaign':''}`} data-surface-phase={phase}>
+  return <><div className={`phase-curtain ${phaseFade}`}/><main className={`game-shell${isWelcome ? ' is-welcome' : ''}${campaign?' has-campaign is-field-expedition':''}`} data-surface-phase={phase}>
     <MarsWorld keys={keys} config={confirmedMission?.config} />
     <div className="vignette" />
     {!isWelcome && <header className="surface-top">
@@ -232,14 +239,14 @@ export default function MarsGame() {
       </div>
       {scannedTargets.length > 0 && <div className="science-stamp" role="status"><small>LATEST OBSERVATION</small>{lastDiscovery || 'SCIENCE DATA SECURED'}<b>{campaign?`${science.toFixed(2)} / 30 SCIENTIFIC VALUE`:`${science} RESEARCH POINTS`} · {scannedTargets.length}/{SCIENCE_TARGETS.length}</b></div>}
     </>}
-    {campaign&&missionPhase==='mars'&&phase==='active'&&!abortOpen&&<SolControls key={campaign.sol}>{drivingBanner}</SolControls>}
+    {campaign&&missionPhase==='mars'&&!abortOpen&&<FieldMission drivingStatus={drivingBanner}/>}
     {missionPhase==='mars'&&(!campaign||phase==='paused')&&!abortOpen&&<div className="drive-status-standalone">{drivingBanner}</div>}
     {isWelcome && <WelcomeScreen onEnter={() => {useGameStore.getState().setPreparation({preparationOpen:true});setCrewOpen(true);}} />}
     {overlay && <div className="intro-overlay"><div className="intro-content">
       <p className="eyebrow"><i aria-hidden="true" /> [ MARS // {campaign?getScenario(campaign.options.site).name.toUpperCase():'JEZERO CRATER'} // SOL {String(sol).padStart(2, '0')} ]</p>
       <h1>{phase === 'briefing' ? <>A WORLD<br /><em>UNFOLDS.</em></> : phase === 'paused' ? <>MISSION<br /><em>PAUSED.</em></> : <>SIGNAL<br /><em>LOST.</em></>}</h1>
       <p>{phase === 'briefing' ? 'Plan a Perseverance-class science payload, launch to Mars, then drive the rover across Jezero Crater.' : phase === 'paused' ? 'Take a breath. The red planet can wait.' : 'The rover has exhausted its reserves.'}</p>
-      <dl className="brief-meta"><div><dt>ROVER</dt><dd>MARS 2020 · PERSEVERANCE</dd></div><div><dt>MISSION</dt><dd>ECHOES OF JEZERO</dd></div><div><dt>{phase === 'briefing' ? 'CREW' : 'YOUR SEAT'}</dt><dd>{phase === 'briefing' ? 'SIX SEATS · ONE MISSION' : `${crew.name.toUpperCase()} · ${crew.role.toUpperCase()}`}</dd></div></dl>
+      <dl className="brief-meta"><div><dt>ROVER</dt><dd>MARS 2020 · PERSEVERANCE</dd></div><div><dt>MISSION</dt><dd>{campaign?getScenario(campaign.options.site).name.toUpperCase():'ECHOES OF JEZERO'}</dd></div><div><dt>{phase === 'briefing' ? 'CREW' : 'YOUR SEAT'}</dt><dd>{phase === 'briefing' ? 'SIX SEATS · ONE MISSION' : `${crew.name.toUpperCase()} · ${crew.role.toUpperCase()}`}</dd></div></dl>
       <button className="start-button ax-btn ax-btn--primary" onClick={() => phase === 'briefing' ? (useGameStore.getState().setPreparation({preparationOpen:true}),setCrewOpen(true)) : phase === 'paused' ? togglePause() : begin()}>{phase === 'briefing' ? 'ENTER MISSION CONTROL' : phase === 'paused' ? 'RESUME MISSION' : 'RESTART'} <b aria-hidden="true">↗</b></button>
       <p className="intro-foot"><kbd className="ax-key">W</kbd><kbd className="ax-key">A</kbd><kbd className="ax-key">S</kbd><kbd className="ax-key">D</kbd> DRIVE <kbd className="ax-key">SPACE</kbd> BRAKE <kbd className="ax-key">E</kbd> SCAN <kbd className="ax-key">ESC</kbd> PAUSE</p>
     </div></div>}

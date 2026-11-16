@@ -4,12 +4,12 @@ import { disposeModel, isModelAbort, modelFailure, modelProgressText, type Model
 import * as THREE from 'three';
 import { geologyAt, scenarioHeightAt, hazardContains, routeGeometry, seeded } from './terrain';
 import { scenarioTargets, getScenario, sunElevationDeg, type SiteId } from '../data/scenarios';
-import { traverse, targetReadiness, nearbyScienceTarget } from '../engine/campaign';
+import { traverse, targetReadiness, nearbyScienceTarget, scienceSteps, executeScienceStep } from '../engine/campaign';
 import { integrateEnergy } from '../engine/energy';
 import { getDriveStatus } from '../engine/mobility';
 import { useMarsStore } from '../store/marsStore';
 import { SCIENCE_TARGETS as LEGACY_TARGETS } from '../data/scienceTargets';
-import { DEFAULT_CONFIG, FIXED, INSTRUMENTS, type RoverConfig } from '../nasa/data';
+import { DEFAULT_CONFIG, FIXED, INSTRUMENTS, type RoverConfig, type InstrumentId } from '../nasa/data';
 import { driveEnergyWh, rtgPowerW, slopeAngleDeg } from '../nasa/engineering';
 import { useGameStore } from '../store/gameStore';
 import { visualConfig, visualQuality, visualV2Enabled } from '../ops/visual/config/visualConfig';
@@ -26,6 +26,50 @@ import { addLakebedOutcrop } from '../ops/visual/terrain/strataOutcrop';
 
 type Props = { keys: React.MutableRefObject<Set<string>>; config?: RoverConfig; preview?: boolean; quality?: ReturnType<typeof visualQuality> };
 const SCAN_RANGE = 8;
+
+// These formations and reading points illustrate instrument workflows; their
+// geometry, colours and interaction counts are authored game art, not NASA data.
+const READING_POINTS:Record<InstrumentId,{count:number;label:string;tip:string}> = {
+  'mastcam-z':{count:3,label:'Stereo context panorama',tip:'Frame the left edge, central layers and right edge of the formation.'},
+  supercam:{count:2,label:'Remote chemistry comparison',tip:'Compare two exposed faces. A pulse illustrates targeting, not a measured spectrum.'},
+  pixl:{count:3,label:'Elemental mapping mosaic',tip:'Confirm three adjacent mapping cells to connect composition with texture.'},
+  sherloc:{count:2,label:'Organic and mineral context',tip:'Compare two areas. Organic/mineral context does not establish life.'},
+  rimfax:{count:1,label:'Subsurface profile review',tip:'Review the already acquired traversal profile; no radar distance is created here.'},
+  meda:{count:1,label:'Weather context',tip:'Review the environmental context.'},
+  moxie:{count:1,label:'Oxygen demonstration',tip:'Review the engineering run.'},
+};
+
+function scienceFormation(index:number,site:SiteId) {
+  const group=new THREE.Group(); group.name=`Authored_${site}_Formation_${index+1}`;
+  const palette=site==='syrtis'?['#665b50','#938571','#b5a286','#67574b']:site==='columbia'?['#d6bc97','#9c7255','#cba77d','#805442']:['#ad7d5a','#c49b74','#805e4c','#cdb28b'];
+  const material=new THREE.MeshStandardMaterial({color:palette[index%4],roughness:.96,emissive:'#1e5658',emissiveIntensity:0});
+  const rock=new THREE.Mesh(index===1?new THREE.DodecahedronGeometry(1.2,0):new THREE.IcosahedronGeometry(1.2,1),material);
+  rock.position.y=.8;rock.scale.set(index===2?1.7:1.25,index===3?.95:.7,1);rock.castShadow=true;rock.receiveShadow=true;group.add(rock);
+  if(index===0||site==='columbia'&&index===3){
+    for(let layer=0;layer<5;layer++){
+      const mat=new THREE.MeshStandardMaterial({color:palette[(layer+index)%4],roughness:1});
+      const band=new THREE.Mesh(new THREE.CylinderGeometry(1.4-layer*.07,1.5-layer*.07,.16,9),mat);
+      band.position.set((layer%2)*.1,.26+layer*.24,0);band.scale.z=.7;band.rotation.y=.2;band.castShadow=true;group.add(band);
+    }
+  }else if(index===1){
+    for(let vein=0;vein<3;vein++){
+      const mat=new THREE.MeshStandardMaterial({color:site==='columbia'?'#eee0bb':'#c4b49b',roughness:.9});
+      const strip=new THREE.Mesh(new THREE.BoxGeometry(.07,1.05,.14),mat);
+      strip.position.set(-.48+vein*.4,.9,-.82);strip.rotation.z=.25-vein*.13;group.add(strip);
+    }
+  }else if(index===2){
+    for(let face=0;face<4;face++){
+      const slab=new THREE.Mesh(new THREE.BoxGeometry(.55,.7,.8),new THREE.MeshStandardMaterial({color:palette[(face+1)%4],roughness:1}));
+      slab.position.set(-.85+face*.55,.5+face*.1,-.1);slab.rotation.set(.1,face*.21,.09);slab.castShadow=true;group.add(slab);
+    }
+  }else{
+    for(let n=0;n<5;n++){
+      const knob=new THREE.Mesh(new THREE.DodecahedronGeometry(.32,0),new THREE.MeshStandardMaterial({color:palette[(n+1)%4],roughness:1}));
+      knob.position.set(Math.sin(n*2.4)*.9,.55+Math.cos(n)*.23,Math.cos(n*2.4)*.8);group.add(knob);
+    }
+  }
+  return {group,rock,material};
+}
 
 function roundedDeck(width: number, height: number, length: number, material: THREE.Material) {
   const r = Math.min(width, height) * 0.14;
@@ -129,7 +173,8 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
   const [modelProgress, setModelProgress] = useState<ModelProgress>({ phase: 'waiting' });
   const retryModel = useRef<() => void>(() => {});
   const modelStatus = modelProgress.phase === 'ready' ? 'ready' : modelProgress.phase === 'failed' ? 'fallback' : 'loading';
-  const rendererRef=useRef<THREE.WebGLRenderer|null>(null),sunRef=useRef<THREE.DirectionalLight|null>(null),rockMeshesRef=useRef<THREE.InstancedMesh[]>([]),rockBaseCountsRef=useRef<number[]>([]),pebbleRef=useRef<THREE.InstancedMesh|null>(null);
+  const modelStatusLabel=modelProgressText(modelProgress,'Perseverance')+(modelStatus==='fallback'?' · Using procedural rover. Retry rover model.':'');
+  const rendererRef=useRef<THREE.WebGLRenderer|null>(null),sunRef=useRef<THREE.DirectionalLight|null>(null),pebbleRef=useRef<THREE.InstancedMesh|null>(null),pebbleBaseCount=useRef(0);
   const cameraView = useRef({ yaw: preview ? 2.7 : 0.34, pitch: 0.16, zoom: 10.5 });
   const previewZoomInitialized = useRef(false);
   const updateTelemetry = useMarsStore((s) => s.updateTelemetry);
@@ -180,7 +225,9 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
     scene.add(sun.target);
     const fill = new THREE.AmbientLight('#aebdce', 0.23); scene.add(fill);
 
-    const terrainGeo = new THREE.PlaneGeometry(visualConfig.terrain.widthM, visualConfig.terrain.widthM, visualConfig.terrain.segments, visualConfig.terrain.segments);
+    // Rendering detail never changes the authoritative terrain queries or rocks.
+    const terrainSegments=visualV2&&quality==='low'?144:visualConfig.terrain.segments;
+    const terrainGeo = new THREE.PlaneGeometry(visualConfig.terrain.widthM, visualConfig.terrain.widthM, terrainSegments, terrainSegments);
     terrainGeo.rotateX(-Math.PI / 2);
     const pos = terrainGeo.attributes.position as THREE.BufferAttribute;
     const colors: number[] = [];
@@ -242,7 +289,6 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
     const rockMats = rockColors.map((color) => new THREE.MeshStandardMaterial({ color, roughness: 0.98, metalness: 0.02, flatShading: visualV2 }));
     const rockCapacity = visualV2 ? visualConfig.rocks.boulderCapacity : 64;
     const rocks = rockGeos.map((geometry, i) => new THREE.InstancedMesh(geometry, rockMats[i], rockCapacity));
-    rockMeshesRef.current=rocks;rockBaseCountsRef.current=rocks.map(()=>0);
     rocks.forEach((mesh) => { mesh.castShadow = true; mesh.receiveShadow = true; scene.add(mesh); });
     const dummy = new THREE.Object3D();
     const obstaclePositions: { x: number; z: number; r: number }[] = [];
@@ -279,9 +325,8 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
       for (let i = 0; i < clusterCount; i++) addRock(centerX, centerZ, spread);
     }
     rocks.forEach((mesh, index) => { mesh.count = rockCounts[index]; mesh.instanceMatrix.needsUpdate = true; });
-    rockBaseCountsRef.current=[...rockCounts];
     rocks.forEach((mesh) => { if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true; });
-    if (visualV2) pebbleRef.current=addPebbleField(scene);
+    if (visualV2) {pebbleRef.current=addPebbleField(scene);pebbleBaseCount.current=pebbleRef.current.count;}
 
     const rover = new THREE.Group(); rover.name = 'ARES01_Root'; scene.add(rover);
     const chassis = new THREE.Group(); chassis.name = 'Chassis'; rover.add(chassis);
@@ -393,7 +438,7 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
       const lens = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 8), lensMat); lens.position.copy(aperture.position).add(new THREE.Vector3(0, 0, -0.06)); pixl.add(lens);
     } else if (visualV2) box(turret,0.24,0.16,0.2,darkMat,.18,-.02,.14);
     if (config.instruments.includes('meda')) {
-      const weatherMast = new THREE.Group(); weatherMast.position.set(-0.94, 1.92, 0.18); chassis.add(weatherMast);
+      const weatherMast = new THREE.Group();weatherMast.name='Configured_Weather_Mast'; weatherMast.position.set(-0.94, 1.92, 0.18); chassis.add(weatherMast);
       const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.04, 0.42, 8), steelMat); stem.position.y = 0.21; weatherMast.add(stem);
       const sensor = new THREE.Mesh(new THREE.SphereGeometry(0.095, 12, 8), instrumentMat); sensor.position.y = 0.45; weatherMast.add(sensor);
       for (const side of [-1, 1]) { const vane = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.025, 0.04), goldMat); vane.position.set(side * 0.12, 0.45, 0); weatherMast.add(vane); }
@@ -441,25 +486,63 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
     rover.position.set(savedProgress.x, heightAt(savedProgress.x, savedProgress.z) + (visualV2 ? 0.01 : 0.03), savedProgress.z);
     rover.rotation.y=savedProgress.heading;
 
+    let routeGuide:THREE.Line|null=null;
     if(campaignMode&&!preview){const route=routeGeometry(site);const barrier=new THREE.Mesh(new THREE.BoxGeometry(16,siteRules.obstacle,2.4),new THREE.MeshStandardMaterial({color:'#724c42',roughness:1}));barrier.position.set(route.midpoint[0],heightAt(...route.midpoint)+siteRules.obstacle/2,route.midpoint[1]);barrier.rotation.y=Math.atan2(-route.side[1],route.side[0]);barrier.name='Scenario_E1_Barrier';scene.add(barrier);
-      const path=new THREE.BufferGeometry().setFromPoints([route.a,route.via,route.b].map(([x,z])=>new THREE.Vector3(x,heightAt(x,z)+.09,z)));scene.add(new THREE.Line(path,new THREE.LineBasicMaterial({color:'#e9ab67'})));}
-    const beacons = preview ? [] : SCIENCE_TARGETS.map((target, index) => {
-      const beacon = new THREE.Group(); beacon.position.set(target.x, heightAt(target.x, target.z) + 0.1, target.z); scene.add(beacon);
-      const rockMat = new THREE.MeshStandardMaterial({ color: ['#a78e78', '#594740', '#bd7950'][index%3], roughness: 0.92, flatShading: true, emissive: '#163d42', emissiveIntensity: 0 });
-      const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(index === 0 ? 1.05 : 1.35, 1), rockMat);
-      rock.position.y = index === 0 ? 0.8 : 1; rock.scale.set(1.2, 0.8, 1); rock.castShadow = true; beacon.add(rock);
+      const points:THREE.Vector3[]=[],waypoints=[route.a,route.via,route.b];
+      for(let segment=0;segment<2;segment++){
+        const a=waypoints[segment],b=waypoints[segment+1],samples=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/1.5));
+        for(let sample=segment===0?0:1;sample<=samples;sample++){
+          const t=sample/samples,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;
+          points.push(new THREE.Vector3(x,heightAt(x,z)+.09,z));
+        }
+      }
+      routeGuide=new THREE.Line(new THREE.BufferGeometry().setFromPoints(points),new THREE.LineBasicMaterial({color:'#e9ab67',transparent:true,opacity:.65}));routeGuide.name='Survey_Safe_Detour_Guide';routeGuide.visible=false;scene.add(routeGuide);
+    }
+    const formations=new Map<string,ReturnType<typeof makeFormation>>();
+    function makeFormation(target:typeof SCIENCE_TARGETS[number],index:number){
+      const art=scienceFormation(index,site),beacon=art.group,rock=art.rock,rockMat=art.material;
+      beacon.position.set(target.x,heightAt(target.x,target.z)+.1,target.z);scene.add(beacon);
+      // Footprints follow authored prop extents. They are visual game geometry,
+      // not NASA terrain dimensions; the 8 m instrument approach remains open.
+      obstaclePositions.push({x:target.x,z:target.z,r:index===2?2.1:1.6});
+      beacon.userData.formationKey=`${target.x},${target.z}`;
       const ring = new THREE.Mesh(new THREE.TorusGeometry(visualV2?visualConfig.beacon.ringRadiusM:2.8, visualV2?0.045:0.055, 8, 64), new THREE.MeshBasicMaterial({ color: '#56e3ea', fog: false })); ring.rotation.x = Math.PI / 2; ring.position.y = 0.1; beacon.add(ring);
       const ring2 = visualV2 ? new THREE.Mesh(new THREE.TorusGeometry(visualConfig.beacon.ringRadiusM*1.18,.025,6,64),new THREE.MeshBasicMaterial({color:'#9bf6fa',transparent:true,opacity:.72,fog:false})) : null;
       if(ring2){ring2.rotation.x=Math.PI/2;ring2.position.y=.13;beacon.add(ring2);}
       const pillar = visualV2 ? createBeaconColumn() : new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.04, 4, 8), new THREE.MeshBasicMaterial({ color: '#5cebf3', transparent: true, opacity: 0.68 }));
       if(!visualV2)pillar.position.y=3;beacon.add(pillar);
-      return { target, beacon, rock, rockMat, ring, ring2, pillar };
+      const cells=new THREE.Group();cells.name='Illustrative_Reading_Cells';beacon.add(cells);
+      for(let n=0;n<3;n++){
+        const cell=new THREE.Mesh(new THREE.RingGeometry(.13,.17,12),new THREE.MeshBasicMaterial({color:'#b5eff1',transparent:true,opacity:.95,depthWrite:false,side:THREE.DoubleSide}));
+        cell.position.set((n-1)*.52,1.03+Math.sin(n)*.15,-.96);cell.name=`Reading_Point_${n+1}`;cells.add(cell);
+      }
+      cells.visible=false;
+      return {beacon,rock,rockMat,ring,ring2,pillar,cells,x:target.x,z:target.z};
+    }
+    const beacons = preview ? [] : SCIENCE_TARGETS.map(target=>{
+      const key=`${target.x},${target.z}`;
+      let formation=formations.get(key);
+      if(!formation){formation=makeFormation(target,formations.size);formations.set(key,formation);}
+      return {target,...formation};
+    });
+    const targetDeclined=(targetId:string)=>!!useGameStore.getState().campaign?.completed.includes(`declined:${targetId}`);
+    const pendingTarget=(target:typeof SCIENCE_TARGETS[number])=>!targetDeclined(target.id)&&!useMarsStore.getState().scannedTargets.includes(target.id)&&(!useGameStore.getState().campaign||!('availableSol' in target)||Number(target.availableSol)<=useGameStore.getState().campaign!.sol);
+    const pendingAt=(x:number,z:number)=>beacons.filter(e=>e.target.x===x&&e.target.z===z&&pendingTarget(e.target));
+    const updateFormationMarkers=()=>formations.forEach(f=>{
+      const state=useMarsStore.getState(),pending=pendingAt(f.x,f.z),distance=Math.hypot(rover.position.x-f.x,rover.position.z-f.z);
+      const selected=pending.some(e=>e.target.id===state.focusedTargetId);
+      const showNavigation=state.cameraMode!=='mast'&&!state.activeScienceStage;
+      const ringVisible=showNavigation&&pending.length>0&&(selected||distance<35||state.cameraMode==='survey');
+      f.ring.visible=ringVisible;if(f.ring2)f.ring2.visible=ringVisible;
+      f.pillar.visible=showNavigation&&pending.length>0&&selected&&(state.cameraMode==='survey'||distance>35);
     });
 
     const trackTrail=visualV2&&!preview?createWheelTracks():null;if(trackTrail)scene.add(trackTrail.mesh);
     const wheelDust=visualV2&&!preview?createWheelDust():null;if(wheelDust)scene.add(wheelDust.points);
     const scanBeam=visualV2&&!preview?new THREE.Mesh(new THREE.CylinderGeometry(.014,.014,1,7),new THREE.MeshBasicMaterial({color:'#5cebf3',transparent:true,opacity:.62,depthWrite:false})):null;
     if(scanBeam){scanBeam.visible=false;scanBeam.name='Instrument_To_Target_Scan_Beam';scene.add(scanBeam);}
+    const radarSweep=visualV2&&!preview?new THREE.Mesh(new THREE.RingGeometry(.35,.45,28),new THREE.MeshBasicMaterial({color:'#d9b17b',transparent:true,opacity:.5,depthWrite:false,side:THREE.DoubleSide})):null;
+    if(radarSweep){radarSweep.rotation.x=-Math.PI/2;radarSweep.visible=false;radarSweep.name='Illustrative_RIMFAX_Profile_Pulse';scene.add(radarSweep);}
     const contactShadow=visualV2?(()=>{const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const ctx=canvas.getContext('2d');if(ctx){const g=ctx.createRadialGradient(64,64,2,64,64,62);g.addColorStop(0,'rgba(32,20,17,.48)');g.addColorStop(.5,'rgba(32,20,17,.2)');g.addColorStop(1,'rgba(32,20,17,0)');ctx.fillStyle=g;ctx.fillRect(0,0,128,128);}const tex=new THREE.CanvasTexture(canvas);const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false,opacity:.82});const mesh=new THREE.Mesh(new THREE.PlaneGeometry(4.6,3.5),mat);mesh.rotation.x=-Math.PI/2;mesh.position.set(rover.position.x,heightAt(rover.position.x,rover.position.z)+.012,rover.position.z);mesh.name='Soft_Rover_Contact_Shadow';scene.add(mesh);return mesh;})():null;
 
     const skyGeometry = new THREE.SphereGeometry(420, 48, 28);
@@ -495,15 +578,26 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
     // Stop immediately at control boundaries, even if pause/resume or
     // review/commit both happen between rendered frames. Never clear held input
     // on ordinary per-segment energy updates.
-    const stopControls = () => { speed=0; keys.current.clear(); };
+    const stopControls = () => { speed=0; keys.current.clear();if(useMarsStore.getState().activeScienceStage)useMarsStore.getState().cancelScienceInteraction(); };
     const unsubscribePhase=useMarsStore.subscribe((state,previous)=>{if(state.phase!==previous.phase)stopControls();});
+    let instrumentCue:{instrument:InstrumentId;until:number}|null=null;
     const unsubscribeCampaign=useGameStore.subscribe((state,previous)=>{
       if(state.missionPhase!==previous.missionPhase||state.campaign?.sol!==previous.campaign?.sol||state.campaign?.mode!==previous.campaign?.mode||state.campaign?.safe!==previous.campaign?.safe||state.campaign?.mobilityDisabled!==previous.campaign?.mobilityDisabled||(!state.campaign&&state.missionRecord?.safeMode!==previous.missionRecord?.safeMode))stopControls();
+      if(state.campaign&&previous.campaign&&state.campaign.products.length>previous.campaign.products.length){
+        const added=state.campaign.products.slice(previous.campaign.products.length);
+        if(added.some(p=>p.id.endsWith(':moxie')))instrumentCue={instrument:'moxie',until:performance.now()+3500};
+        else if(added.some(p=>p.id.endsWith(':meda')))instrumentCue={instrument:'meda',until:performance.now()+3500};
+      }
     });
     let framePending=true,lastPresentation='';
-    let dragging = false, lastX = 0, lastY = 0, disposed = false,lastDebugUpdate=0;
+    let stagedWork:(NonNullable<ReturnType<typeof useMarsStore.getState>['scienceRequest']>&{points:number;required:number})|null=null;
+    let lastScienceRequest=useMarsStore.getState().scienceRequestId,lastScienceConfirm=useMarsStore.getState().scienceConfirmId,readingPulse=-10,discoveryUntil=0;
+    let lastCameraRevision=useMarsStore.getState().cameraRevision;
+    let dragging = false, lastX = 0, lastY = 0, pointerStartX=0,pointerStartY=0,pointerTravel=0, disposed = false,lastDebugUpdate=0;
     let importedRover: ImportedRover | null = null;
     const fallbackParts = [...rover.children];
+    const configuredWeatherMast=chassis.getObjectByName('Configured_Weather_Mast');
+    const oxygenLamp=chassis.getObjectByName('MOXIE_Run_Status_Light') as THREE.Mesh<THREE.SphereGeometry,THREE.MeshBasicMaterial>|undefined;
     let loadController: AbortController | undefined, generation = 0, awaitingModelRender = false;
     const loadRover = () => {
       const attempt = ++generation;
@@ -532,9 +626,25 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
     let lastCameraInput=performance.now(),lastActivity=performance.now(),introStart=performance.now(),boostZoom=0,trackDistance=0,trackNext=0,trackUsed=0;
     const trackDummy=new THREE.Object3D(), trackWorld=new THREE.Vector3(), trackColor=new THREE.Color('#49352e');
     const lookTargetSmooth=rover.position.clone().add(new THREE.Vector3(0,visualV2?.9:1.6,0));
-    const pointerDown = (e: PointerEvent) => { if (!preview) renderer.domElement.focus({preventScroll:true}); dragging = true; lastX = e.clientX; lastY = e.clientY; lastCameraInput=performance.now(); framePending=true; renderer.domElement.setPointerCapture(e.pointerId); };
-    const pointerMove = (e: PointerEvent) => { if (!dragging) return; framePending=true; lastCameraInput=performance.now();yawTarget -= (e.clientX - lastX) * 0.006; pitchTarget = visualV2?THREE.MathUtils.clamp(pitchTarget + (e.clientY-lastY)*0.004,THREE.MathUtils.degToRad(visualConfig.camera.minElevation),THREE.MathUtils.degToRad(visualConfig.camera.maxElevation)):THREE.MathUtils.clamp(pitchTarget + (e.clientY - lastY) * 0.004, 0.08, 0.72); lastX = e.clientX; lastY = e.clientY; };
-    const pointerUp = () => { dragging = false; framePending=true; };
+    const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+    const pointerDown = (e: PointerEvent) => { if(e.button!==0)return;if (!preview) renderer.domElement.focus({preventScroll:true}); dragging = true; lastX=pointerStartX=e.clientX;lastY=pointerStartY=e.clientY;pointerTravel=0; lastCameraInput=performance.now(); framePending=true; renderer.domElement.setPointerCapture(e.pointerId); };
+    const pointerMove = (e: PointerEvent) => { if (!dragging) return;pointerTravel=Math.max(pointerTravel,Math.hypot(e.clientX-pointerStartX,e.clientY-pointerStartY)); framePending=true; lastCameraInput=performance.now();yawTarget -= (e.clientX - lastX) * 0.006; pitchTarget = visualV2?THREE.MathUtils.clamp(pitchTarget + (e.clientY-lastY)*0.004,THREE.MathUtils.degToRad(visualConfig.camera.minElevation),THREE.MathUtils.degToRad(visualConfig.camera.maxElevation)):THREE.MathUtils.clamp(pitchTarget + (e.clientY - lastY) * 0.004, 0.08, 0.72); lastX = e.clientX; lastY = e.clientY; };
+    const pointerUp = (e:PointerEvent) => {
+      const clicked=dragging&&pointerTravel<6&&e.type!=='pointercancel';dragging=false;framePending=true;
+      if(!clicked||preview||useMarsStore.getState().phase!=='active')return;
+      const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(pointer,camera);
+      const hits=raycaster.intersectObjects([...formations.values()].map(f=>f.beacon),true);
+      const visibleHit=hits.find(hit=>{let node:THREE.Object3D|null=hit.object;while(node){if(!node.visible)return false;node=node.parent;}return true;});
+      let object:THREE.Object3D|null=visibleHit?.object??null;
+      while(object&&!object.userData.formationKey)object=object.parent;
+      const formation=object?formations.get(String(object.userData.formationKey)):undefined;
+      if(!formation)return;
+      const state=useMarsStore.getState(),pending=pendingAt(formation.x,formation.z);
+      const selected=pending.find(e=>e.target.id===state.focusedTargetId)??pending[0]??beacons.find(e=>e.target.x===formation.x&&e.target.z===formation.z&&!targetDeclined(e.target.id));
+      if(!selected)return;
+      if(state.activeScienceStage&&beacons.some(e=>e.target.id===state.activeScienceStage!.targetId&&e.target.x===formation.x&&e.target.z===formation.z))state.confirmSciencePoint();
+      else state.setFocusedTarget(selected.target.id);
+    };
     const wheel = (e: WheelEvent) => { e.preventDefault(); framePending=true; lastCameraInput=performance.now();zoomTarget = THREE.MathUtils.clamp(zoomTarget + e.deltaY * (visualV2?0.02:0.012), minZoom, maxZoom); };
     renderer.domElement.addEventListener('pointerdown', pointerDown); renderer.domElement.addEventListener('pointermove', pointerMove); renderer.domElement.addEventListener('pointerup', pointerUp); renderer.domElement.addEventListener('pointercancel', pointerUp); renderer.domElement.addEventListener('wheel', wheel);
     const resize = () => { if (!root) return; framePending=true; camera.aspect = root.clientWidth / root.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(root.clientWidth, root.clientHeight); };
@@ -549,14 +659,21 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
       const nextBoundary=`${campaign?.sol}/${campaign?.mode}/${useMarsStore.getState().phase}`;
       if(nextBoundary!==motionBoundary){speed=0;motionBoundary=nextBoundary;}
       if(campaign)battery=useGameStore.getState().missionProgress.battery;
-      const presentation=campaign?`${campaign.sol}/${campaign.mode}/${useMarsStore.getState().phase}/${useMarsStore.getState().scannedTargets.join(',')}`:'';
-      if(presentation!==lastPresentation){framePending=true;lastPresentation=presentation;beacons.forEach(({target,ring,pillar})=>{ring.visible=pillar.visible=!useMarsStore.getState().scannedTargets.includes(target.id)&&(!campaign||!('availableSol' in target)||Number(target.availableSol)<=campaign.sol);});}
+      const presentation=campaign?`${campaign.sol}/${campaign.mode}/${useMarsStore.getState().phase}/${useMarsStore.getState().scannedTargets.join(',')}/${campaign.completed.filter(id=>id.startsWith('declined:')).join(',')}`:'';
+      if(presentation!==lastPresentation){framePending=true;lastPresentation=presentation;updateFormationMarkers();}
       const active = !preview && useMarsStore.getState().phase === 'active' && (!campaign||campaign.mode==='operations');
       scanStatusNearby = null;
       const input = keys.current;
+      const viewState=useMarsStore.getState();
+      if(routeGuide){const visible=campaign?.route==='reroute'&&viewState.cameraMode==='survey'&&!viewState.activeScienceStage;if(routeGuide.visible!==visible)framePending=true;routeGuide.visible=visible;}
+      if(lastCameraRevision!==viewState.cameraRevision){
+        lastCameraRevision=viewState.cameraRevision;lastCameraInput=now;framePending=true;
+        yawTarget=0;pitchTarget=THREE.MathUtils.degToRad(viewState.cameraMode==='survey'?60:visualConfig.camera.elevation);zoomTarget=viewState.cameraMode==='survey'?22:visualConfig.camera.distance;
+        updateFormationMarkers();
+      }
       if(input.size>0)lastActivity=now;
-      if(visualV2&&!dragging&&Math.abs(speed)>.3&&now-lastCameraInput>visualConfig.camera.yawResumeMs){const yawHome=Math.atan2(Math.sin(-yawTarget),Math.cos(-yawTarget));yawTarget+=yawHome*(1-Math.exp(-dt*0.99));}
-      if((!campaign||active)&&visualV2&&!dragging&&input.size===0&&now-lastActivity>visualConfig.camera.idleOrbitAfter*1000)yawTarget+=dt*Math.PI/60;
+      if(visualV2&&viewState.cameraMode==='chase'&&!viewState.activeScienceStage&&!dragging&&Math.abs(speed)>.3&&now-lastCameraInput>visualConfig.camera.yawResumeMs){const yawHome=Math.atan2(Math.sin(-yawTarget),Math.cos(-yawTarget));yawTarget+=yawHome*(1-Math.exp(-dt*0.99));}
+      if((!campaign||active)&&visualV2&&viewState.cameraMode==='chase'&&!viewState.activeScienceStage&&!dragging&&input.size===0&&now-lastActivity>visualConfig.camera.idleOrbitAfter*1000)yawTarget+=dt*Math.PI/60;
       const forward = input.has('w') || input.has('arrowup'), reverse = input.has('s') || input.has('arrowdown');
       const left = input.has('a') || input.has('arrowleft'), right = input.has('d') || input.has('arrowright');
       if (active) {
@@ -618,21 +735,41 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
           pivot.position.y += (targetY - pivot.position.y) * Math.min(1, dt * 9);
         });
         importedRover?.update(signedMovedThisFrame, driveAllowed ? (Number(left) - Number(right)) * .35 : 0, chassis.rotation.x, chassis.rotation.z);
-        mast.rotation.y = Math.sin(elapsed * 0.32) * 0.08;
         const scanState = useMarsStore.getState();
         if(safe&&scanState.scanningTargetId){scanNotice='SAFE MODE · SCIENCE WORKLOAD SUSPENDED';useMarsStore.getState().cancelScan(scanNotice);scanProgress=0;}
-        arm.rotation.x = scanState.scanningTargetId ? Math.sin(elapsed * 8) * 0.16 : 0;
-        if(scanBeam){const activeEntry=scanState.scanningTargetId?beacons.find(entry=>entry.target.id===scanState.scanningTargetId):undefined;scanBeam.visible=!!activeEntry;if(activeEntry){const from=rover.localToWorld(new THREE.Vector3(.35,.78,-.95));const to=new THREE.Vector3(activeEntry.target.x,heightAt(activeEntry.target.x,activeEntry.target.z)+.8,activeEntry.target.z);const vector=to.sub(from);scanBeam.position.copy(from).addScaledVector(vector,.5);scanBeam.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),vector.clone().normalize());scanBeam.scale.y=vector.length();}}
+        if(campaign&&scanState.scanningTargetId&&targetDeclined(scanState.scanningTargetId)){scanNotice=targetReadiness(campaign,scanState.scanningTargetId).reason;useMarsStore.getState().cancelScan(scanNotice);scanProgress=0;}
+        const selectedEntry=scanState.scanningTargetId?beacons.find(entry=>entry.target.id===scanState.scanningTargetId&&!targetDeclined(entry.target.id)):undefined;
+        const activeTool=scanState.activeScienceStage?.instrument??(selectedEntry?'supercam':null);
+        const targetYaw=selectedEntry?Math.atan2(-(selectedEntry.target.x-rover.position.x),-(selectedEntry.target.z-rover.position.z))-heading:0;
+        const aimYaw=Math.atan2(Math.sin(targetYaw),Math.cos(targetYaw));
+        const armActive=activeTool==='pixl'||activeTool==='sherloc';
+        mast.rotation.y+=(THREE.MathUtils.clamp(activeTool==='supercam'||activeTool==='mastcam-z'?aimYaw:Math.sin(elapsed*.32)*.08,-.9,.9)-mast.rotation.y)*(1-Math.exp(-dt*5));
+        cameraHead.rotation.x+=(Number(activeTool==='mastcam-z')*-.09-cameraHead.rotation.x)*(1-Math.exp(-dt*5));
+        arm.rotation.x+=((armActive?-.24:0)-arm.rotation.x)*(1-Math.exp(-dt*5));
+        arm.rotation.y+=((armActive?THREE.MathUtils.clamp(aimYaw,-.6,.6):0)-arm.rotation.y)*(1-Math.exp(-dt*5));
+        turret.rotation.y+=(Number(armActive)*Math.sin((scanState.activeScienceStage?.points??0)*1.3)*.25-turret.rotation.y)*(1-Math.exp(-dt*5));
+        importedRover?.setSciencePose(activeTool,scanState.activeScienceStage?.progress??scanProgress,aimYaw);
+        if(scanBeam){scanBeam.visible=activeTool==='supercam'&&!!selectedEntry&&(!scanState.activeScienceStage||elapsed-readingPulse<.24);if(selectedEntry){const from=rover.localToWorld(new THREE.Vector3(0,visualV2?1.98:3.15,-1));const to=new THREE.Vector3(selectedEntry.target.x,heightAt(selectedEntry.target.x,selectedEntry.target.z)+.8,selectedEntry.target.z);const vector=to.sub(from);scanBeam.position.copy(from).addScaledVector(vector,.5);scanBeam.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),vector.clone().normalize());scanBeam.scale.y=vector.length();}}
+        if(radarSweep){radarSweep.visible=!!campaign&&config.instruments.includes('rimfax')&&movedThisFrame>0;radarSweep.position.set(rover.position.x,heightAt(rover.position.x,rover.position.z)+.035,rover.position.z);radarSweep.scale.setScalar(.8+(elapsed%1)*2.2);}
+        const cue=instrumentCue&&now<instrumentCue.until?instrumentCue.instrument:null;
+        if(configuredWeatherMast)configuredWeatherMast.rotation.y=cue==='meda'?Math.sin(elapsed*3)*.12:0;
+        if(oxygenLamp){oxygenLamp.visible=config.instruments.includes('moxie');oxygenLamp.material.color.set(cue==='moxie'?'#fff0a0':config.moxieRun?'#f7ad4f':'#48423a');oxygenLamp.scale.setScalar(cue==='moxie'?1.3+Math.sin(elapsed*5)*.12:1);}
+        if(radarSweep&&cue==='meda'){radarSweep.visible=true;(radarSweep.material as THREE.MeshBasicMaterial).color.set('#a1e9e3');}else if(radarSweep)(radarSweep.material as THREE.MeshBasicMaterial).color.set('#d9b17b');
+        const uplinking=!!campaign&&campaign.energy.at(-1)?.id.startsWith(`transmit:${campaign.sol}`);
+        antenna.rotation.y+=(Number(uplinking)*.5-antenna.rotation.y)*(1-Math.exp(-dt*2));
         // New missions advance only executed physical activities, never rendering time.
         // Legacy saves retain their old live mode, with corrected EQ-8 efficiencies and no duplicate routine science load.
         if(!campaign){const hours=dt/3600;const result=integrateEnergy(battery/100*2408,{hours,generationW:rtgPowerW(),loadW:config.baselineW,extraLoadWh:driveEnergyWh(movedThisFrame,gradeAngle,(useGameStore.getState().confirmedMission?.results.massKg??FIXED.massKg))});battery=result.storedWh/2408*100;}
         if(campaign)useGameStore.getState().setMissionProgress({x:rover.position.x,z:rover.position.z,heading,distance});
-        const availableTargets = beacons.filter(({ target }) => !scanState.scannedTargets.includes(target.id) && (!campaign || !('availableSol' in target) || Number(target.availableSol)<=campaign.sol));
-        const candidateId=campaign?nearbyScienceTarget(useGameStore.getState().campaign!,rover.position.x,rover.position.z,availableTargets.map(e=>e.target.id)):undefined;
+        const availableTargets = beacons.filter(({target})=>pendingTarget(target));
+        const focusedId=useMarsStore.getState().focusedTargetId;
+        const focusedNearby=availableTargets.find(e=>e.target.id===focusedId&&Math.hypot(rover.position.x-e.target.x,rover.position.z-e.target.z)<=SCAN_RANGE);
+        const candidateId=campaign?focusedNearby?.target.id??nearbyScienceTarget(useGameStore.getState().campaign!,rover.position.x,rover.position.z,availableTargets.map(e=>e.target.id)):undefined;
         const nearby = campaign?availableTargets.map(entry=>({...entry,distance:Math.hypot(rover.position.x-entry.target.x,rover.position.z-entry.target.z)})).find(entry=>entry.target.id===candidateId):availableTargets.map(entry=>({...entry,distance:Math.hypot(rover.position.x-entry.target.x,rover.position.z-entry.target.z)})).filter(entry=>entry.distance<=SCAN_RANGE).sort((a,b)=>a.distance-b.distance)[0];
         scanStatusNearby = nearby?.target.id ?? null;
         if (scanState.scanRequestId !== lastScanRequest) {
           lastScanRequest = scanState.scanRequestId;
+          if(stagedWork){stagedWork=null;useMarsStore.getState().cancelScienceInteraction();}
           if (scanState.scanningTargetId) { scanNotice = 'SCAN ABORTED'; useMarsStore.getState().cancelScan(scanNotice); scanProgress = 0; }
           else if (safe) scanNotice = 'SAFE MODE · SCIENCE WORKLOAD SUSPENDED';
           else if (!nearby) scanNotice = 'MOVE CLOSER TO A SCIENCE TARGET';
@@ -641,8 +778,56 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
           else if (!campaign && battery < (INSTRUMENTS.find(i=>i.id===nearby.target.requiredInstruments.find(id=>config.instruments.includes(id))!)!.powerW*INSTRUMENTS.find(i=>i.id===nearby.target.requiredInstruments.find(id=>config.instruments.includes(id))!)!.hours/2408*100)) scanNotice = 'INSUFFICIENT POWER TO SCAN';
           else { scanNotice = ''; useMarsStore.getState().beginScan(nearby.target.id); scanProgress = 0; }
         }
+        const interaction=useMarsStore.getState();
+        if(stagedWork&&!interaction.activeScienceStage){stagedWork=null;scanProgress=0;scanNotice=interaction.scanMessage;}
+        if(interaction.scienceRequestId!==lastScienceRequest){
+          lastScienceRequest=interaction.scienceRequestId;
+          const request=interaction.scienceRequest,entry=request?beacons.find(e=>e.target.id===request.targetId):undefined;
+          const current=useGameStore.getState().campaign;
+          const step=current&&request?scienceSteps(current,request.targetId,request.method).find(s=>s.instrument===request.instrument):undefined;
+          if(!request||!entry||!current||request.sol!==current.sol||current.mode!=='operations'||current.safe)scanNotice='Science requires an active, safe sol plan.';
+          else if(targetDeclined(request.targetId))scanNotice=targetReadiness(current,request.targetId).reason;
+          else if(Math.hypot(rover.position.x-entry.target.x,rover.position.z-entry.target.z)>SCAN_RANGE)scanNotice='Approach within 8 m to place the instrument.';
+          else if(!step?.available||step.completed)scanNotice=step?.completed?'This reading is already recorded.':step?.reason||'This instrument is not part of the selected observation.';
+          else{
+            const reading=READING_POINTS[request.instrument];stagedWork={...request,points:0,required:reading.count};lastScienceConfirm=interaction.scienceConfirmId;scanProgress=0;scanNotice=reading.tip;
+            useMarsStore.setState({scanningTargetId:request.targetId,activeScienceStage:{targetId:request.targetId,instrument:request.instrument,progress:0,label:reading.label,points:0,required:reading.count,tip:reading.tip},scanMessage:reading.tip,scanProgress:0});
+            interaction.setCameraMode(request.instrument==='mastcam-z'||request.instrument==='supercam'?'mast':request.instrument==='rimfax'?'survey':'chase');
+            framePending=true;
+          }
+        }
+        if(stagedWork){
+          const work=stagedWork,entry=beacons.find(e=>e.target.id===work.targetId),current=useGameStore.getState().campaign;
+          if(current&&targetDeclined(work.targetId)){
+            stagedWork=null;scanNotice=targetReadiness(current,work.targetId).reason;useMarsStore.getState().cancelScan(scanNotice);scanProgress=0;
+          }else if(!entry||!current||current.sol!==work.sol||current.safe||Math.hypot(rover.position.x-entry.target.x,rover.position.z-entry.target.z)>SCAN_RANGE){
+            stagedWork=null;scanNotice='Reading canceled: return within 8 m in an active sol. Incomplete readings consume no modeled energy.';useMarsStore.getState().cancelScan(scanNotice);
+          }else{
+            scanStatusNearby=work.targetId;
+            const confirm=useMarsStore.getState().scienceConfirmId;
+            if(confirm!==lastScienceConfirm){
+              lastScienceConfirm=confirm;
+              if(Math.abs(speed)>.08)scanNotice='Brake to hold the instrument steady before confirming a reading.';
+              else{
+                work.points++;readingPulse=elapsed;scanProgress=work.points/work.required;framePending=true;
+                const reading=READING_POINTS[work.instrument];scanNotice=`${reading.label} · ${work.points} / ${work.required} reading points`;
+                if(work.points>=work.required){
+                  // Visual confirmations never change scientific values. The
+                  // deterministic engine executes and charges the activity once.
+                  const next=executeScienceStep(current,work.targetId,work.instrument,rover.position.x,rover.position.z,work.method);
+                  const productId=`${work.targetId}:${work.instrument}`;
+                  const recorded=!current.products.some(p=>p.id===productId)&&next.products.some(p=>p.id===productId);
+                  useGameStore.getState().setCampaign(next);stagedWork=null;
+                  scanNotice=next.message;scanProgress=0;
+                  useMarsStore.setState({activeScienceStage:null,scanningTargetId:null,scanProgress:0,scanMessage:next.message,...(recorded?{lastDiscovery:`${INSTRUMENTS.find(i=>i.id===work.instrument)?.name} · ${entry.target.discovery}`}:{})});
+                  if(recorded)discoveryUntil=elapsed+3;
+                }else useMarsStore.setState({activeScienceStage:{targetId:work.targetId,instrument:work.instrument,progress:scanProgress,label:reading.label,points:work.points,required:work.required,tip:reading.tip},scanProgress,scanMessage:scanNotice});
+              }
+            }
+          }
+        }
         const currentScan = useMarsStore.getState().scanningTargetId;
-        const activeTarget = currentScan ? beacons.find((entry) => entry.target.id === currentScan) : undefined;
+        const activeTarget = currentScan&&!stagedWork ? beacons.find((entry) => entry.target.id === currentScan&&!targetDeclined(entry.target.id)) : undefined;
         if (activeTarget) {
           const targetDistance = Math.hypot(rover.position.x - activeTarget.target.x, rover.position.z - activeTarget.target.z);
           if (targetDistance > SCAN_RANGE + 1) { scanProgress = 0; scanNotice = 'SCAN LOST · RETURN TO TARGET'; useMarsStore.getState().cancelScan(scanNotice); }
@@ -663,18 +848,27 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
               scanProgress = 0;
             }
           }
-        } else {
+        } else if(!stagedWork) {
           scanProgress = 0;
           if (!scanNotice || scanNotice === 'SPECTROMETER ANALYZING' || scanNotice === 'BRAKE TO SCAN') scanNotice = '';
         }
-        beacons.forEach(({ target, ring, pillar, rockMat }) => {
-          const scanned = useMarsStore.getState().scannedTargets.includes(target.id);
-          ring.visible = pillar.visible = !scanned && (!campaign || !('availableSol' in target) || Number(target.availableSol)<=campaign.sol);
-          ring.rotation.z += dt * 0.2;
-          const focused = useMarsStore.getState().scanningTargetId === target.id;
-          ring.scale.setScalar(focused ? 1 + Math.sin(elapsed * 5) * 0.06 : 1);
-          const selectedBeacon=beacons.find(e=>e.target.id===target.id);if(selectedBeacon?.ring2)selectedBeacon.ring2.scale.setScalar(1+Math.sin(elapsed*2.2)*.035);
-          rockMat.emissiveIntensity = focused ? 0.24 + Math.sin(elapsed * 7) * 0.1 : 0;
+        updateFormationMarkers();
+        formations.forEach(f=>{
+          const focused=beacons.some(e=>e.target.x===f.x&&e.target.z===f.z&&e.target.id===useMarsStore.getState().focusedTargetId);
+          const stage=useMarsStore.getState().activeScienceStage;
+          const working=!!stage&&beacons.some(e=>e.target.x===f.x&&e.target.z===f.z&&e.target.id===stage.targetId);
+          const scanning=beacons.some(e=>e.target.x===f.x&&e.target.z===f.z&&e.target.id===useMarsStore.getState().scanningTargetId);
+          f.ring.rotation.z+=dt*.2;f.ring.scale.setScalar(scanning?1+Math.sin(elapsed*5)*.04:1);
+          f.cells.visible=working;
+          f.cells.children.forEach((cell,index)=>{
+            cell.visible=index<(stage?.required??0);
+            const material=(cell as THREE.Mesh).material as THREE.MeshBasicMaterial;
+            material.color.set(index<(stage?.points??0)?'#e7b66a':'#a6f2ee');
+            material.opacity=index===(stage?.points??0)?.95:.45;
+            cell.scale.setScalar(index===(stage?.points??0)?1+Math.sin(elapsed*4)*.06:1);
+          });
+          f.rockMat.emissiveIntensity=scanning?.28:focused?.14:elapsed<discoveryUntil?.17:0;
+          if(f.ring2)f.ring2.scale.setScalar(working?1+Math.sin(elapsed*3)*.045:1);
         });
         if(trackTrail&&movedThisFrame>0){trackDistance+=movedThisFrame;while(trackDistance>=trackTrail.spacingM){trackDistance-=trackTrail.spacingM;for(const side of [-1,1])for(const axle of [-1,0,1]){rover.localToWorld(trackWorld.set(side*1.16,0,axle*1.15));trackDummy.position.set(trackWorld.x,heightAt(trackWorld.x,trackWorld.z)+.012,trackWorld.z);trackDummy.rotation.set(0,heading,0);trackDummy.updateMatrix();trackTrail.mesh.setMatrixAt(trackNext,trackDummy.matrix);trackTrail.mesh.setColorAt(trackNext,trackColor);trackNext=(trackNext+1)%trackTrail.capacity;trackUsed=Math.min(trackTrail.capacity,trackUsed+1);}trackTrail.mesh.count=trackUsed;trackTrail.mesh.instanceMatrix.needsUpdate=true;if(trackTrail.mesh.instanceColor)trackTrail.mesh.instanceColor.needsUpdate=true;}}
         if(wheelDust)wheelDust.update(rover,dt>0?movedThisFrame/dt:0,dt,heightAt);
@@ -690,20 +884,23 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
       cameraView.current = { yaw, pitch, zoom };
       const introBlend=visualV2?THREE.MathUtils.smoothstep((now-introStart)/4000,0,1):1;
       const baseZoom=visualV2?THREE.MathUtils.lerp(16,zoom,introBlend):zoom;
-      const activeTarget=visualV2?beacons.map(entry=>({...entry,distance:Math.hypot(rover.position.x-entry.target.x,rover.position.z-entry.target.z)})).filter(entry=>entry.distance<30).sort((a,b)=>a.distance-b.distance)[0]:undefined;
+      const activeTarget=visualV2?beacons.filter(entry=>pendingTarget(entry.target)).map(entry=>({...entry,distance:Math.hypot(rover.position.x-entry.target.x,rover.position.z-entry.target.z)})).filter(entry=>entry.distance<30).sort((a,b)=>Number(b.target.id===useMarsStore.getState().focusedTargetId)-Number(a.target.id===useMarsStore.getState().focusedTargetId)||a.distance-b.distance)[0]:undefined;
       const targetFrame=activeTarget?1-activeTarget.distance/30:0;
       const framedZoom=baseZoom*(1+targetFrame*.15)*(1+boostZoom*.12);
-      const lookTarget = rover.position.clone().add(new THREE.Vector3(0, preview?1.05:visualV2?visualConfig.camera.targetHeight:1.6, visualV2?0:-0.35));
+      const cameraMode=preview?'chase':useMarsStore.getState().cameraMode;
+      const mastEye=cameraMode==='mast'?rover.localToWorld(new THREE.Vector3(0,2.02,-1.18)):null;
+      const lookTarget = mastEye?mastEye.clone().add(new THREE.Vector3(-Math.sin(heading+yaw)*24,-Math.tan((pitch-THREE.MathUtils.degToRad(18))*.45)*24,-Math.cos(heading+yaw)*24)):rover.position.clone().add(new THREE.Vector3(0, preview?1.05:visualV2?visualConfig.camera.targetHeight:1.6, visualV2?0:-0.35));
       if(visualV2&&Math.abs(speed)>.05){lookTarget.x+=-Math.sin(heading)*Math.sign(speed)*Math.min(1.5,Math.abs(speed)*.25);lookTarget.z+=-Math.cos(heading)*Math.sign(speed)*Math.min(1.5,Math.abs(speed)*.25);}
-      if(activeTarget){const midpoint=rover.position.clone().lerp(new THREE.Vector3(activeTarget.target.x,heightAt(activeTarget.target.x,activeTarget.target.z)+.8,activeTarget.target.z),.5);lookTarget.lerp(midpoint,targetFrame*.4);}
+      if(activeTarget&&cameraMode!=='mast'){const midpoint=rover.position.clone().lerp(new THREE.Vector3(activeTarget.target.x,heightAt(activeTarget.target.x,activeTarget.target.z)+.8,activeTarget.target.z),.5);lookTarget.lerp(midpoint,targetFrame*.4);}
+      if(mastEye&&useMarsStore.getState().activeScienceStage&&activeTarget)lookTarget.set(activeTarget.target.x,heightAt(activeTarget.target.x,activeTarget.target.z)+.9,activeTarget.target.z);
       if(visualV2)lookTargetSmooth.lerp(lookTarget,1-Math.exp(-dt*(Math.LN2/.15)));else lookTargetSmooth.copy(lookTarget);
       const cameraElevation=visualV2?THREE.MathUtils.lerp(THREE.MathUtils.degToRad(8),pitch,introBlend):0.3+pitch;
       const behind = new THREE.Vector3(Math.sin(heading + yaw) * framedZoom, visualV2?framedZoom*Math.tan(cameraElevation):framedZoom*cameraElevation, Math.cos(heading + yaw) * framedZoom);
-      const desired = rover.position.clone().add(behind);
+      const desired = mastEye??rover.position.clone().add(behind);
       desired.y = Math.max(desired.y, heightAt(desired.x, desired.z) + (visualV2?visualConfig.camera.clearance:1.65));
       // Short terrain probes keep the chase line from passing behind a ridge.
       let safeFraction = 1;
-      for (let i = 1; i <= 10; i++) {
+      for (let i = 1; cameraMode!=='mast'&&i <= 10; i++) {
         const t = i / 10, probe = lookTargetSmooth.clone().lerp(desired, t), clearance=visualV2?visualConfig.camera.clearance:1.1;
         if (probe.y < heightAt(probe.x, probe.z) + clearance) { if(visualV2)desired.y=Math.max(desired.y,lookTargetSmooth.y+(heightAt(probe.x,probe.z)+clearance-lookTargetSmooth.y)/t);else safeFraction = Math.max(0.2, t - 0.1); }
       }
@@ -719,6 +916,14 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
       if (!preview && now - lastHud > 125) {
         updateTelemetry({ battery, speed: dt>0?movedThisFrame/dt:0, sol: useGameStore.getState().campaign?.sol ?? useMarsStore.getState().sol, distance, warning: battery < config.reserve*100 ? 'RESERVE THRESHOLD' : elapsed < collisionUntil ? 'ROCK CONTACT' : '' });
         useMarsStore.getState().updateScanStatus(scanStatusNearby, scanProgress, scanNotice);
+        const showNavigation=useMarsStore.getState().cameraMode!=='mast'&&!useMarsStore.getState().activeScienceStage;
+        const anchors=showNavigation?[...formations.values()].flatMap(f=>{
+          const pending=pendingAt(f.x,f.z),selected=pending.find(e=>e.target.id===useMarsStore.getState().focusedTargetId)??pending[0];
+          if(!selected)return [];
+          const projected=new THREE.Vector3(f.x,heightAt(f.x,f.z)+2.2,f.z).project(camera);
+          return [{id:selected.target.id,x:(projected.x*.5+.5)*root.clientWidth,y:(-.5*projected.y+.5)*root.clientHeight,visible:projected.z>=-1&&projected.z<=1&&Math.abs(projected.x)<.95&&Math.abs(projected.y)<.9,distance:Math.hypot(f.x-rover.position.x,f.z-rover.position.z)}];
+        }):[];
+        useMarsStore.getState().updateWorldAnchors(anchors);
         lastHud = now;
       }
       if(!preview && !campaign && elapsed-lastCampaignSave>=5){useGameStore.getState().setMissionProgress({x:rover.position.x,z:rover.position.z,heading,distance,battery,sol:Math.floor(elapsed/90)+1,scannedTargets:useMarsStore.getState().scannedTargets,science:useMarsStore.getState().science});lastCampaignSave=elapsed}
@@ -737,12 +942,12 @@ export default function MarsWorld({ keys, config=DEFAULT_CONFIG, preview=false, 
       if (importedRover) { rover.remove(importedRover.root); importedRover.dispose(); }
       renderer.domElement.removeEventListener('pointerdown', pointerDown); renderer.domElement.removeEventListener('pointermove', pointerMove); renderer.domElement.removeEventListener('pointerup', pointerUp); renderer.domElement.removeEventListener('pointercancel', pointerUp); renderer.domElement.removeEventListener('wheel', wheel);
       disposeModel(scene);
-      if(rendererRef.current===renderer)rendererRef.current=null;if(sunRef.current===sun)sunRef.current=null;rockMeshesRef.current=[];rockBaseCountsRef.current=[];pebbleRef.current=null;if(debugOverlay?.parentElement===root)root.removeChild(debugOverlay);environmentTarget?.dispose();
+      if(rendererRef.current===renderer)rendererRef.current=null;if(sunRef.current===sun)sunRef.current=null;pebbleRef.current=null;pebbleBaseCount.current=0;if(debugOverlay?.parentElement===root)root.removeChild(debugOverlay);environmentTarget?.dispose();
       renderer.dispose(); renderer.forceContextLoss(); if (renderer.domElement.parentElement === root) root.removeChild(renderer.domElement);
     };
   }, [keys, updateTelemetry, preview, visualKey, visualV2, site, campaignMode]);
 
-  useEffect(()=>{if(!visualV2)return;const renderer=rendererRef.current;if(!renderer)return;const cap=quality==='low'?1:quality==='high'?2:1.5;renderer.setPixelRatio(Math.min(devicePixelRatio,cap));if(host.current)renderer.setSize(host.current.clientWidth,host.current.clientHeight);const sun=sunRef.current;if(sun){sun.shadow.map?.dispose();sun.shadow.map=null;const mapSize=quality==='low'?1024:visualConfig.lighting.shadowSize;sun.shadow.mapSize.set(mapSize,mapSize);}const rockLimit=quality==='low'?800:quality==='high'?3500:2000;let left=rockLimit;rockMeshesRef.current.forEach((mesh,index)=>{mesh.count=Math.min(rockBaseCountsRef.current[index],left);left-=mesh.count;});if(pebbleRef.current)pebbleRef.current.count=quality==='low'?Math.min(160,pebbleRef.current.count):quality==='medium'?Math.min(visualConfig.rocks.pebbleCount,pebbleRef.current.count):pebbleRef.current.count;},[quality,visualV2]);
+  useEffect(()=>{if(!visualV2)return;const renderer=rendererRef.current;if(!renderer)return;const cap=quality==='low'?1:quality==='high'?2:1.5;renderer.setPixelRatio(Math.min(devicePixelRatio,cap));if(host.current)renderer.setSize(host.current.clientWidth,host.current.clientHeight);const sun=sunRef.current;if(sun){sun.shadow.map?.dispose();sun.shadow.map=null;const mapSize=quality==='low'?1024:visualConfig.lighting.shadowSize;sun.shadow.mapSize.set(mapSize,mapSize);}if(pebbleRef.current)pebbleRef.current.count=quality==='low'?Math.min(160,pebbleBaseCount.current):pebbleBaseCount.current;},[quality,visualV2]);
 
-  return <div className={`mars-world${preview ? ' engineering-rover-world' : ''}`} ref={host} aria-label={preview ? 'Live 3D rover configuration preview' : 'Interactive 3D Mars rover exploration'} data-rover-config={visualKey} data-preview-config={preview ? visualKey : undefined} data-visual-variant={visualV2?'v2':'v1'} data-quality={quality} data-model-status={modelStatus} data-model-phase={modelProgress.phase}>{modelStatus !== 'ready' && <span className="model-status" role="status">{modelProgressText(modelProgress, 'Perseverance')}{modelStatus === 'fallback' && <> · Using procedural rover <button type="button" onClick={() => retryModel.current()}>Retry rover model</button></>}</span>}</div>;
+  return <div className={`mars-world${preview ? ' engineering-rover-world' : ''}`} ref={host} aria-label={preview ? 'Live 3D rover configuration preview' : 'Interactive 3D Mars rover exploration'} data-rover-config={visualKey} data-preview-config={preview ? visualKey : undefined} data-visual-variant={visualV2?'v2':'v1'} data-quality={quality} data-model-status={modelStatus} data-model-phase={modelProgress.phase}>{modelStatus !== 'ready' && <span className="model-status" role="status" title={modelStatusLabel} aria-label={modelStatusLabel}>{modelProgressText(modelProgress, 'Perseverance')}{modelStatus === 'fallback' && <> · Using procedural rover <button type="button" onClick={() => retryModel.current()}>Retry rover model</button></>}</span>}</div>;
 }

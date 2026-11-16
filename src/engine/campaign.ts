@@ -10,6 +10,8 @@ export const DEFAULT_OPTIONS: MissionOptions = { site: 'jezero', ranking: ['G','
 export const VEHICLE_KG = { light:1200, medium:1500, heavy:1550 } as const;
 export const RELAY_KG = { O1:0, O2:75, O3:350 } as const;
 export type ScienceProduct = { id: string; objective: ObjectiveId; unit: number; sol: number; bits: number; sentBits: number; method: string };
+export type ScienceMethod = 'pixl'|'supercam'|'rimfax';
+export type ScienceStep = { instrument:InstrumentId; label:string; hours:number; powerW:number; bits:number; completed:boolean; available:boolean; reason:string };
 export type CampaignEvent = { id:string; sol:number; title:string; detail:string; resolved:boolean; actionable?:boolean };
 export type EnergyEntry = { id:string; sol:number; hours:number; generatedWh:number; requestedWh:number; servedWh:number; conversionLossWh:number; curtailedWh:number; unservedWh:number; storedWh:number };
 export type SolRecord = { sol:number; endWh:number; safe:boolean; generatedWh:number; loadWh:number; driveMeters:number };
@@ -20,6 +22,8 @@ export type Campaign = {
   plan:SolPlan; products:ScienceProduct[]; events:CampaignEvent[]; energy:EnergyEntry[]; history:SolRecord[];
   completed:string[]; zeroStreak:number; safe:boolean; skipNext:boolean; mobilityDisabled:boolean; majorFailures:string[];
   route:'pending'|'reroute'|'cross'; dataPriority:Ranking; contactUsedBits:number; message:string;
+  /** Composition choice is fixed once a target's first activity executes. Older saves infer it. */
+  targetMethods?:Record<string,ScienceMethod>;
 };
 export const DEFAULT_SOL_PLAN: SolPlan = { driveHours:4, scienceHours:8.5, science:true, weather:true, transmit:true };
 export function validRanking(value: unknown): value is Ranking {
@@ -67,7 +71,26 @@ function scheduleEvents(c:Campaign):Campaign {
   const site=getScenario(c.options.site), next={...c,events:[...c.events]};
   if(c.sol>=WINDOWS[c.options.window].hazardSol && !c.events.some(e=>e.id==='E1'))next.events.push({id:'E1',sol:WINDOWS[c.options.window].hazardSol,title:'E1 · Route hazard',detail:`${site.slope}° slope / ${site.obstacle} m obstacle. Safe detour adds ${site.detour} m. Crossing disables mobility (assumed severity).${c.mobilityDisabled?' Non-actionable: mobility is already disabled; no traversal or response credit.':''}`,resolved:c.mobilityDisabled,actionable:!c.mobilityDisabled});
   if(c.sol>=site.outageSol && !c.events.some(e=>e.id==='E2'))next.events.push({id:'E2',sol:site.outageSol,title:'E2 · Relay window loss',detail:'One relay opportunity is unavailable this sol. Reprioritize data or wait; backlog is preserved.',resolved:false});
-  return next;
+  return samplingDecision(next);
+}
+/** D12 is an approved player decision, distinct from the scheduled E1/E2 hazards. */
+function samplingDecision(c:Campaign):Campaign {
+  const targetId=`${c.options.site}-B-2`,examined=c.completed.includes(`science:${targetId}`),declined=c.completed.includes(`declined:${targetId}`);
+  const existing=c.events.find(event=>event.id==='D12');
+  if(existing){
+    if(existing.resolved&&(!declined||existing.actionable===false)||!examined&&!declined)return c;
+    return {...c,events:c.events.map(event=>event.id==='D12'?{...event,resolved:true,actionable:!declined,detail:event.detail+(declined?' Crew chose to move on; this B unit is permanently forfeited.':' The same-rock SHERLOC and PIXL bundle was acquired; only complete return earns credit.')}:event)};
+  }
+  // Do not retroactively expire or impose an unmade choice on old post-sol-8 saves.
+  if(c.sol!==8||c.mode==='finished')return c;
+  return {...c,events:[...c.events,{id:'D12',sol:8,title:'D12 · Examine the unusual rock?',detail:'Examine this rock with SHERLOC + PIXL (3 modeled hours, 98.8 Wh instrument energy, 334.8 Mbit), or explicitly move on and permanently forfeit this one B unit. Existing partial work remains recorded.',resolved:examined||declined,actionable:!declined}]};
+}
+export function declineUnusualRock(c:Campaign):Campaign {
+  const targetId=`${c.options.site}-B-2`;
+  if(c.mode==='finished'||c.sol<8||c.completed.includes(`science:${targetId}`)||c.completed.includes(`declined:${targetId}`))return c;
+  const pending=samplingDecision(c),declined={...pending,completed:[...pending.completed,`declined:${targetId}`]};
+  const next=pending.events.some(event=>event.id==='D12')?samplingDecision(declined):{...declined,events:[...declined.events,{id:'D12',sol:c.sol,title:'D12 · Unusual rock declined',detail:'Crew explicitly chose to move on. This B unit is permanently forfeited; existing partial products and executed work remain recorded.',resolved:true,actionable:false}]};
+  return {...next,message:'Moved on from the unusual rock. This B unit cannot be recovered later; all other B units can still return (maximum 3/4). Executed work and data are retained.'};
 }
 export function forecastSol(c:Campaign,plan:SolPlan) {
   const remainingHours=Math.max(0,FIXED.solHours-c.elapsedHours);
@@ -155,18 +178,73 @@ function productsFor(c:Campaign,id:string,objective:ObjectiveId,unit:number,meth
   const products=parts.map(([instrument,,mbit])=>({id:`${id}:${instrument}`,objective,unit,sol:c.sol,bits:Math.round(mbit*1e6),sentBits:0,method}));
   return {...next,products:[...next.products,...products],completed:[...next.completed,`science:${id}`],message:'Observation acquired; it counts only after all its products return.'};
 }
-export function acquireTarget(c:Campaign,targetId:string,x:number,z:number):Campaign {
+function targetScienceMethod(c:Campaign,targetId:string,requested?:ScienceMethod):ScienceMethod {
+  const recorded=c.targetMethods?.[targetId];
+  if(recorded)return recorded;
+  const products=c.products.filter(p=>p.id.startsWith(`${targetId}:`));
+  for(const method of ['pixl','supercam','rimfax'] as const)if(products.some(p=>p.id===`${targetId}:${method}`))return method;
+  return requested??(c.config.instruments.includes('pixl')?'pixl':c.config.instruments.includes('supercam')?'supercam':'rimfax');
+}
+function targetScienceParts(c:Campaign,targetId:string,method?:ScienceMethod):Array<[InstrumentId,number,number]> {
   const target=scenarioTargets(c.options.site).find(t=>t.id===targetId);
-  if(!target||target.availableSol>c.sol||Math.hypot(x-target.x,z-target.z)>8)return {...c,message:'Target is not available or is outside the 8 m scan range.'};
-  if(target.objective==='B')return productsFor(c,targetId,'B',target.unit,'SHERLOC + PIXL', [['sherloc',1,318.8],['pixl',2,16]]);
-  const composition=c.config.instruments.includes('pixl')?'pixl':c.config.instruments.includes('supercam')?'supercam':null;
-  if(composition)return productsFor(c,targetId,'G',target.unit,`Mastcam-Z + ${composition}`, [['mastcam-z',.5,148],[composition,composition==='pixl'?2:.5,composition==='pixl'?16:62]]);
-  if(c.config.instruments.includes('rimfax')&&c.profileMeters>=100-1e-8&&c.radarUnits<2) {
-    const next=productsFor(c,targetId,'G',target.unit,'Mastcam-Z + RIMFAX', [['mastcam-z',.5,148]]);
-    if(next.products.length===c.products.length)return next;
-    return {...next,profileMeters:Math.max(0,c.profileMeters-100),radarUnits:c.radarUnits+1,products:[...next.products,{id:`${targetId}:rimfax`,objective:'G',unit:target.unit,sol:c.sol,bits:80e6,sentBits:0,method:'Mastcam-Z + RIMFAX'}]};
-  }
-  return {...c,message:'Geology needs Mastcam-Z plus composition, or an unused 100 m RIMFAX profile (maximum two alternatives).'};
+  if(!target)return [];
+  if(target.objective==='B')return [['sherloc',1,318.8],['pixl',2,16]];
+  const composition=targetScienceMethod(c,targetId,method);
+  return [['mastcam-z',.5,148],[composition,composition==='pixl'?2:composition==='supercam'?.5:0,composition==='pixl'?16:composition==='supercam'?62:80]];
+}
+/** Presentation and controls share these exact, approved activity quantities. */
+export function scienceSteps(c:Campaign,targetId:string,method?:ScienceMethod):ScienceStep[] {
+  const target=scenarioTargets(c.options.site).find(t=>t.id===targetId),parts=targetScienceParts(c,targetId,method);
+  return parts.map(([instrument,hours,mbit],index)=>{
+    const completed=c.products.some(p=>p.id===`${targetId}:${instrument}`);
+    const executed=c.completed.includes(`activity:${targetId}:${instrument}`);
+    let reason='';
+    if(c.completed.includes(`declined:${targetId}`))reason='The crew explicitly moved on from this unusual rock. Its B unit is permanently forfeited.';
+    else if(!target||target.availableSol>c.sol)reason='This target is not currently available.';
+    else if(c.mode!=='operations'||c.safe||!c.plan.science)reason='Commit a science-enabled plan outside safe mode first.';
+    else if(parts.some(([id])=>!c.config.instruments.includes(id)))reason='The complete instrument bundle is not installed.';
+    else if(method&&c.targetMethods?.[targetId]&&method!==c.targetMethods[targetId])reason='This target already has a committed composition method.';
+    else if(index>0&&!c.products.some(p=>p.id===`${targetId}:${parts[0][0]}`)&&!c.completed.includes(`activity:${targetId}:${parts[0][0]}`))reason='Complete the context observation first.';
+    else if(instrument==='rimfax'&&!completed&&(c.profileMeters<100-1e-8||c.radarUnits>=2))reason='A unique unused 100 m radar profile is required (maximum two alternatives).';
+    else if(!executed&&(hours>FIXED.solHours-c.elapsedHours+1e-9||hours>(c.plan.scienceHours??8.5)-(c.scienceSpentHours??0)+1e-9))reason='Revise the remaining science-hour allocation or continue next sol.';
+    return {instrument,label:INSTRUMENTS.find(i=>i.id===instrument)!.name,hours:executed?0:hours,powerW:instrument==='rimfax'?0:INSTRUMENTS.find(i=>i.id===instrument)!.powerW,bits:Math.round(mbit*1e6),completed,available:!reason&&!completed,reason:reason||(completed?'This instrument product is already onboard or returned.':'')};
+  });
+}
+/** Execute one real activity; a visual animation never substitutes for this reducer. */
+export function executeScienceStep(c:Campaign,targetId:string,instrument:InstrumentId,x:number,z:number,method?:ScienceMethod):Campaign {
+  const target=scenarioTargets(c.options.site).find(t=>t.id===targetId);
+  if(c.completed.includes(`declined:${targetId}`))return {...c,message:'This unusual rock was explicitly declined. Its B unit is permanently forfeited.'};
+  if(!target||target.availableSol>c.sol||!Number.isFinite(x)||!Number.isFinite(z)||Math.hypot(x-target.x,z-target.z)>8)return {...c,message:'Target is not available or is outside the 8 m scan range.'};
+  if(c.products.some(p=>p.id===`${targetId}:${instrument}`))return c;
+  const step=scienceSteps(c,targetId,method).find(s=>s.instrument===instrument);
+  if(!step)return {...c,message:'This instrument does not belong to the selected observation method.'};
+  if(!step.available)return {...c,message:step.reason};
+  const composition=targetScienceMethod(c,targetId,method),activity=`activity:${targetId}:${instrument}`;
+  let next=c;
+  if(instrument!=='rimfax'&&!c.completed.includes(activity))next=interval(c,activity,step.hours,step.powerW);
+  if(instrument!=='rimfax'&&!next.completed.includes(activity))return next;
+  const label=target.objective==='B'?'SHERLOC + PIXL':composition==='rimfax'?'Mastcam-Z + RIMFAX':`Mastcam-Z + ${composition}`;
+  const products=[...next.products,{id:`${targetId}:${instrument}`,objective:target.objective,unit:target.unit,sol:c.sol,bits:step.bits,sentBits:0,method:label}];
+  const complete=targetScienceParts(c,targetId,method).every(([id])=>products.some(p=>p.id===`${targetId}:${id}`));
+  next={...next,products,...(target.objective==='G'?{targetMethods:{...next.targetMethods,[targetId]:composition}}:{}),
+    completed:complete&&!next.completed.includes(`science:${targetId}`)?[...next.completed,`science:${targetId}`]:next.completed,
+    message:next.safe?next.message:complete?'Observation acquired; it counts only after all its products return.':`${step.label} product acquired. Complete the remaining instrument observation; a partial bundle earns no objective credit.`};
+  if(instrument==='rimfax')next={...next,profileMeters:Math.max(0,next.profileMeters-100),radarUnits:next.radarUnits+1};
+  return samplingDecision(next);
+}
+export function acquireTarget(c:Campaign,targetId:string,x:number,z:number,method?:ScienceMethod):Campaign {
+  const target=scenarioTargets(c.options.site).find(t=>t.id===targetId);
+  if(c.completed.includes(`declined:${targetId}`))return {...c,message:'This unusual rock was explicitly declined. Its B unit is permanently forfeited.'};
+  if(!target||target.availableSol>c.sol||!Number.isFinite(x)||!Number.isFinite(z)||Math.hypot(x-target.x,z-target.z)>8)return {...c,message:'Target is not available or is outside the 8 m scan range.'};
+  if(c.completed.includes(`science:${targetId}`)||c.mode!=='operations'||c.safe||!c.plan.science)return c;
+  const parts=targetScienceParts(c,targetId,method);
+  if(parts.some(([instrument])=>!c.config.instruments.includes(instrument)))return {...c,message:'Required instruments are not installed.'};
+  if(parts.some(([instrument])=>instrument==='rimfax')&&(c.profileMeters<100-1e-8||c.radarUnits>=2))return {...c,message:'Geology needs an unused 100 m RIMFAX profile (maximum two alternatives).'};
+  const hours=parts.filter(([instrument])=>!c.completed.includes(`activity:${targetId}:${instrument}`)&&!c.products.some(p=>p.id===`${targetId}:${instrument}`)).reduce((sum,[,duration])=>sum+duration,0);
+  if(hours>FIXED.solHours-c.elapsedHours+1e-9||hours>(c.plan.scienceHours??8.5)-(c.scienceSpentHours??0)+1e-9)return {...c,message:'The whole science bundle does not fit the remaining sol or science-hour allocation.'};
+  let next=c;
+  for(const [instrument] of parts){next=executeScienceStep(next,targetId,instrument,x,z,method);if(next.safe)return next;}
+  return next;
 }
 export function acquireWeather(c:Campaign):Campaign {
   if(!c.plan.weather||!c.config.instruments.includes('meda'))return {...c,message:'A distinct MEDA record requires weather enabled and the instrument installed.'};
@@ -197,12 +275,30 @@ export function resolveRoute(c:Campaign,choice:'reroute'|'cross'):Campaign {
   return {...c,route:choice,mobilityDisabled:c.mobilityDisabled||choice==='cross',events:c.events.map(e=>e.id==='E1'?{...e,resolved:true,detail:e.detail+(choice==='cross'?' Crossed: mobility lost.':' Safe detour chosen; distance is charged when traversed.')} :e),message:choice==='cross'?'Mobility disabled by the accepted terrain crossing.':'Safe route selected. Follow the detour corridor.'};
 }
 export function prioritizeData(c:Campaign,id:ObjectiveId):Campaign {return {...c,dataPriority:[id,...(c.dataPriority??c.options.ranking).filter(other=>other!==id)] as Ranking,message:'Return priority updated; scientific ranking and weights are unchanged.'};}
+/** E2's explicit wait choice preserves the queue without granting another contact. */
+export function holdForRelay(c:Campaign):Campaign {
+  if(c.mode==='finished'||!c.events.some(e=>e.id==='E2'&&!e.resolved))return c;
+  return {...c,events:c.events.map(e=>e.id==='E2'&&!e.resolved?{...e,resolved:true,detail:`${e.detail} Crew chose to hold data for the next pass.`}:e),message:'Data held onboard for the next relay pass. Contact capacity, mission time and energy are unchanged.'};
+}
+/** Bits remain conserved. Normal end-of-mission backlog is unreturned, not dropped. */
+export function dataSummary(c:Campaign) {
+  const collectedBits=c.products.reduce((sum,p)=>sum+p.bits,0),returnedBits=c.products.reduce((sum,p)=>sum+p.sentBits,0);
+  const pendingBits=collectedBits-returnedBits,roverLost=c.mode==='finished'&&c.majorFailures.some(f=>f.startsWith('S7 rover lost:'));
+  return {collectedBits,returnedBits,onboardBits:roverLost?0:pendingBits,unreturnedBits:c.mode==='finished'&&!roverLost?pendingBits:0,lostBits:roverLost?pendingBits:0,
+    // NASA's 2 GB physical flash does not establish an approved science allocation.
+    capacityBits:null};
+}
 export function scienceSummary(c:Campaign) {
   const fractions={G:0,B:0,E:0};
   for(const o of OBJECTIVES){
     const units=new Map<number,ScienceProduct[]>();
     for(const p of c.products.filter(p=>p.objective===o.id))units.set(p.unit,[...(units.get(p.unit)??[]),p]);
-    const complete=[...units.values()].filter(parts=>parts.length>0&&parts.every(p=>p.sentBits===p.bits));
+    const complete=[...units.values()].filter(parts=>{
+      if(parts.length===0||parts.some(p=>p.sentBits!==p.bits)||o.id==='B'&&c.completed.includes(`declined:${c.options.site}-B-${parts[0].unit}`))return false;
+      // A returned camera image or isolated chemistry map is not a complete unit.
+      const has=(instrument:InstrumentId)=>parts.some(p=>p.id.endsWith(`:${instrument}`));
+      return o.id==='G'?has('mastcam-z')&&(has('pixl')||has('supercam')||has('rimfax')):o.id==='B'?has('sherloc')&&has('pixl'):true;
+    });
     const done=o.id==='E'?complete.filter(parts=>parts[0].method==='MEDA').length+Math.min(2,complete.filter(parts=>parts[0].method==='MOXIE + MEDA context'&&parts.length===2).length):complete.length;
     fractions[o.id]=Math.min(1,done/o.required);
   }
@@ -214,6 +310,8 @@ export function scienceSummary(c:Campaign) {
 export function endSol(c:Campaign):Campaign {
   if(c.mode==='finished')return c;
   if(c.events.some(e=>e.id==='E1'&&!e.resolved))return {...c,message:'Resolve the pending route hazard before ending the sol.'};
+  c=samplingDecision(c);
+  if(c.events.some(e=>e.id==='D12'&&!e.resolved))return {...c,message:'D12 requires an explicit decision: finish examining the unusual rock, or move on and permanently forfeit its B unit.'};
   let next=interval(c,`close:${c.sol}`,Math.max(0,FIXED.solHours-c.elapsedHours));
   next=transmit(next);
   const entries=next.energy.filter(e=>e.sol===c.sol), zeros=zeroEnergyStreak(c.zeroStreak,next.energyWh);
@@ -240,7 +338,11 @@ export function restoreCampaign(json:string):Campaign {
   if(!finite(c.elapsedHours,0,FIXED.solHours)||!finite(c.scienceSpentHours,0,c.elapsedHours+1e-8)||!finite(c.driveHours,0,4)||!finite(c.driveMeters)||!finite(c.profileMeters)||!finite(c.radarRemainder)||!finite(c.contactUsedBits)||!finite(c.zeroStreak)||!finite(c.plan.driveHours,0,4)||!finite(c.plan.scienceHours,0,FIXED.solHours))invalid();
   if(!validRanking(c.dataPriority)||!finite(c.config.baselineW)||![.2,.3,.4].includes(c.config.reserve)||!['UHF','X-band'].includes(c.config.downlink)||!Array.isArray(c.config.instruments)||c.config.instruments.some(id=>!INSTRUMENTS.some(i=>i.id===id)))invalid();
   for(const product of c.products)if(typeof product.id!=='string'||!OBJECTIVES.some(o=>o.id===product.objective)||!Number.isSafeInteger(product.bits)||!Number.isSafeInteger(product.sentBits)||!finite(product.bits)||!finite(product.sentBits,0,product.bits)||!Number.isSafeInteger(product.unit)||!Number.isSafeInteger(product.sol)||product.sol<1||product.sol>c.sol)invalid();
-  return c;
+  if(c.targetMethods!==undefined){
+    if(!c.targetMethods||typeof c.targetMethods!=='object'||Array.isArray(c.targetMethods))invalid();
+    for(const [id,method] of Object.entries(c.targetMethods??{}))if(!scenarioTargets(c.options.site).some(t=>t.id===id&&t.objective==='G')||!['pixl','supercam','rimfax'].includes(method))invalid();
+  }
+  return samplingDecision(c);
 }
 export { batteryPercent };
 
@@ -251,7 +353,7 @@ export function objectiveCapabilities(config:RoverConfig) {
 export function skipQuietSols(c:Campaign):Campaign {
   let next=c;
   for(let i=0;i<30&&next.mode!=='finished';i++) {
-    const available=scenarioTargets(next.options.site).some(t=>t.availableSol<=next.sol&&!next.completed.includes(`science:${t.id}`));
+    const available=scenarioTargets(next.options.site).some(t=>t.availableSol<=next.sol&&!next.completed.includes(`science:${t.id}`)&&!next.completed.includes(`declined:${t.id}`));
     const weather=next.config.instruments.includes('meda')&&!next.completed.includes(`science:weather:${next.sol}`)&&scienceSummary(next).fractions.E<1;
     if(available&&!next.mobilityDisabled||weather||next.events.some(e=>!e.resolved))return {...next,message:'A target or event needs review on this sol.'};
     next=endSol(next);
@@ -264,14 +366,15 @@ export function setOperatingDownlink(c:Campaign,downlink:'UHF'|'X-band'):Campaig
   return {...c,config:{...c.config,downlink},message:'Operating downlink changed. Radio power is already included in the baseline.'};
 }
 
-export function targetReadiness(c:Campaign,id:string):{allowed:boolean;reason:string} {
+export function targetReadiness(c:Campaign,id:string,method?:ScienceMethod):{allowed:boolean;reason:string} {
   const t=scenarioTargets(c.options.site).find(target=>target.id===id),has=(instrument:InstrumentId)=>c.config.instruments.includes(instrument);
+  if(c.completed.includes(`declined:${id}`))return {allowed:false,reason:'The crew explicitly moved on from this unusual rock. Its B unit is permanently forfeited.'};
   if(!t||t.availableSol>c.sol||c.completed.includes(`science:${id}`))return {allowed:false,reason:'This target is not currently available.'};
   if(c.mode!=='operations'||c.safe||!c.plan.science)return {allowed:false,reason:'Commit a science-enabled plan outside safe mode first.'};
-  const instruments:InstrumentId[]=t.objective==='B'?['sherloc','pixl']:['mastcam-z',has('pixl')?'pixl':has('supercam')?'supercam':'rimfax'];
+  const instruments=targetScienceParts(c,id,method).map(([instrument])=>instrument);
   if(instruments.some(i=>!has(i)))return {allowed:false,reason:'The complete instrument bundle is not installed.'};
   if(instruments.includes('rimfax')&&(c.profileMeters<100-1e-8||c.radarUnits>=2))return {allowed:false,reason:'A unique unused 100 m radar profile is required (maximum two alternatives).'};
-  const pending=instruments.filter(i=>i!=='rimfax'&&!c.completed.includes(`activity:${id}:${i}`));
+  const pending=instruments.filter(i=>i!=='rimfax'&&!c.completed.includes(`activity:${id}:${i}`)&&!c.products.some(p=>p.id===`${id}:${i}`));
   const hours=pending.reduce((sum,i)=>sum+INSTRUMENTS.find(instrument=>instrument.id===i)!.hours,0);
   if(hours>FIXED.solHours-c.elapsedHours+1e-9||hours>(c.plan.scienceHours??8.5)-(c.scienceSpentHours??0)+1e-9)return {allowed:false,reason:'Revise the remaining science-hour allocation or continue next sol.'};
   return {allowed:true,reason:''};
